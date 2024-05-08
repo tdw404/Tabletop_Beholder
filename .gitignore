@@ -1,0 +1,25 @@
+.DS_Store
+/build
+/.classpath
+/.settings
+/.project
+/eclipse-bin/
+/.idea
+/annotation-generated-src
+/annotation-generated-tst
+/SAMToolkit.devenv
+/configuration/stack-exec
+*.iml
+.aws-sam
+.vscode
+
+# Ignore Gradle project-specific cache directory
+.gradle
+
+# Ignore Gradle build output directory
+build
+logs
+node_modules
+
+.env*
+bin

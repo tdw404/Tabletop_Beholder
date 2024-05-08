@@ -1,0 +1,88 @@
+@startuml
+
+class Exceptions.RuntimeException #DimGray
+
+newpage
+allowmixing
+class activity.templateActivity.OtherTemplateActivities{}
+class activity.templateActivity.CreateTemplateFromActivity{}
+class activity.actionActivity.AllActionActivities{}
+class activity.actionActivity.AllSpellActivities{}
+class activity.actionActivity.AllCreatureActivities{}
+class activity.actionActivity.AllEncounterActivities{}
+class activity.actionActivity.AllSessionActivities{}
+database DynamoDB
+database "EXTERNAL Open5E"
+
+class dynamodb.externalDao.TemplateDao{
+}
+
+class dynamodb.dao.SessionDao{
+}
+
+class dynamodb.dao.EncounterDao{
+}
+
+class dynamodb.dao.CreatureDao{}
+
+class dynamodb.dao.SpellDao{}
+
+class dynamodb.dao.ActionDao{}
+
+class lambda.AllTemplateLambdas{}
+class lambda.AllActionLambdas{}
+class lambda.AllSpellLambdas{}
+class lambda.AllCreatureLambdas{}
+class lambda.AllEncounterLambdas{}
+class lambda.AllSessionLambdas{}
+class lambda.LambdaActivityRunner{}
+
+
+dynamodb.externalDao.TemplateDao -d[hidden]- dynamodb.dao.ActionDao
+dynamodb.dao.SessionDao -u[hidden]- dynamodb.dao.EncounterDao
+dynamodb.dao.EncounterDao -u[hidden]- dynamodb.dao.CreatureDao
+dynamodb.dao.CreatureDao -u[hidden]-dynamodb.dao.SpellDao
+dynamodb.dao.SpellDao -u[hidden]- dynamodb.dao.ActionDao
+
+dynamodb.dao.SessionDao -l- DynamoDB
+dynamodb.dao.EncounterDao -l- DynamoDB
+dynamodb.dao.CreatureDao -l- DynamoDB
+dynamodb.dao.SpellDao -l- DynamoDB
+dynamodb.dao.ActionDao -l- DynamoDB
+dynamodb.externalDao.TemplateDao -l- "EXTERNAL Open5E"
+activity.templateActivity.CreateTemplateFromActivity -u[hidden]- activity.templateActivity.OtherTemplateActivities
+activity.templateActivity.CreateTemplateFromActivity -right[hidden]- dynamodb.externalDao.TemplateDao
+activity.templateActivity.CreateTemplateFromActivity -- dynamodb.externalDao.TemplateDao
+activity.templateActivity.CreateTemplateFromActivity -- dynamodb.dao.ActionDao
+activity.templateActivity.CreateTemplateFromActivity -- dynamodb.dao.SpellDao
+activity.templateActivity.CreateTemplateFromActivity -- dynamodb.dao.CreatureDao
+
+activity.actionActivity.AllActionActivities -u[hidden]- activity.templateActivity.CreateTemplateFromActivity
+activity.actionActivity.AllSpellActivities -u[hidden]- activity.actionActivity.AllActionActivities
+activity.actionActivity.AllCreatureActivities -u[hidden]- activity.actionActivity.AllSpellActivities
+activity.actionActivity.AllEncounterActivities -u[hidden]- activity.actionActivity.AllCreatureActivities
+activity.actionActivity.AllSessionActivities -u[hidden]- activity.actionActivity.AllEncounterActivities
+activity.actionActivity.AllActionActivities -r- dynamodb.dao.ActionDao
+activity.actionActivity.AllSpellActivities -r- dynamodb.dao.SpellDao
+activity.actionActivity.AllCreatureActivities -r- dynamodb.dao.CreatureDao
+activity.actionActivity.AllEncounterActivities -r- dynamodb.dao.EncounterDao
+activity.actionActivity.AllSessionActivities -r- dynamodb.dao.SessionDao
+activity.templateActivity.OtherTemplateActivities -r- dynamodb.externalDao.TemplateDao
+
+lambda.AllActionLambdas -u[hidden]- lambda.AllTemplateLambdas
+lambda.AllSpellLambdas -u[hidden]- lambda.AllActionLambdas
+lambda.AllCreatureLambdas -u[hidden]- lambda.AllSpellLambdas
+lambda.AllEncounterLambdas -u[hidden]- lambda.AllCreatureLambdas
+lambda.AllSessionLambdas -u[hidden]- lambda.AllEncounterLambdas
+lambda.LambdaActivityRunner -u[hidden]- lambda.AllActionLambdas
+
+activity.templateActivity.OtherTemplateActivities -r- lambda.AllTemplateLambdas
+activity.templateActivity.CreateTemplateFromActivity -r- lambda.AllTemplateLambdas
+activity.actionActivity.AllActionActivities -r- lambda.AllActionLambdas
+activity.actionActivity.AllSpellActivities -r- lambda.AllSpellLambdas
+activity.actionActivity.AllCreatureActivities -r- lambda.AllCreatureLambdas
+activity.actionActivity.AllEncounterActivities -r- lambda.AllEncounterLambdas
+activity.actionActivity.AllSessionActivities -r- lambda.AllSessionLambdas
+
+
+@enduml
