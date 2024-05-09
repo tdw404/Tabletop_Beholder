@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <script type="text/javascript" src="assets/taskDetailScripts.js"></script>
+    <link rel="stylesheet" type="text/css" href="css/style.css">
+</head>
+
+<body class="background">
+    <header class="header" id="header"></header>
+    <center>
+    <div class="card">
+        <h2 id = "loading">Loading, please wait...</h2>
+        <h2 id = "greeting" hidden = true class="preload">Task Detail</h2>
+        <p>
+            <label for="name" class="preload" hidden = true>Name:</label>
+            <input type="text" id="name" class="preload" disabled hidden = true>
+        </p>
+        <p>
+            <label for="users" class="preload" hidden = true>Assignee:</label>
+            <select id="users" class="preload"  disabled hidden = true>
+                <option selected>No Assignee</option>
+            </select>
+        </p>
+        <p>
+            <label for="completed" class="preload" hidden = true>Completed:</label>
+            <input type="text" id="completed" class="preload" disabled hidden = true>
+        </p>
+        <p>
+            <label for="hours" class="preload" hidden = true>Hours to complete:</label>
+            <input type="text" id="hours" class="preload" disabled hidden = true>
+        </p>
+        <p>
+            <label for="startTime" class="preload" hidden = true>Start date:</label>
+            <input type="text" id="startTime" class="preload" disabled hidden = true>
+        </p>
+        <p>
+            <label for="endTime" class="preload" hidden = true>Finished date:</label>
+            <input type="text" id="endTime" class="preload" disabled hidden = true>
+        </p>
+        <br>
+        <p>
+            <label for="taskNotes" class="preload" hidden=true>Task notes:</label><br>
+            <textarea id="taskNotes" rows="4" cols="50" hidden = true class="preload"></textarea>
+        </p>
+        <a class="button" id="save-btn" hidden = true>Save Task</a>
+        <a class="button" id="cancel-btn" hidden = true>Cancel</a>
+        <a class="button" id="complete-btn" hidden = true>Complete Task</a>
+        <a class="button" id="uncomplete-btn" hidden = true>Reactivate Task</a>
+    </div>
+    </center>
+    <center>
+    <div class="card">
+        <br>
+        <p>
+        <table id = "material-table" class="preload" hidden = true>
+            <thead>
+            <tr>
+                <th>Material</th>
+                <th>Quantity</th>
+                <th></th>
+            </tr>
+            </thead>
+            <tbody>
+            </tbody>
+        </table>
+        <p>
+            <select id="materials" class="preload" hidden = true>
+                <option selected disabled>Add another material</option>
+            </select>
+        </p>
+        <p>
+            <a class="button" id="plus-btn" hidden = true>+</a>
+            <a class="button" id="remove-btn" hidden = true>Remove</a>
+            <a class="button" id="minus-btn" hidden = true>-</a>
+        </p>
+        </p>
+    </div>
+    </center>
+</body>
+
+</html>

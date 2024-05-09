@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <script type="text/javascript" src="assets/assignedTaskListScripts.js"></script>
+    <link rel="stylesheet" type="text/css" href="css/style.css">
+</head>
+
+<body class="background">
+    <header class="header" id="header"></header>
+    <center>
+        <div class="card">
+            <h2 id = "loading">Loading, please wait...</h2>
+            <h2 id = "greeting" hidden = true class="preload">Assigned Task List</h2>
+            <p>
+                <table id = "task-table" hidden = true class="preload">
+                    <thead>
+                        <tr>
+                        <th>Task</th>
+                        <th>Estimated Hours</th>
+                        <th>Project Start</th>
+                        <th>Completed?</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                  </table>
+            </p>
+            <p>
+                <label for="start" hidden = true class="preload">Start after:</label>
+                <input type="date" id="start" hidden = true class="preload" value="2024-02-01" />
+            </p>
+            <p>
+                <label for="end" hidden = true class="preload">Start before:</label>
+                <input type="date" id="end" hidden = true class="preload" value="2024-05-01" />
+            </p>
+            <p>
+                <label for="completed" hidden = true class="preload"> Show completed:</label>
+                <input type="checkbox" hidden = true class="preload" id="completed">
+            </p>
+            <p>
+                <a class="button" id="view-btn" hidden = true class="preload">View Task</a>
+            </p>
+        </div>
+    </center>
+</body>
+
+</html>
