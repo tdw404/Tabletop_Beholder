@@ -5,30 +5,29 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import dev.tdwalsh.project.tabletopBeholder.dynamodb.models.Effect;
-import dev.tdwalsh.project.tabletopBeholder.exceptions.EffectSerializationException;
-
+import dev.tdwalsh.project.tabletopBeholder.dynamodb.models.Spell;
+import dev.tdwalsh.project.tabletopBeholder.exceptions.SpellSerializationException;
 
 import java.util.List;
 
-public class EffectConverter implements DynamoDBTypeConverter<String, List<Effect>>{
+public class SpellConverter implements DynamoDBTypeConverter<String, List<Spell>>{
     private JavaTimeModule javaTimeModule = new JavaTimeModule();
     private ObjectMapper objectMapper =new ObjectMapper().registerModule(javaTimeModule);
     @Override
-    public String convert(List<Effect> effectList) {
+    public String convert(List<Spell> spellList) {
         try {
-            return objectMapper.writeValueAsString(effectList);
+            return objectMapper.writeValueAsString(spellList);
         } catch (JsonProcessingException e) {
-            throw new EffectSerializationException("Error serializing effect list", e);
+            throw new SpellSerializationException("Error spell encounter list", e);
         }
     }
 
     @Override
-    public List<Effect> unconvert(String effectString) {
+    public List<Spell> unconvert(String spellString) {
         try {
-            return objectMapper.readValue(effectString, new TypeReference<>(){});
+            return objectMapper.readValue(spellString, new TypeReference<>(){});
         } catch (JsonProcessingException e) {
-            throw new EffectSerializationException("Error deserializing effect list", e);
+            throw new SpellSerializationException("Error deserializing spell list", e);
         }
     }
 }
