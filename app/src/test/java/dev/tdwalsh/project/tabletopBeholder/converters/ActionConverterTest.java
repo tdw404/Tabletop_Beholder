@@ -2,7 +2,6 @@ package dev.tdwalsh.project.tabletopBeholder.converters;
 
 import dev.tdwalsh.project.tabletopBeholder.dynamodb.models.Action;
 import dev.tdwalsh.project.tabletopBeholder.exceptions.ActionSerializationException;
-import dev.tdwalsh.project.tabletopBeholder.exceptions.SpellSerializationException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
