@@ -1,0 +1,184 @@
+name: Project Pipeline
+
+on:
+  push:
+    branches:
+      - 'main'
+      - 'feature**'
+
+env:
+
+  # STUDENTS: Set these environment variables 
+  API_BASE_URL: sam deploy
+  COGNITO_DOMAIN: project-tabletop-beholder-prod
+  COGNITO_REDIRECT_SIGNIN: https://d174g5g1s91nhq.cloudfront.net
+  COGNITO_REDIRECT_SIGNOUT: https://d174g5g1s91nhq.cloudfront.net
+
+  COGNITO_USER_POOL_ID: ${{ secrets.COGNITO_USER_POOL_ID }}
+  COGNITO_USER_POOL_CLIENT_ID: ${{ secrets.COGNITO_USER_POOL_CLIENT_ID }}
+
+  GH_PACKAGE_REG_READ_USER: ${{ secrets.GH_PACKAGE_REG_READ_USER }}
+  GH_PACKAGE_REG_READ_PASS: ${{ secrets.GH_PACKAGE_REG_READ_PASS }}
+  
+  PIPELINE_USER_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+  PIPELINE_USER_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+  SAM_TEMPLATE: template.yaml
+
+  STACK_NAME: tabletop-beholder-prod
+  PIPELINE_EXECUTION_ROLE: arn:aws:iam::211125563089:role/aws-sam-cli-managed-ServiceSt-PipelineExecutionRole-RlvSqNX3SrDt
+  CLOUDFORMATION_EXECUTION_ROLE: arn:aws:iam::211125563089:role/aws-sam-cli-managed-Servi-CloudFormationExecutionRo-xGYLKUDUhSgD
+  ARTIFACTS_BUCKET: aws-sam-cli-managed-servicestage-p-artifactsbucket-hqam2g4b7g5n
+  REGION: us-east-2
+
+jobs:
+
+  build-feature:
+    # this stage is triggered only for feature branches (feature*),
+    # which will build the stack and deploy to a stack named with branch name.
+    if: startsWith(github.ref, 'refs/heads/feature')
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-python@v2
+      - uses: aws-actions/setup-sam@v1
+      - run: sam build --template ${SAM_TEMPLATE}
+
+      - name: Assume the pipeline user role
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ env.PIPELINE_USER_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ env.PIPELINE_USER_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.REGION }}
+          role-to-assume: ${{ env.PIPELINE_EXECUTION_ROLE }}
+          role-session-name: feature-deployment
+          role-duration-seconds: 3600
+          role-skip-session-tagging: true
+
+      - name: Build SAM resources
+        shell: bash
+        run: |
+          sam build --template ${SAM_TEMPLATE}
+
+  build-and-package-main:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-python@v2
+      - uses: actions/setup-node@v3
+      - uses: aws-actions/setup-sam@v1
+
+      - name: Build SAM resources
+        run: |
+          sam build --template ${SAM_TEMPLATE}
+
+      - name: Assume the pipeline user role
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ env.PIPELINE_USER_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ env.PIPELINE_USER_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.REGION }}
+          role-to-assume: ${{ env.PIPELINE_EXECUTION_ROLE }}
+          role-session-name: testing-packaging
+          role-duration-seconds: 3600
+          role-skip-session-tagging: true
+
+      - name: Assume the pipeline user role
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ env.PIPELINE_USER_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ env.PIPELINE_USER_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.REGION }}
+          role-to-assume: ${{ env.PIPELINE_EXECUTION_ROLE }}
+          role-session-name: prod-packaging
+          role-duration-seconds: 3600
+          role-skip-session-tagging: true
+
+      - name: Upload SAM artifacts to artifact buckets
+        run: |
+          sam package \
+            --s3-bucket ${ARTIFACTS_BUCKET} \
+            --region ${REGION} \
+            --output-template-file packaged-prod.yaml
+
+      - uses: actions/upload-artifact@v2
+        with:
+          name: packaged-prod.yaml
+          path: packaged-prod.yaml
+
+      - name: Install NPM dependencies
+        working-directory: web
+        run: npm install
+
+      - name: Create .env file for npm build
+        working-directory: web
+        run: |
+          touch .env
+
+          echo API_BASE_URL=\"$API_BASE_URL\" >> .env
+
+          echo COGNITO_DOMAIN=\"${COGNITO_DOMAIN}.auth.us-east-2.amazoncognito.com\" >> .env
+
+          echo COGNITO_USER_POOL_ID=\"$COGNITO_USER_POOL_ID\" >> .env
+          echo COGNITO_USER_POOL_CLIENT_ID=\"$COGNITO_USER_POOL_CLIENT_ID\" >> .env
+
+          echo COGNITO_REDIRECT_SIGNIN=\"$COGNITO_REDIRECT_SIGNIN\" >> .env
+          echo COGNITO_REDIRECT_SIGNOUT=\"$COGNITO_REDIRECT_SIGNOUT\" >> .env
+
+      - name: Build NPM static resources
+        working-directory: web
+        run: npm run build
+
+      - name: Upload NPM static build output
+        uses: actions/upload-artifact@v2
+        with:
+          name: static-build
+          path: web/build
+
+  deploy-to-aws:
+    if: github.ref == 'refs/heads/main'
+    needs: [build-and-package-main]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-python@v2
+      - uses: actions/setup-node@v3
+      - uses: aws-actions/setup-sam@v1
+      - uses: actions/download-artifact@v2
+        with:
+          name: packaged-prod.yaml
+
+      - name: Assume the pipeline user role
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ env.PIPELINE_USER_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ env.PIPELINE_USER_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.REGION }}
+          role-to-assume: ${{ env.PIPELINE_EXECUTION_ROLE }}
+          role-session-name: testing-deployment
+          role-duration-seconds: 3600
+          role-skip-session-tagging: true
+
+      - name: Deploy to testing account
+        run: |
+          sam deploy --stack-name ${STACK_NAME} \
+            --template packaged-prod.yaml \
+            --capabilities CAPABILITY_IAM \
+            --region ${REGION} \
+            --s3-bucket ${ARTIFACTS_BUCKET} \
+            --no-fail-on-empty-changeset \
+            --parameter-overrides "S3Bucket=${ARTIFACTS_BUCKET} CognitoDomain=${COGNITO_DOMAIN}" \
+            --role-arn ${CLOUDFORMATION_EXECUTION_ROLE}
+
+      - name: Download NPM static resources
+        uses: actions/download-artifact@v2
+        with:
+          name: static-build
+          path: build/static
+
+      - name: Deploy NPM static resources
+        run: |
+          aws s3 cp \
+            build/static \
+            s3://${ARTIFACTS_BUCKET}/static/ \
+            --recursive
