@@ -9,7 +9,7 @@ on:
 env:
 
   # STUDENTS: Set these environment variables 
-  API_BASE_URL: sam deploy
+  API_BASE_URL: https://2syvb90yl4.execute-api.us-east-2.amazonaws.com/Prod/
   COGNITO_DOMAIN: project-tabletop-beholder-prod
   COGNITO_REDIRECT_SIGNIN: https://d174g5g1s91nhq.cloudfront.net
   COGNITO_REDIRECT_SIGNOUT: https://d174g5g1s91nhq.cloudfront.net
