@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <script type="text/javascript" src="assets/newRoleScripts.js"></script>
+    <link rel="stylesheet" type="text/css" href="css/style.css">
+</head>
+
+<body class="background">
+    <header class="header" id="header"></header>
+    <center>
+        <div class="card">
+            <h2 id = "greeting" hidden = true>Select a New Role</h2>
+            <h2 id = "please-wait">Loading, please wait...</h2>
+            <p>
+                <form id = "name-form" hidden = true>
+                    <label for="displayName">Display name:  </label>
+                    <input type="text" id="displayName">
+                  </form>
+                  <p>  
+                    <select id="organizations" hidden = true>
+                            <option selected disabled>Select a new organization...</option>
+                        </select>
+                    </p>
+                    <p>
+                        <select id="jobRoles" hidden = true>
+                            <option selected disabled>Select a job role...</option>
+                            <option id="workerRole">Worker</option>
+                            <option id="managerRole">Manager</option>
+                        </select>
+                    </p>
+            </p>
+            <p>
+                <a class="button" id="submit-btn" hidden = true>Submit</a>
+            </p>
+            <p>
+                <a href="index.html" class="button" id="cancel-btn" hidden = true>Cancel</a>
+            </p>
+        </div>
+    </center>
+</body>
+
+</html>
