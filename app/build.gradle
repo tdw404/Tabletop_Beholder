@@ -7,9 +7,15 @@
  */
 
 plugins {
-    // Apply the application plugin to add support for building a CLI application in Java.
-    id 'application'
+    id "java"
+    id "checkstyle"
+    id 'jacoco'
+    id 'com.adarshr.test-logger' version '3.2.0'
 }
+
+group 'dev.tdwalsh.project.tabletopBeholder'
+version '1.0.0'
+defaultTasks 'clean', 'build'
 
 repositories {
     // Use Maven Central for resolving dependencies.
@@ -17,19 +23,84 @@ repositories {
 }
 
 dependencies {
-    // Use JUnit Jupiter for testing.
-    testImplementation 'org.junit.jupiter:junit-jupiter:5.8.1'
+    implementation 'org.apache.commons:commons-text:1.9'
+    implementation 'org.apache.logging.log4j:log4j-core:2.18.0'
+
+    implementation 'com.google.guava:guava:31.1-jre'
+    implementation 'com.google.dagger:dagger:2.42'
+    testImplementation 'junit:junit:4.13.1'
+    annotationProcessor 'com.google.dagger:dagger-compiler:2.42'
+    implementation 'com.google.code.gson:gson:2.8.8'
+
+    implementation 'com.fasterxml.jackson.core:jackson-core:2.11.4'
+    implementation 'com.fasterxml.jackson.core:jackson-databind:2.11.4'
+    implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.16.1'
+
+    implementation 'com.amazonaws:aws-lambda-java-core:1.2.1'
+    implementation 'com.amazonaws:aws-lambda-java-events:3.11.0'
+    implementation 'com.amazonaws:aws-java-sdk-cloudwatch:1.12.+'
+    implementation 'com.amazonaws:aws-java-sdk-dynamodb:1.12.+'
+
+    implementation 'javax.measure:unit-api:2.1.3'
+
+    implementation 'org.mockito:mockito-core:4.+'
+    implementation "org.mockito:mockito-inline:4.+"
+
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.1'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.1'
 
     // This dependency is used by the application.
     implementation 'com.google.guava:guava:30.1.1-jre'
 }
 
-application {
-    // Define the main class for the application.
-    mainClass = 'dev.tdwalsh.project.tabletopBeholder.App'
+test {
+    useJUnitPlatform()
+    jacoco {
+        destinationFile = file("$buildDir/jacoco/${name}.exec")
+    }
 }
 
-tasks.named('test') {
-    // Use JUnit Platform for unit tests.
-    useJUnitPlatform()
+/* checkstyle */
+
+// Applies Checkstyle plugin quality checks on project’s Java source files and generates reports from these checks.
+checkstyle {
+    toolVersion '8.17'
+
+    // Expect the checkstyle config to be in a either the current directory or
+    //  a parent, grandparent or great-grandparent directory of the root project
+    // NOTE: The purpose of putting checkstyle config in a higher directory is to
+    //       share the same config among multiple projects.
+    def configFilePath = 'checkstyle/checkstyle.xml'
+    for (int attempts = 0; attempts < 4; attempts++) {
+        configFile = rootProject.file(configFilePath)
+
+        if (configFile.exists()) {
+            break;
+        }
+
+        configFilePath = '../' + configFilePath
+    }
+
+    def checkstyleDir = configFile.toPath().parent
+    def suppressionFile = new File("$checkstyleDir/unit3/suppressions.xml")
+    configProperties.put('checkstyle.suppression.filter', suppressionFile) // This property is refereced in `checkstyle.xml`
+
+    sourceSets = [sourceSets.main]
+}
+
+// If we are running the task 'staticchecks', do not ignore failures, otherwise ignore
+checkstyleMain.doFirst {
+    ignoreFailures = !gradle.taskGraph.allTasks.any({ it.name ==~ /.*staticchecks/ })
+}
+
+check.dependsOn jacocoTestCoverageVerification
+jacocoTestCoverageVerification {
+    violationRules {
+        rule {
+            limit {
+                //minimum = 0.8
+                minimum = 0.0
+            }
+        }
+    }
 }
