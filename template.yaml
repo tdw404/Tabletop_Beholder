@@ -239,17 +239,20 @@ Resources:
               - Effect: Allow
                 Action: dynamodb:*
                 Resource: !Sub "arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/TabletopBeholder_SpellTable"
+              - Effect: Allow
+                Action: dynamodb:query
+                Resource: !Sub "arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/TabletopBeholder_SpellTable/index/SpellsSortBySpellNameIndex"
 
   #-----------------------------------------------------
   # Lambda Functions Configuration
   #-----------------------------------------------------
 
-  GetTaskLambda:
+  GetSpellLambda:
     Type: AWS::Serverless::Function
     Properties:
       Role: !GetAtt AccessRole.Arn
       CodeUri: app
-      Handler: dev.tdwalsh.project.tabletopBeholder::handleRequest
+      Handler: dev.tdwalsh.project.tabletopBeholder.lambda.spell.GetSpellLambda::handleRequest
       Runtime: java11
       Architectures:
         - x86_64
@@ -261,7 +264,27 @@ Resources:
         MusicPlaylistService:
           Type: Api
           Properties:
-            Path: /organizations/{orgId}/tasks/{taskId}
+            Path: /user/{userEmail}/spell/{spellId}
+            Method: get
+
+  GetAllSpellsLambda:
+    Type: AWS::Serverless::Function
+    Properties:
+      Role: !GetAtt AccessRole.Arn
+      CodeUri: app
+      Handler: dev.tdwalsh.project.tabletopBeholder.lambda.spell.GetAllSpellsLambda::handleRequest
+      Runtime: java11
+      Architectures:
+        - x86_64
+      MemorySize: 512
+      Environment:
+        Variables:
+          JAVA_TOOL_OPTIONS: -XX:+TieredCompilation -XX:TieredStopAtLevel=1
+      Events:
+        MusicPlaylistService:
+          Type: Api
+          Properties:
+            Path: /user/{userEmail}/spell
             Method: get
   #-----------------------------------------------------
   # DynamoDB Configuration
@@ -342,6 +365,15 @@ Resources:
           KeyType: "RANGE"
       BillingMode: PAY_PER_REQUEST
       TableName: "TabletopBeholder_SpellTable"
+      GlobalSecondaryIndexes:
+        - IndexName: "SpellsSortBySpellNameIndex"
+          KeySchema:
+            - AttributeName: "userEmail"
+              KeyType: "HASH"
+            - AttributeName: "spellName"
+              KeyType: "RANGE"
+          Projection:
+            ProjectionType: "KEYS_ONLY"
 
 #-----------------------------------------------------
 # The outputs defined below will be printed

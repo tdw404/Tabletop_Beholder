@@ -3,7 +3,7 @@ package dev.tdwalsh.project.tabletopBeholder.dynamodb.models;
 import com.amazonaws.services.dynamodbv2.datamodeling.*;
 import dev.tdwalsh.project.tabletopBeholder.converters.ActionConverter;
 import dev.tdwalsh.project.tabletopBeholder.converters.EffectConverter;
-import dev.tdwalsh.project.tabletopBeholder.converters.StringIntMapConverter;
+import dev.tdwalsh.project.tabletopBeholder.converters.SpellConverter;
 
 import java.util.List;
 import java.util.Map;
@@ -326,7 +326,6 @@ public class Creature {
     }
 
     @DynamoDBAttribute(attributeName = "statMap")
-    @DynamoDBTypeConverted(converter = StringIntMapConverter.class)
     public Map<String, Integer> getStatMap() {
         return statMap;
     }
@@ -336,7 +335,6 @@ public class Creature {
     }
 
     @DynamoDBAttribute(attributeName = "saveMap")
-    @DynamoDBTypeConverted(converter = StringIntMapConverter.class)
     public Map<String, Integer> getSaveMap() {
         return saveMap;
     }
@@ -355,7 +353,6 @@ public class Creature {
     }
 
     @DynamoDBAttribute(attributeName = "skillsMap")
-    @DynamoDBTypeConverted(converter = StringIntMapConverter.class)
     public Map<String, Integer> getSkillsMap() {
         return skillsMap;
     }
@@ -453,7 +450,7 @@ public class Creature {
     }
 
     @DynamoDBAttribute(attributeName = "spellList")
-    @DynamoDBTyped(DynamoDBAttributeType.SS)
+    @DynamoDBTypeConverted(converter = SpellConverter.class)
     public List<Spell> getSpellList() {
         return spellList;
     }
@@ -463,7 +460,6 @@ public class Creature {
     }
 
     @DynamoDBAttribute(attributeName = "spellSlots")
-    @DynamoDBTypeConverted(converter = StringIntMapConverter.class)
     public Map<Integer, String> getSpellSlots() {
         return spellSlots;
     }

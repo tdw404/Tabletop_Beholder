@@ -1,10 +1,10 @@
-package dev.tdwalsh.project.tabletopBeholder.exceptions;
+package dev.tdwalsh.project.tabletopBeholder.exceptions.serializationExceptions;
 
-public class SpellSerializationException extends RuntimeException{
+public class ActionSerializationException extends RuntimeException {
 
-    private static final long serialVersionUID = 2742072458537789813L;
+    private static final long serialVersionUID = 4854057893671725354L;
 
-    public SpellSerializationException() {
+    public ActionSerializationException() {
         super();
     }
 
@@ -12,7 +12,7 @@ public class SpellSerializationException extends RuntimeException{
      * Exception with a message, but no cause.
      * @param message A descriptive message for this exception.
      */
-    public SpellSerializationException(String message) {
+    public ActionSerializationException(String message) {
         super(message);
     }
 
@@ -20,7 +20,7 @@ public class SpellSerializationException extends RuntimeException{
      * Exception with no message, but with a cause.
      * @param cause The original throwable resulting in this exception.
      */
-    public SpellSerializationException(Throwable cause) {
+    public ActionSerializationException(Throwable cause) {
         super(cause);
     }
 
@@ -29,7 +29,7 @@ public class SpellSerializationException extends RuntimeException{
      * @param message A descriptive message for this exception.
      * @param cause The original throwable resulting in this exception.
      */
-    public SpellSerializationException(String message, Throwable cause) {
+    public ActionSerializationException(String message, Throwable cause) {
         super(message, cause);
     }
 }

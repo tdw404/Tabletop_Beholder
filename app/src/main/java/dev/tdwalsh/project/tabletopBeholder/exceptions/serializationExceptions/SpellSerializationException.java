@@ -1,10 +1,10 @@
-package dev.tdwalsh.project.tabletopBeholder.exceptions;
+package dev.tdwalsh.project.tabletopBeholder.exceptions.serializationExceptions;
 
-public class CreatureSerializationException extends RuntimeException {
+public class SpellSerializationException extends RuntimeException{
 
-    private static final long serialVersionUID = 2594731283890889689L;
+    private static final long serialVersionUID = 2742072458537789813L;
 
-    public CreatureSerializationException() {
+    public SpellSerializationException() {
         super();
     }
 
@@ -12,7 +12,7 @@ public class CreatureSerializationException extends RuntimeException {
      * Exception with a message, but no cause.
      * @param message A descriptive message for this exception.
      */
-    public CreatureSerializationException(String message) {
+    public SpellSerializationException(String message) {
         super(message);
     }
 
@@ -20,7 +20,7 @@ public class CreatureSerializationException extends RuntimeException {
      * Exception with no message, but with a cause.
      * @param cause The original throwable resulting in this exception.
      */
-    public CreatureSerializationException(Throwable cause) {
+    public SpellSerializationException(Throwable cause) {
         super(cause);
     }
 
@@ -29,7 +29,7 @@ public class CreatureSerializationException extends RuntimeException {
      * @param message A descriptive message for this exception.
      * @param cause The original throwable resulting in this exception.
      */
-    public CreatureSerializationException(String message, Throwable cause) {
+    public SpellSerializationException(String message, Throwable cause) {
         super(message, cause);
     }
 }
