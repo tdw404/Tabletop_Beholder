@@ -1,6 +1,7 @@
 package dev.tdwalsh.project.tabletopBeholder.dependency;
 
 import dagger.Component;
+import dev.tdwalsh.project.tabletopBeholder.activity.spell.GetAllSpellsActivity;
 import dev.tdwalsh.project.tabletopBeholder.activity.spell.GetSpellActivity;
 
 import javax.inject.Singleton;
@@ -17,4 +18,10 @@ public interface ServiceComponent {
      * @return GetSpellActivity
      */
     GetSpellActivity provideGetSpellActivity();
+
+    /**
+     * Provides the relevant activity.
+     * @return GetAllSpellsActivity
+     */
+    GetAllSpellsActivity provideGetAllSpellsActivity();
 }
