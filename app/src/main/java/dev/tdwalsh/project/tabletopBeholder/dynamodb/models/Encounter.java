@@ -1,19 +1,19 @@
 package dev.tdwalsh.project.tabletopBeholder.dynamodb.models;
 
 import com.amazonaws.services.dynamodbv2.datamodeling.*;
-import dev.tdwalsh.project.tabletopBeholder.converters.EncounterConverter;
+import dev.tdwalsh.project.tabletopBeholder.converters.CreatureConverter;
 import dev.tdwalsh.project.tabletopBeholder.converters.ZonedDateTimeConverter;
 
 import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Objects;
 
-@DynamoDBTable(tableName = "ProjectBeholder_SessionTable")
-public class Session {
+@DynamoDBTable(tableName = "TabletopBeholder_EncounterTable")
+public class Encounter {
     private String userEmail;
-    private String sessionId;
-    private String sessionName;
-    private List<Encounter> encounterList;
+    private String encounterId;
+    private String encounterName;
+    private List<Creature> creatureList;
     private ZonedDateTime createDateTime;
     private ZonedDateTime editDateTime;
 
@@ -26,35 +26,35 @@ public class Session {
         this.userEmail = userEmail;
     }
 
-    @DynamoDBRangeKey(attributeName = "sessionId")
-    public String getSessionId() {
-        return sessionId;
+    @DynamoDBRangeKey(attributeName = "encounterId")
+    public String getEncounterId() {
+        return encounterId;
     }
 
-    public void setSessionId(String sessionId) {
-        this.sessionId = sessionId;
+    public void setEncounterId(String encounterId) {
+        this.encounterId = encounterId;
     }
 
-    @DynamoDBAttribute(attributeName = "sessionName")
-    public String getSessionName() {
-        return sessionName;
+    @DynamoDBAttribute(attributeName = "encounterName")
+    public String getEncounterName() {
+        return encounterName;
     }
 
-    public void setSessionName(String sessionName) {
-        this.sessionName = sessionName;
+    public void setEncounterName(String encounterName) {
+        this.encounterName = encounterName;
     }
 
-    @DynamoDBAttribute(attributeName = "encounterList")
-    @DynamoDBTypeConverted(converter = EncounterConverter.class)
-    public List<Encounter> getEncounterList() {
-        return encounterList;
+    @DynamoDBAttribute(attributeName = "creatureList")
+    @DynamoDBTypeConverted(converter = CreatureConverter.class)
+    public List<Creature> getCreatureList() {
+        return creatureList;
     }
 
-    public void setEncounterList(List<Encounter> encounterList) {
-        this.encounterList = encounterList;
+    public void setCreatureList(List<Creature> creatureList) {
+        this.creatureList = creatureList;
     }
 
-    @DynamoDBAttribute(attributeName= "createDateTime")
+    @DynamoDBAttribute(attributeName = "createDateTime")
     @DynamoDBTypeConverted(converter = ZonedDateTimeConverter.class)
     public ZonedDateTime getCreateDateTime() {
         return createDateTime;
@@ -76,7 +76,7 @@ public class Session {
 
     @Override
     public int hashCode() {
-        return Objects.hash(this.userEmail + this.sessionId);
+        return Objects.hash(this.userEmail = this.encounterId);
     }
 
     @Override
@@ -84,16 +84,13 @@ public class Session {
         if (o == null) {
             return false;
         }
-
         if (this == o) {
             return true;
         }
-
-        if(this.getClass() != o.getClass()) {
+        if (this.getClass() != o.getClass()) {
             return false;
         }
-
-        Session other = (Session) o;
-        return this.userEmail.equals(other.userEmail) && this.sessionId.equals(other.sessionId);
+        Encounter other = (Encounter) o;
+        return (this.userEmail.equals(other.userEmail)) && (this.encounterId.equals(other.encounterId));
     }
 }
