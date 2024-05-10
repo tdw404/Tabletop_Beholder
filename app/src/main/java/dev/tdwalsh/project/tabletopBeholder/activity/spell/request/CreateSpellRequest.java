@@ -1,9 +1,11 @@
 package dev.tdwalsh.project.tabletopBeholder.activity.spell.request;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import dev.tdwalsh.project.tabletopBeholder.dynamodb.models.Effect;
 
 import java.util.List;
 
+@JsonDeserialize(builder = CreateSpellRequest.Builder.class)
 public class CreateSpellRequest {
     private final String userEmail;
     private final String spellName;

@@ -1,6 +1,7 @@
 package dev.tdwalsh.project.tabletopBeholder.dependency;
 
 import dagger.Component;
+import dev.tdwalsh.project.tabletopBeholder.activity.spell.CreateSpellActivity;
 import dev.tdwalsh.project.tabletopBeholder.activity.spell.GetAllSpellsActivity;
 import dev.tdwalsh.project.tabletopBeholder.activity.spell.GetSpellActivity;
 
@@ -24,4 +25,10 @@ public interface ServiceComponent {
      * @return GetAllSpellsActivity
      */
     GetAllSpellsActivity provideGetAllSpellsActivity();
+
+    /**
+     * Provides the relevant activity.
+     * @return CreateSpellActivity
+     */
+    CreateSpellActivity provideCreateSpellActivity();
 }

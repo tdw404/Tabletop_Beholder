@@ -2,11 +2,14 @@ package dev.tdwalsh.project.tabletopBeholder.dynamodb.dao;
 
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBQueryExpression;
+import com.amazonaws.services.dynamodbv2.model.AttributeValue;
 import dev.tdwalsh.project.tabletopBeholder.dynamodb.models.Spell;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Stores, reads, updates, or deletes Spell models in DynamoDB using {@link Spell}.
@@ -74,5 +77,23 @@ public class SpellDao {
         spell.setUserEmail(userEmail);
         spell.setSpellId(spellId);
         mapper.delete(spell);
+    }
+
+    /**
+     * Searches to determine whether a name exists already.
+     *
+     * @param userEmail The userEmail to search
+     * @param spellName The userEmail to search
+     */
+    public Boolean spellNameExists(String userEmail, String spellName) {
+        Map<String, AttributeValue> valueMap = new HashMap<>();
+        valueMap.put(":userEmail", new AttributeValue(userEmail));
+        valueMap.put(":spellName", new AttributeValue(spellName));
+        DynamoDBQueryExpression<Spell> queryExpression = new DynamoDBQueryExpression<Spell>()
+                .withIndexName("SpellsSortBySpellNameIndex")
+                .withConsistentRead(false)
+                .withKeyConditionExpression("userEmail = :userEmail and spellName = :spellName")
+                .withExpressionAttributeValues(valueMap);
+        return !mapper.query(Spell.class, queryExpression).isEmpty();
     }
 }
