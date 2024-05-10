@@ -6,7 +6,7 @@ import dev.tdwalsh.project.tabletopBeholder.converters.EffectConverter;
 import java.util.List;
 import java.util.Objects;
 
-@DynamoDBTable(tableName = "ProjectBeholder_ActionTable")
+@DynamoDBTable(tableName = "TabletopBeholder_ActionTable")
 public class Action {
     private String userEmail;
     private String actionId;
