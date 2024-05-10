@@ -1,10 +1,10 @@
-package dev.tdwalsh.project.tabletopBeholder.exceptions;
+package dev.tdwalsh.project.tabletopBeholder.exceptions.resourceNotFoundExceptions;
 
-public class EncounterSerializationException extends RuntimeException{
+public class ActionNotFoundException extends DBResourceNotFoundException{
 
-    private static final long serialVersionUID = 3931237969516209780L;
+    private static final long serialVersionUID = -1493451373893866881L;
 
-    public EncounterSerializationException() {
+    public ActionNotFoundException() {
         super();
     }
 
@@ -12,7 +12,7 @@ public class EncounterSerializationException extends RuntimeException{
      * Exception with a message, but no cause.
      * @param message A descriptive message for this exception.
      */
-    public EncounterSerializationException(String message) {
+    public ActionNotFoundException(String message) {
         super(message);
     }
 
@@ -20,7 +20,7 @@ public class EncounterSerializationException extends RuntimeException{
      * Exception with no message, but with a cause.
      * @param cause The original throwable resulting in this exception.
      */
-    public EncounterSerializationException(Throwable cause) {
+    public ActionNotFoundException(Throwable cause) {
         super(cause);
     }
 
@@ -29,7 +29,7 @@ public class EncounterSerializationException extends RuntimeException{
      * @param message A descriptive message for this exception.
      * @param cause The original throwable resulting in this exception.
      */
-    public EncounterSerializationException(String message, Throwable cause) {
+    public ActionNotFoundException(String message, Throwable cause) {
         super(message, cause);
     }
 }

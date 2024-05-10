@@ -6,7 +6,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import dev.tdwalsh.project.tabletopBeholder.dynamodb.models.Encounter;
-import dev.tdwalsh.project.tabletopBeholder.exceptions.EncounterSerializationException;
+import dev.tdwalsh.project.tabletopBeholder.exceptions.serializationExceptions.EncounterSerializationException;
 
 import java.util.List;
 

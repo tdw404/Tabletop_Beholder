@@ -1,7 +1,7 @@
 package dev.tdwalsh.project.tabletopBeholder.converters;
 
 import dev.tdwalsh.project.tabletopBeholder.dynamodb.models.Effect;
-import dev.tdwalsh.project.tabletopBeholder.exceptions.EffectSerializationException;
+import dev.tdwalsh.project.tabletopBeholder.exceptions.serializationExceptions.EffectSerializationException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 

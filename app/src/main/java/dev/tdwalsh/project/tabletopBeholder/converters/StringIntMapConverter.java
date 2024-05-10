@@ -4,7 +4,7 @@ import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBTypeConverter;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import dev.tdwalsh.project.tabletopBeholder.exceptions.StringIntMapSerializationException;
+import dev.tdwalsh.project.tabletopBeholder.exceptions.serializationExceptions.StringIntMapSerializationException;
 
 import java.util.Map;
 

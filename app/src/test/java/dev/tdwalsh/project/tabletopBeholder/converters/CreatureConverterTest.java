@@ -1,11 +1,10 @@
 package dev.tdwalsh.project.tabletopBeholder.converters;
 
 import dev.tdwalsh.project.tabletopBeholder.dynamodb.models.Creature;
-import dev.tdwalsh.project.tabletopBeholder.exceptions.CreatureSerializationException;
+import dev.tdwalsh.project.tabletopBeholder.exceptions.serializationExceptions.CreatureSerializationException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import javax.security.auth.login.CredentialException;
 import java.util.ArrayList;
 import java.util.List;
 

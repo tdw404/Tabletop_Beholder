@@ -6,7 +6,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import dev.tdwalsh.project.tabletopBeholder.dynamodb.models.Spell;
-import dev.tdwalsh.project.tabletopBeholder.exceptions.SpellSerializationException;
+import dev.tdwalsh.project.tabletopBeholder.exceptions.serializationExceptions.SpellSerializationException;
 
 import java.util.List;
 

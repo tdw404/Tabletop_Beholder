@@ -244,12 +244,12 @@ Resources:
   # Lambda Functions Configuration
   #-----------------------------------------------------
 
-  GetTaskLambda:
+  GetSpellLambda:
     Type: AWS::Serverless::Function
     Properties:
       Role: !GetAtt AccessRole.Arn
       CodeUri: app
-      Handler: dev.tdwalsh.project.tabletopBeholder::handleRequest
+      Handler: dev.tdwalsh.project.tabletopBeholder.lambda.spell.GetSpellLambda::handleRequest
       Runtime: java11
       Architectures:
         - x86_64
@@ -261,7 +261,7 @@ Resources:
         MusicPlaylistService:
           Type: Api
           Properties:
-            Path: /organizations/{orgId}/tasks/{taskId}
+            Path: /user/{userEmail}/spell/{spellId}
             Method: get
   #-----------------------------------------------------
   # DynamoDB Configuration

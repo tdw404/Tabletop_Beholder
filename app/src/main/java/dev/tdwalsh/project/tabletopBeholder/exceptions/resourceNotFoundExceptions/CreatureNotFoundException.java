@@ -1,9 +1,10 @@
-package dev.tdwalsh.project.tabletopBeholder.exceptions;
+package dev.tdwalsh.project.tabletopBeholder.exceptions.resourceNotFoundExceptions;
 
-public class EffectSerializationException extends RuntimeException{
-    private static final long serialVersionUID = 2617468249332261754L;
+public class CreatureNotFoundException extends DBResourceNotFoundException{
 
-    public EffectSerializationException() {
+    private static final long serialVersionUID = 7786692599125919823L;
+
+    public CreatureNotFoundException() {
         super();
     }
 
@@ -11,7 +12,7 @@ public class EffectSerializationException extends RuntimeException{
      * Exception with a message, but no cause.
      * @param message A descriptive message for this exception.
      */
-    public EffectSerializationException(String message) {
+    public CreatureNotFoundException(String message) {
         super(message);
     }
 
@@ -19,7 +20,7 @@ public class EffectSerializationException extends RuntimeException{
      * Exception with no message, but with a cause.
      * @param cause The original throwable resulting in this exception.
      */
-    public EffectSerializationException(Throwable cause) {
+    public CreatureNotFoundException(Throwable cause) {
         super(cause);
     }
 
@@ -28,7 +29,7 @@ public class EffectSerializationException extends RuntimeException{
      * @param message A descriptive message for this exception.
      * @param cause The original throwable resulting in this exception.
      */
-    public EffectSerializationException(String message, Throwable cause) {
+    public CreatureNotFoundException(String message, Throwable cause) {
         super(message, cause);
     }
 }

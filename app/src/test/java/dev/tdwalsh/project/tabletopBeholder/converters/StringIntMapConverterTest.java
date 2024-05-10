@@ -1,6 +1,6 @@
 package dev.tdwalsh.project.tabletopBeholder.converters;
 
-import dev.tdwalsh.project.tabletopBeholder.exceptions.StringIntMapSerializationException;
+import dev.tdwalsh.project.tabletopBeholder.exceptions.serializationExceptions.StringIntMapSerializationException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
