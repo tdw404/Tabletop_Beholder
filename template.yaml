@@ -358,6 +358,8 @@ Resources:
           AttributeType: "S"
         - AttributeName: "spellId"
           AttributeType: "S"
+        - AttributeName: "spellName"
+          AttributeType: "S"
       KeySchema:
         - AttributeName: "userEmail"
           KeyType: "HASH"
