@@ -57,20 +57,4 @@ public class CreateSpellActivity {
                 .withSpell(CreateSpellHelper.createSpell(spellDao, spell))
                 .build();
     }
-
-//    public Spell createSpell(Spell spell) {
-//        spellNameUniqueness(spell.getUserEmail(), spell.getSpellName());
-//        spell.setSpellId(UUID.randomUUID().toString());
-//        while (spellDao.getSingleSpell(spell.getUserEmail(), spell.getSpellId()) != null) {
-//            spell.setSpellId(UUID.randomUUID().toString());
-//        }
-//        spellDao.writeSpell(spell);
-//        return spell;
-//    }
-//
-//    private void spellNameUniqueness(String userName, String spellName) {
-//        if (spellDao.spellNameExists(userName, spellName)) {
-//            throw new DuplicateResourceException(String.format("Resource with name [%s] already exists", spellName));
-//        }
-//    }
 }
