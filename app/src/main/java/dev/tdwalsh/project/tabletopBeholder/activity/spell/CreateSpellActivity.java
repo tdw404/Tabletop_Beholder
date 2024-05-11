@@ -6,6 +6,7 @@ import dev.tdwalsh.project.tabletopBeholder.activity.spell.result.CreateSpellRes
 import dev.tdwalsh.project.tabletopBeholder.activity.spell.result.GetAllSpellsResult;
 import dev.tdwalsh.project.tabletopBeholder.dynamodb.dao.SpellDao;
 import dev.tdwalsh.project.tabletopBeholder.dynamodb.models.Spell;
+import dev.tdwalsh.project.tabletopBeholder.exceptions.DuplicateResourceException;
 
 import javax.inject.Inject;
 import java.util.UUID;
@@ -50,13 +51,25 @@ public class CreateSpellActivity {
         spell.setSpellLevel(createSpellRequest.getSpellLevel());
         spell.setSpellSchool(createSpellRequest.getSpellSchool());
         spell.setAppliesEffects(createSpellRequest.getAppliesEffects());
-        return CreateSpellResult.builder().build().builder()
+
+        return CreateSpellResult.builder()
                 .withSpell(createSpell(spell))
                 .build();
     }
 
     public Spell createSpell(Spell spell) {
+        spellNameUniqueness(spell.getUserEmail(), spell.getSpellName());
         spell.setSpellId(UUID.randomUUID().toString());
+        while (spellDao.getSingleSpell(spell.getUserEmail(), spell.getSpellId()) != null) {
+            spell.setSpellId(UUID.randomUUID().toString());
+        }
+        spellDao.writeSpell(spell);
         return spell;
+    }
+
+    private void spellNameUniqueness(String userName, String spellName) {
+        if (spellDao.spellNameExists(userName, spellName)) {
+            throw new DuplicateResourceException(String.format("Resource with name [%s] already exists", spellName));
+        }
     }
 }

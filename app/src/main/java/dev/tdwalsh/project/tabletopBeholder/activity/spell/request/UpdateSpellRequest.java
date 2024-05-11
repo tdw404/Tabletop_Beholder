@@ -5,9 +5,10 @@ import dev.tdwalsh.project.tabletopBeholder.dynamodb.models.Effect;
 
 import java.util.List;
 
-@JsonDeserialize(builder = CreateSpellRequest.Builder.class)
-public class CreateSpellRequest {
+@JsonDeserialize(builder = UpdateSpellRequest.Builder.class)
+public class UpdateSpellRequest {
     private final String userEmail;
+    private final String spellId;
     private final String spellName;
     private final String spellDescription;
     private final String spellHigherLevel;
@@ -20,7 +21,8 @@ public class CreateSpellRequest {
     private final String spellSchool;
     private final List<Effect> appliesEffects;
 
-    private CreateSpellRequest(String userEmail,
+    private UpdateSpellRequest(String userEmail,
+                               String spellId,
                                String spellName,
                                String spellDescription,
                                String spellHigherLevel,
@@ -33,6 +35,7 @@ public class CreateSpellRequest {
                                String spellSchool,
                                List<Effect> appliesEffects) {
         this.userEmail = userEmail;
+        this.spellId = spellId;
         this.spellName = spellName;
         this.spellDescription = spellDescription;
         this.spellHigherLevel = spellHigherLevel;
@@ -49,6 +52,8 @@ public class CreateSpellRequest {
     public String getUserEmail() {
         return this.userEmail;
     }
+
+    public String getSpellId() { return this.spellId; }
 
     public String getSpellName() { return this.spellName; }
 
@@ -97,6 +102,7 @@ public class CreateSpellRequest {
     }
     public static class Builder {
         private String userEmail;
+        private String spellId;
         private String spellName;
         private String spellDescription;
         private String spellHigherLevel;
@@ -111,6 +117,11 @@ public class CreateSpellRequest {
 
         public Builder withUserEmail(String userEmail) {
             this.userEmail = userEmail;
+            return this;
+        }
+
+        public Builder withSpellId(String spellId) {
+            this.spellId = spellId;
             return this;
         }
 
@@ -157,8 +168,9 @@ public class CreateSpellRequest {
             return this;
         }
 
-        public CreateSpellRequest build() {
-            return new CreateSpellRequest(userEmail,
+        public UpdateSpellRequest build() {
+            return new UpdateSpellRequest(userEmail,
+                                            spellId,
                                             spellName,
                                             spellDescription,
                                             spellHigherLevel,
