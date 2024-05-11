@@ -356,8 +356,6 @@ Resources:
           AttributeType: "S"
         - AttributeName: "sessionId"
           AttributeType: "S"
-        - AttributeName: "sessionName"
-          AttributeType: "S"
       KeySchema:
         - AttributeName: "userEmail"
           KeyType: "HASH"
@@ -390,8 +388,6 @@ Resources:
           AttributeType: "S"
         - AttributeName: "creatureId"
           AttributeType: "S"
-        - AttributeName: "creatureName"
-          AttributeType: "S"
       KeySchema:
         - AttributeName: "userEmail"
           KeyType: "HASH"
@@ -408,8 +404,6 @@ Resources:
           AttributeType: "S"
         - AttributeName: "actionId"
           AttributeType: "S"
-        - AttributeName: "actionName"
-          AttributeType: "S"
       KeySchema:
         - AttributeName: "userEmail"
           KeyType: "HASH"
@@ -425,8 +419,6 @@ Resources:
         - AttributeName: "userEmail"
           AttributeType: "S"
         - AttributeName: "spellId"
-          AttributeType: "S"
-        - AttributeName: "spellName"
           AttributeType: "S"
       KeySchema:
         - AttributeName: "userEmail"
