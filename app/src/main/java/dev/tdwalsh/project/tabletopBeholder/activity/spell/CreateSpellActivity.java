@@ -1,5 +1,6 @@
 package dev.tdwalsh.project.tabletopBeholder.activity.spell;
 
+import dev.tdwalsh.project.tabletopBeholder.activity.helpers.CreateSpellHelper;
 import dev.tdwalsh.project.tabletopBeholder.activity.spell.request.CreateSpellRequest;
 import dev.tdwalsh.project.tabletopBeholder.activity.spell.request.GetAllSpellsRequest;
 import dev.tdwalsh.project.tabletopBeholder.activity.spell.result.CreateSpellResult;
@@ -53,23 +54,7 @@ public class CreateSpellActivity {
         spell.setAppliesEffects(createSpellRequest.getAppliesEffects());
 
         return CreateSpellResult.builder()
-                .withSpell(createSpell(spell))
+                .withSpell(CreateSpellHelper.createSpell(spellDao, spell))
                 .build();
-    }
-
-    public Spell createSpell(Spell spell) {
-        spellNameUniqueness(spell.getUserEmail(), spell.getSpellName());
-        spell.setSpellId(UUID.randomUUID().toString());
-        while (spellDao.getSingleSpell(spell.getUserEmail(), spell.getSpellId()) != null) {
-            spell.setSpellId(UUID.randomUUID().toString());
-        }
-        spellDao.writeSpell(spell);
-        return spell;
-    }
-
-    private void spellNameUniqueness(String userName, String spellName) {
-        if (spellDao.spellNameExists(userName, spellName)) {
-            throw new DuplicateResourceException(String.format("Resource with name [%s] already exists", spellName));
-        }
     }
 }
