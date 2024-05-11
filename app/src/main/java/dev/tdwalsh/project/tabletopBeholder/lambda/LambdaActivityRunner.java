@@ -33,7 +33,7 @@ public class LambdaActivityRunner <TRequest, TResult> {
 
             ServiceComponent serviceComponent = getService();
             TResult result = handleRequest.apply(request, serviceComponent);
-
+            if(result == null) { return LambdaResponse.successNoContent(); }
             return LambdaResponse.success(result);
         } catch (Exception e) {
             return LambdaResponse.error(e);

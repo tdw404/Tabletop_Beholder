@@ -1,10 +1,7 @@
 package dev.tdwalsh.project.tabletopBeholder.dependency;
 
 import dagger.Component;
-import dev.tdwalsh.project.tabletopBeholder.activity.spell.CreateSpellActivity;
-import dev.tdwalsh.project.tabletopBeholder.activity.spell.GetAllSpellsActivity;
-import dev.tdwalsh.project.tabletopBeholder.activity.spell.GetSpellActivity;
-import dev.tdwalsh.project.tabletopBeholder.activity.spell.UpdateSpellActivity;
+import dev.tdwalsh.project.tabletopBeholder.activity.spell.*;
 
 import javax.inject.Singleton;
 
@@ -38,4 +35,10 @@ public interface ServiceComponent {
      * @return UpdateSpellActivity
      */
     UpdateSpellActivity provideUpdateSpellActivity();
+
+    /**
+     * Provides the relevant activity.
+     * @return DeleteSpellActivity
+     */
+    DeleteSpellActivity provideDeleteSpellActivity();
 }
