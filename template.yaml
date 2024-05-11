@@ -57,7 +57,7 @@ Resources:
             Priority: 1
       UsernameAttributes:
         - email
-      UsernameConfiguration: 
+      UsernameConfiguration:
         CaseSensitive: false
       AutoVerifiedAttributes:
         - email
@@ -80,15 +80,15 @@ Resources:
       CallbackURLs:
         - http://localhost:8000
         - !If
-            - DeployCloudFront
-            - !Sub "https://${CloudFrontDistribution.DomainName}"
-            - !Ref "AWS::NoValue"
+          - DeployCloudFront
+          - !Sub "https://${CloudFrontDistribution.DomainName}"
+          - !Ref "AWS::NoValue"
       LogoutURLs:
         - http://localhost:8000
         - !If
-            - DeployCloudFront
-            - !Sub "https://${CloudFrontDistribution.DomainName}"
-            - !Ref "AWS::NoValue"
+          - DeployCloudFront
+          - !Sub "https://${CloudFrontDistribution.DomainName}"
+          - !Ref "AWS::NoValue"
       AllowedOAuthFlows:
         - code
         - implicit
@@ -180,8 +180,8 @@ Resources:
         - 'arn:aws:iam::aws:policy/service-role/AWSLambdaRole'
         - 'arn:aws:iam::aws:policy/AWSLambdaExecute'
       AssumeRolePolicyDocument:
-        Version: "2012-10-17" 
-        Statement: 
+        Version: "2012-10-17"
+        Statement:
           - Effect: Allow
             Principal:
               Service:
@@ -193,21 +193,21 @@ Resources:
           PolicyDocument:
             Version: '2012-10-17'
             Statement:
-            - Effect: Allow
-              Action:
-                - logs:CreateLogGroup
-                - logs:CreateLogStream
-                - logs:PutLogEvents
-                - cloudwatch:PutMetricData
-              Resource: '*'
+              - Effect: Allow
+                Action:
+                  - logs:CreateLogGroup
+                  - logs:CreateLogStream
+                  - logs:PutLogEvents
+                  - cloudwatch:PutMetricData
+                Resource: '*'
 
         - PolicyName: 'AccessEncounterTable'
           PolicyDocument:
             Version: '2012-10-17'
             Statement:
-            - Effect: Allow
-              Action: dynamodb:*
-              Resource: !Sub "arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/TabletopBeholder_EncounterTable"
+              - Effect: Allow
+                Action: dynamodb:*
+                Resource: !Sub "arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/TabletopBeholder_EncounterTable"
 
         - PolicyName: 'AccessSessionTable'
           PolicyDocument:
@@ -216,6 +216,9 @@ Resources:
               - Effect: Allow
                 Action: dynamodb:*
                 Resource: !Sub "arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/TabletopBeholder_SessionTable"
+              - Effect: Allow
+                Action: dynamodb:query
+                Resource: !Sub "arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/TabletopBeholder_SessionTable/index/SessionsSortByNameIndex"
 
         - PolicyName: 'AccessCreatureTable'
           PolicyDocument:
@@ -224,6 +227,9 @@ Resources:
               - Effect: Allow
                 Action: dynamodb:*
                 Resource: !Sub "arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/TabletopBeholder_CreatureTable"
+              - Effect: Allow
+                Action: dynamodb:query
+                Resource: !Sub "arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/TabletopBeholder_CreatureTable/index/CreaturesSortByNameIndex"
 
         - PolicyName: 'AccessActionTable'
           PolicyDocument:
@@ -232,6 +238,9 @@ Resources:
               - Effect: Allow
                 Action: dynamodb:*
                 Resource: !Sub "arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/TabletopBeholder_ActionTable"
+              - Effect: Allow
+                Action: dynamodb:query
+                Resource: !Sub "arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/TabletopBeholder_ActionTable/index/ActionsSortByNameIndex"
 
         - PolicyName: 'AccessSpellTable'
           PolicyDocument:
@@ -240,6 +249,9 @@ Resources:
               - Effect: Allow
                 Action: dynamodb:*
                 Resource: !Sub "arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/TabletopBeholder_SpellTable"
+              - Effect: Allow
+                Action: dynamodb:query
+                Resource: !Sub "arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/TabletopBeholder_SpellTable/index/SpellsSortByNameIndex"
 
   #-----------------------------------------------------
   # Lambda Functions Configuration
@@ -347,7 +359,7 @@ Resources:
   #-----------------------------------------------------
   # DynamoDB Configuration
   #-----------------------------------------------------
-  
+
   SessionTable:
     Type: AWS::DynamoDB::Table
     Properties:
@@ -356,6 +368,8 @@ Resources:
           AttributeType: "S"
         - AttributeName: "sessionId"
           AttributeType: "S"
+        - AttributeName: "sessionName"
+          AttributeType: "S"
       KeySchema:
         - AttributeName: "userEmail"
           KeyType: "HASH"
@@ -363,7 +377,15 @@ Resources:
           KeyType: "RANGE"
       BillingMode: PAY_PER_REQUEST
       TableName: "TabletopBeholder_SessionTable"
-
+      GlobalSecondaryIndexes:
+        - IndexName: "SessionsSortByNameIndex"
+          KeySchema:
+            - AttributeName: "userEmail"
+              KeyType: "HASH"
+            - AttributeName: "sessionName"
+              KeyType: "RANGE"
+          Projection:
+            ProjectionType: "KEYS_ONLY"
   EncounterTable:
     Type: AWS::DynamoDB::Table
     Properties:
@@ -379,7 +401,6 @@ Resources:
           KeyType: "RANGE"
       BillingMode: PAY_PER_REQUEST
       TableName: "TabletopBeholder_EncounterTable"
-
   CreatureTable:
     Type: AWS::DynamoDB::Table
     Properties:
@@ -388,6 +409,8 @@ Resources:
           AttributeType: "S"
         - AttributeName: "creatureId"
           AttributeType: "S"
+        - AttributeName: "creatureName"
+          AttributeType: "S"
       KeySchema:
         - AttributeName: "userEmail"
           KeyType: "HASH"
@@ -395,7 +418,15 @@ Resources:
           KeyType: "RANGE"
       BillingMode: PAY_PER_REQUEST
       TableName: "TabletopBeholder_CreatureTable"
-
+      GlobalSecondaryIndexes:
+        - IndexName: "CreaturesSortByNameIndex"
+          KeySchema:
+            - AttributeName: "userEmail"
+              KeyType: "HASH"
+            - AttributeName: "creatureName"
+              KeyType: "RANGE"
+          Projection:
+            ProjectionType: "KEYS_ONLY"
   ActionTable:
     Type: AWS::DynamoDB::Table
     Properties:
@@ -404,6 +435,8 @@ Resources:
           AttributeType: "S"
         - AttributeName: "actionId"
           AttributeType: "S"
+        - AttributeName: "actionName"
+          AttributeType: "S"
       KeySchema:
         - AttributeName: "userEmail"
           KeyType: "HASH"
@@ -411,7 +444,15 @@ Resources:
           KeyType: "RANGE"
       BillingMode: PAY_PER_REQUEST
       TableName: "TabletopBeholder_ActionTable"
-
+      GlobalSecondaryIndexes:
+        - IndexName: "ActionsSortByNameIndex"
+          KeySchema:
+            - AttributeName: "userEmail"
+              KeyType: "HASH"
+            - AttributeName: "actionName"
+              KeyType: "RANGE"
+          Projection:
+            ProjectionType: "KEYS_ONLY"
   SpellTable:
     Type: AWS::DynamoDB::Table
     Properties:
@@ -420,6 +461,8 @@ Resources:
           AttributeType: "S"
         - AttributeName: "spellId"
           AttributeType: "S"
+        - AttributeName: "spellName"
+          AttributeType: "S"
       KeySchema:
         - AttributeName: "userEmail"
           KeyType: "HASH"
@@ -427,6 +470,15 @@ Resources:
           KeyType: "RANGE"
       BillingMode: PAY_PER_REQUEST
       TableName: "TabletopBeholder_SpellTable"
+      GlobalSecondaryIndexes:
+        - IndexName: "SpellsSortByNameIndex"
+          KeySchema:
+            - AttributeName: "userEmail"
+              KeyType: "HASH"
+            - AttributeName: "spellName"
+              KeyType: "RANGE"
+          Projection:
+            ProjectionType: "KEYS_ONLY"
 
 #-----------------------------------------------------
 # The outputs defined below will be printed
