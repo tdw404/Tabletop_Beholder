@@ -4,6 +4,7 @@ import dagger.Component;
 import dev.tdwalsh.project.tabletopBeholder.activity.spell.CreateSpellActivity;
 import dev.tdwalsh.project.tabletopBeholder.activity.spell.GetAllSpellsActivity;
 import dev.tdwalsh.project.tabletopBeholder.activity.spell.GetSpellActivity;
+import dev.tdwalsh.project.tabletopBeholder.activity.spell.UpdateSpellActivity;
 
 import javax.inject.Singleton;
 
@@ -31,4 +32,10 @@ public interface ServiceComponent {
      * @return CreateSpellActivity
      */
     CreateSpellActivity provideCreateSpellActivity();
+
+    /**
+     * Provides the relevant activity.
+     * @return UpdateSpellActivity
+     */
+    UpdateSpellActivity provideUpdateSpellActivity();
 }
