@@ -368,12 +368,12 @@ Resources:
           AttributeType: "S"
         - AttributeName: "sessionId"
           AttributeType: "S"
+        - AttributeName: "sessionName"
+          AttributeType: "S"
       KeySchema:
         - AttributeName: "userEmail"
           KeyType: "HASH"
         - AttributeName: "sessionId"
-          KeyType: "RANGE"
-        - AttributeName: "sessionName"
           KeyType: "RANGE"
       BillingMode: PAY_PER_REQUEST
       TableName: "TabletopBeholder_SessionTable"
@@ -409,12 +409,12 @@ Resources:
           AttributeType: "S"
         - AttributeName: "creatureId"
           AttributeType: "S"
+        - AttributeName: "creatureName"
+          AttributeType: "S"
       KeySchema:
         - AttributeName: "userEmail"
           KeyType: "HASH"
         - AttributeName: "creatureId"
-          KeyType: "RANGE"
-        - AttributeName: "creatureName"
           KeyType: "RANGE"
       BillingMode: PAY_PER_REQUEST
       TableName: "TabletopBeholder_CreatureTable"
