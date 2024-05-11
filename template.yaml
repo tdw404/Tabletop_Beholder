@@ -218,7 +218,7 @@ Resources:
                 Resource: !Sub "arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/TabletopBeholder_SessionTable"
               - Effect: Allow
                 Action: dynamodb:query
-                Resource: !Sub "arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/TabletopBeholder_SessionTable/index/SessionsSortBySpellNameIndex"
+                Resource: !Sub "arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/TabletopBeholder_SessionTable/index/SessionsSortByNameIndex"
 
         - PolicyName: 'AccessCreatureTable'
           PolicyDocument:
@@ -229,7 +229,7 @@ Resources:
                 Resource: !Sub "arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/TabletopBeholder_CreatureTable"
               - Effect: Allow
                 Action: dynamodb:query
-                Resource: !Sub "arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/TabletopBeholder_CreatureTable/index/CreaturesSortBySpellNameIndex"
+                Resource: !Sub "arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/TabletopBeholder_CreatureTable/index/CreaturesSortByNameIndex"
 
         - PolicyName: 'AccessActionTable'
           PolicyDocument:
@@ -240,7 +240,7 @@ Resources:
                 Resource: !Sub "arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/TabletopBeholder_ActionTable"
               - Effect: Allow
                 Action: dynamodb:query
-                Resource: !Sub "arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/TabletopBeholder_ActionTable/index/ActionsSortBySpellNameIndex"
+                Resource: !Sub "arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/TabletopBeholder_ActionTable/index/ActionsSortByNameIndex"
 
         - PolicyName: 'AccessSpellTable'
           PolicyDocument:
@@ -251,7 +251,7 @@ Resources:
                 Resource: !Sub "arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/TabletopBeholder_SpellTable"
               - Effect: Allow
                 Action: dynamodb:query
-                Resource: !Sub "arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/TabletopBeholder_SpellTable/index/SpellsSortBySpellNameIndex"
+                Resource: !Sub "arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/TabletopBeholder_SpellTable/index/SpellsSortByNameIndex"
 
   #-----------------------------------------------------
   # Lambda Functions Configuration
@@ -378,7 +378,7 @@ Resources:
       BillingMode: PAY_PER_REQUEST
       TableName: "TabletopBeholder_SessionTable"
       GlobalSecondaryIndexes:
-        - IndexName: "SessionsSortBySpellNameIndex"
+        - IndexName: "SessionsSortByNameIndex"
           KeySchema:
             - AttributeName: "userEmail"
               KeyType: "HASH"
@@ -419,7 +419,7 @@ Resources:
       BillingMode: PAY_PER_REQUEST
       TableName: "TabletopBeholder_CreatureTable"
       GlobalSecondaryIndexes:
-        - IndexName: "CreaturesSortBySpellNameIndex"
+        - IndexName: "CreaturesSortByNameIndex"
           KeySchema:
             - AttributeName: "userEmail"
               KeyType: "HASH"
@@ -445,7 +445,7 @@ Resources:
       BillingMode: PAY_PER_REQUEST
       TableName: "TabletopBeholder_ActionTable"
       GlobalSecondaryIndexes:
-        - IndexName: "ActionsSortBySpellNameIndex"
+        - IndexName: "ActionsSortByNameIndex"
           KeySchema:
             - AttributeName: "userEmail"
               KeyType: "HASH"
@@ -471,7 +471,7 @@ Resources:
       BillingMode: PAY_PER_REQUEST
       TableName: "TabletopBeholder_SpellTable"
       GlobalSecondaryIndexes:
-        - IndexName: "SpellsSortBySpellNameIndex"
+        - IndexName: "SpellsSortByNameIndex"
           KeySchema:
             - AttributeName: "userEmail"
               KeyType: "HASH"

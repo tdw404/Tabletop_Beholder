@@ -90,7 +90,7 @@ public class SpellDao {
         valueMap.put(":userEmail", new AttributeValue(userEmail));
         valueMap.put(":spellName", new AttributeValue(spellName));
         DynamoDBQueryExpression<Spell> queryExpression = new DynamoDBQueryExpression<Spell>()
-                .withIndexName("SpellsSortBySpellNameIndex")
+                .withIndexName("SpellsSortByNameIndex")
                 .withConsistentRead(false)
                 .withKeyConditionExpression("userEmail = :userEmail and spellName = :spellName")
                 .withExpressionAttributeValues(valueMap);
