@@ -356,6 +356,7 @@ Resources:
           Properties:
             Path: /user/{userEmail}/spell/{spellId}
             Method: delete
+
   #-----------------------------------------------------
   # DynamoDB Configuration
   #-----------------------------------------------------
