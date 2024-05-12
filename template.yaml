@@ -367,14 +367,14 @@ Resources:
       AttributeDefinitions:
         - AttributeName: "userEmail"
           AttributeType: "S"
-        - AttributeName: "sessionId"
+        - AttributeName: "objectId"
           AttributeType: "S"
-        - AttributeName: "sessionName"
+        - AttributeName: "objectName"
           AttributeType: "S"
       KeySchema:
         - AttributeName: "userEmail"
           KeyType: "HASH"
-        - AttributeName: "sessionId"
+        - AttributeName: "objectId"
           KeyType: "RANGE"
       BillingMode: PAY_PER_REQUEST
       TableName: "TabletopBeholder_SessionTable"
@@ -383,7 +383,7 @@ Resources:
           KeySchema:
             - AttributeName: "userEmail"
               KeyType: "HASH"
-            - AttributeName: "sessionName"
+            - AttributeName: "objectName"
               KeyType: "RANGE"
           Projection:
             ProjectionType: "KEYS_ONLY"
@@ -394,12 +394,12 @@ Resources:
       AttributeDefinitions:
         - AttributeName: "userEmail"
           AttributeType: "S"
-        - AttributeName: "encounterId"
+        - AttributeName: "objectId"
           AttributeType: "S"
       KeySchema:
         - AttributeName: "userEmail"
           KeyType: "HASH"
-        - AttributeName: "encounterId"
+        - AttributeName: "objectId"
           KeyType: "RANGE"
       BillingMode: PAY_PER_REQUEST
       TableName: "TabletopBeholder_EncounterTable"
@@ -410,14 +410,14 @@ Resources:
       AttributeDefinitions:
         - AttributeName: "userEmail"
           AttributeType: "S"
-        - AttributeName: "creatureId"
+        - AttributeName: "objectId"
           AttributeType: "S"
-        - AttributeName: "creatureName"
+        - AttributeName: "objectName"
           AttributeType: "S"
       KeySchema:
         - AttributeName: "userEmail"
           KeyType: "HASH"
-        - AttributeName: "creatureId"
+        - AttributeName: "objectId"
           KeyType: "RANGE"
       BillingMode: PAY_PER_REQUEST
       TableName: "TabletopBeholder_CreatureTable"
@@ -426,7 +426,7 @@ Resources:
           KeySchema:
             - AttributeName: "userEmail"
               KeyType: "HASH"
-            - AttributeName: "creatureName"
+            - AttributeName: "objectName"
               KeyType: "RANGE"
           Projection:
             ProjectionType: "KEYS_ONLY"
@@ -437,14 +437,14 @@ Resources:
       AttributeDefinitions:
         - AttributeName: "userEmail"
           AttributeType: "S"
-        - AttributeName: "actionId"
+        - AttributeName: "objectId"
           AttributeType: "S"
-        - AttributeName: "actionName"
+        - AttributeName: "objectName"
           AttributeType: "S"
       KeySchema:
         - AttributeName: "userEmail"
           KeyType: "HASH"
-        - AttributeName: "actionId"
+        - AttributeName: "objectId"
           KeyType: "RANGE"
       BillingMode: PAY_PER_REQUEST
       TableName: "TabletopBeholder_ActionTable"
@@ -453,7 +453,7 @@ Resources:
           KeySchema:
             - AttributeName: "userEmail"
               KeyType: "HASH"
-            - AttributeName: "actionName"
+            - AttributeName: "objectName"
               KeyType: "RANGE"
           Projection:
             ProjectionType: "KEYS_ONLY"
@@ -464,14 +464,14 @@ Resources:
       AttributeDefinitions:
         - AttributeName: "userEmail"
           AttributeType: "S"
-        - AttributeName: "spellId"
+        - AttributeName: "objectId"
           AttributeType: "S"
-        - AttributeName: "spellName"
+        - AttributeName: "objectName"
           AttributeType: "S"
       KeySchema:
         - AttributeName: "userEmail"
           KeyType: "HASH"
-        - AttributeName: "spellId"
+        - AttributeName: "objectId"
           KeyType: "RANGE"
       BillingMode: PAY_PER_REQUEST
       TableName: "TabletopBeholder_SpellTable"
@@ -480,7 +480,7 @@ Resources:
           KeySchema:
             - AttributeName: "userEmail"
               KeyType: "HASH"
-            - AttributeName: "spellName"
+            - AttributeName: "objectName"
               KeyType: "RANGE"
           Projection:
             ProjectionType: "KEYS_ONLY"

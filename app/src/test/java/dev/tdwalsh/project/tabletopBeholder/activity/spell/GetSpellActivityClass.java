@@ -42,8 +42,8 @@ public class GetSpellActivityClass {
 
         spell = new Spell();
         spell.setUserEmail(userEmail);
-        spell.setSpellId(spellId);
-        spell.setSpellName("testName");
+        spell.setObjectId(spellId);
+        spell.setObjectName("testName");
         spell.setSpellDescription("testDescription");
         spell.setSpellHigherLevel("testSHL");
         spell.setSpellRange("testRange");

@@ -24,7 +24,7 @@ public class CreateObjectHelper {
      */
     public static BeholderObject createObject(BeholderDao dao, BeholderObject beholderObject) {
         beholderObject.setObjectId(UUID.randomUUID().toString());
-        while (dao.getSingle(beholderObject.getObjectUserEmail(), beholderObject.getObjectId()) != null) {
+        while (dao.getSingle(beholderObject.getUserEmail(), beholderObject.getObjectId()) != null) {
             beholderObject.setObjectId(UUID.randomUUID().toString());
         }
         dao.writeObject(beholderObject);

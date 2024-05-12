@@ -21,7 +21,7 @@ public class NameHelper {
      * @param beholderObject to check
      */
     public static void objectNameUniqueness(BeholderDao dao, BeholderObject beholderObject) {
-        if (dao.objectNameExists(beholderObject.getObjectUserEmail(), beholderObject.getObjectName())) {
+        if (dao.objectNameExists(beholderObject.getUserEmail(), beholderObject.getObjectName())) {
             throw new DuplicateResourceException(String.format("Resource with name [%s] already exists", beholderObject.getObjectName()));
         }
     }

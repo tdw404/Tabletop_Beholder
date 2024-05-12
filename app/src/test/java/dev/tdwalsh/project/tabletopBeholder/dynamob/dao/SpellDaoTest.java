@@ -37,7 +37,7 @@ public class SpellDaoTest {
         spellId = "testSpellId";
         spell = new Spell();
         spell.setUserEmail(userEmail);
-        spell.setSpellId(spellId);
+        spell.setObjectId(spellId);
     }
 
     @Test
@@ -89,7 +89,7 @@ public class SpellDaoTest {
 
         //THEN
         verify(mapper, times(1)).save(argumentCaptor.capture());
-        assertEquals(spell.getSpellId(), argumentCaptor.getValue().getSpellId());
+        assertEquals(spell.getObjectId(), argumentCaptor.getValue().getObjectId());
         assertEquals(spell.getUserEmail(), argumentCaptor.getValue().getUserEmail());
     }
 
@@ -103,7 +103,7 @@ public class SpellDaoTest {
 
         //THEN
         verify(mapper, times(1)).delete(argumentCaptor.capture());
-        assertEquals(spell.getSpellId(), argumentCaptor.getValue().getSpellId());
+        assertEquals(spell.getObjectId(), argumentCaptor.getValue().getObjectId());
         assertEquals(spell.getUserEmail(), argumentCaptor.getValue().getUserEmail());
     }
 }

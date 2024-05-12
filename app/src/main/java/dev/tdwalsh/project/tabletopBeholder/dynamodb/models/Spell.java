@@ -9,8 +9,8 @@ import java.util.Objects;
 @DynamoDBTable(tableName = "TabletopBeholder_SpellTable")
 public class Spell implements BeholderObject {
     private String userEmail;
-    private String spellId;
-    private String spellName;
+    private String objectId;
+    private String objectName;
     private String spellDescription;
     private String spellHigherLevel;
     private String spellRange;
@@ -23,6 +23,7 @@ public class Spell implements BeholderObject {
     private Integer innateCasts;
     private List<Effect> appliesEffects;
 
+    @Override
     @DynamoDBHashKey(attributeName = "userEmail")
     public String getUserEmail() {
         return userEmail;
@@ -32,22 +33,24 @@ public class Spell implements BeholderObject {
         this.userEmail = userEmail;
     }
 
-    @DynamoDBRangeKey(attributeName = "spellId")
-    public String getSpellId() {
-        return spellId;
+    @Override
+    @DynamoDBRangeKey(attributeName = "objectId")
+    public String getObjectId() {
+        return objectId;
     }
 
-    public void setSpellId(String spellId) {
-        this.spellId = spellId;
+    public void setObjectId(String objectId) {
+        this.objectId = objectId;
     }
 
-    @DynamoDBAttribute(attributeName = "spellName")
-    public String getSpellName() {
-        return spellName;
+    @Override
+    @DynamoDBAttribute(attributeName = "objectName")
+    public String getObjectName() {
+        return objectName;
     }
 
-    public void setSpellName(String spellName) {
-        this.spellName = spellName;
+    public void setObjectName(String objectName) {
+        this.objectName = objectName;
     }
 
     @DynamoDBAttribute(attributeName = "spellDescription")
@@ -153,7 +156,7 @@ public class Spell implements BeholderObject {
 
     @Override
     public int hashCode() {
-        return Objects.hash(this.userEmail + this.spellId);
+        return Objects.hash(this.userEmail + this.objectId);
     }
 
     @Override
@@ -168,26 +171,6 @@ public class Spell implements BeholderObject {
             return true;
         }
         Spell other = (Spell) o;
-        return (this.userEmail.equals(other.userEmail)) && (this.spellId.equals(other.spellId));
-    }
-
-    @Override
-    public String getObjectId() {
-        return this.spellId;
-    }
-
-    @Override
-    public String getObjectUserEmail() {
-        return this.userEmail;
-    }
-
-    @Override
-    public String getObjectName() {
-        return this.spellName;
-    }
-
-    @Override
-    public void setObjectId(String objectId) {
-        this.setSpellId(objectId);
+        return (this.userEmail.equals(other.userEmail)) && (this.objectId.equals(other.objectId));
     }
 }

@@ -9,14 +9,15 @@ import java.util.Objects;
 @DynamoDBTable(tableName = "TabletopBeholder_ActionTable")
 public class Action implements BeholderObject {
     private String userEmail;
-    private String actionId;
-    private String actionName;
+    private String objectId;
+    private String objectName;
     private String actionType;
     private String actionDescription;
     private Integer uses;
     private Integer rechargeOn;
     private List<Effect> appliesEffects;
 
+    @Override
     @DynamoDBHashKey(attributeName = "userEmail")
     public String getUserEmail() {
         return userEmail;
@@ -26,22 +27,24 @@ public class Action implements BeholderObject {
         this.userEmail = userEmail;
     }
 
-    @DynamoDBRangeKey(attributeName = "actionId")
-    public String getActionId() {
-        return actionId;
+    @Override
+    @DynamoDBRangeKey(attributeName = "objectId")
+    public String getObjectId() {
+        return objectId;
     }
 
-    public void setActionId(String actionId) {
-        this.actionId = actionId;
+    public void setObjectId(String objectId) {
+        this.objectId = objectId;
     }
 
-    @DynamoDBAttribute(attributeName = "actionName")
-    public String getActionName() {
-        return actionName;
+    @Override
+    @DynamoDBAttribute(attributeName = "objectName")
+    public String getObjectName() {
+        return objectName;
     }
 
-    public void setActionName(String actionName) {
-        this.actionName = actionName;
+    public void setObjectName(String objectName) {
+        this.objectName = objectName;
     }
 
     @DynamoDBAttribute(attributeName = "actionType")
@@ -92,7 +95,7 @@ public class Action implements BeholderObject {
 
     @Override
     public int hashCode() {
-        return Objects.hash(this.userEmail + this.actionId);
+        return Objects.hash(this.userEmail + this.objectId);
     }
 
     @Override
@@ -107,26 +110,6 @@ public class Action implements BeholderObject {
             return false;
         }
         Action other = (Action) o;
-        return (this.userEmail.equals(other.userEmail)) && (this.actionId.equals(other.actionId));
-    }
-
-    @Override
-    public String getObjectId() {
-        return this.actionId;
-    }
-
-    @Override
-    public String getObjectUserEmail() {
-        return this.userEmail;
-    }
-
-    @Override
-    public String getObjectName() {
-        return this.actionName;
-    }
-
-    @Override
-    public void setObjectId(String objectId) {
-        this.setActionId(objectId);
+        return (this.userEmail.equals(other.userEmail)) && (this.objectId.equals(other.objectId));
     }
 }

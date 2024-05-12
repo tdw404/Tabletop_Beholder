@@ -11,12 +11,13 @@ import java.util.Objects;
 @DynamoDBTable(tableName = "TabletopBeholder_EncounterTable")
 public class Encounter implements BeholderObject {
     private String userEmail;
-    private String encounterId;
-    private String encounterName;
+    private String objectId;
+    private String objectName;
     private List<Creature> creatureList;
     private ZonedDateTime createDateTime;
     private ZonedDateTime editDateTime;
 
+    @Override
     @DynamoDBHashKey(attributeName = "userEmail")
     public String getUserEmail() {
         return userEmail;
@@ -26,22 +27,24 @@ public class Encounter implements BeholderObject {
         this.userEmail = userEmail;
     }
 
-    @DynamoDBRangeKey(attributeName = "encounterId")
-    public String getEncounterId() {
-        return encounterId;
+    @Override
+    @DynamoDBRangeKey(attributeName = "objectId")
+    public String getObjectId() {
+        return objectId;
     }
 
-    public void setEncounterId(String encounterId) {
-        this.encounterId = encounterId;
+    public void setObjectId(String objectId) {
+        this.objectId = objectId;
     }
 
-    @DynamoDBAttribute(attributeName = "encounterName")
-    public String getEncounterName() {
-        return encounterName;
+    @Override
+    @DynamoDBAttribute(attributeName = "objectName")
+    public String getObjectName() {
+        return objectName;
     }
 
-    public void setEncounterName(String encounterName) {
-        this.encounterName = encounterName;
+    public void setObjectName(String objectName) {
+        this.objectName = objectName;
     }
 
     @DynamoDBAttribute(attributeName = "creatureList")
@@ -76,7 +79,7 @@ public class Encounter implements BeholderObject {
 
     @Override
     public int hashCode() {
-        return Objects.hash(this.userEmail = this.encounterId);
+        return Objects.hash(this.userEmail + this.objectId);
     }
 
     @Override
@@ -91,26 +94,6 @@ public class Encounter implements BeholderObject {
             return false;
         }
         Encounter other = (Encounter) o;
-        return (this.userEmail.equals(other.userEmail)) && (this.encounterId.equals(other.encounterId));
-    }
-
-    @Override
-    public String getObjectId() {
-        return this.encounterId;
-    }
-
-    @Override
-    public String getObjectUserEmail() {
-        return this.userEmail;
-    }
-
-    @Override
-    public String getObjectName() {
-        return this.encounterName;
-    }
-
-    @Override
-    public void setObjectId(String objectId) {
-        this.setEncounterId(objectId);
+        return (this.userEmail.equals(other.userEmail)) && (this.objectId.equals(other.objectId));
     }
 }

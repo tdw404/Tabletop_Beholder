@@ -80,7 +80,7 @@ public class SpellDao implements BeholderDao {
     public void deleteObject(String userEmail, String spellId) {
         Spell spell = new Spell();
         spell.setUserEmail(userEmail);
-        spell.setSpellId(spellId);
+        spell.setObjectId(spellId);
         mapper.delete(spell);
     }
 

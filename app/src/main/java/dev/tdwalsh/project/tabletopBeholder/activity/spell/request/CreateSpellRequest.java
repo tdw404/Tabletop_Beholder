@@ -8,7 +8,7 @@ import java.util.List;
 @JsonDeserialize(builder = CreateSpellRequest.Builder.class)
 public class CreateSpellRequest {
     private final String userEmail;
-    private final String spellName;
+    private final String objectName;
     private final String spellDescription;
     private final String spellHigherLevel;
     private final String spellRange;
@@ -21,7 +21,7 @@ public class CreateSpellRequest {
     private final List<Effect> appliesEffects;
 
     private CreateSpellRequest(String userEmail,
-                               String spellName,
+                               String objectName,
                                String spellDescription,
                                String spellHigherLevel,
                                String spellRange,
@@ -33,7 +33,7 @@ public class CreateSpellRequest {
                                String spellSchool,
                                List<Effect> appliesEffects) {
         this.userEmail = userEmail;
-        this.spellName = spellName;
+        this.objectName = objectName;
         this.spellDescription = spellDescription;
         this.spellHigherLevel = spellHigherLevel;
         this.spellRange = spellRange;
@@ -50,7 +50,7 @@ public class CreateSpellRequest {
         return this.userEmail;
     }
 
-    public String getSpellName() { return this.spellName; }
+    public String getObjectName() { return this.objectName; }
 
     public String getSpellDescription() {
         return spellDescription;
@@ -97,7 +97,7 @@ public class CreateSpellRequest {
     }
     public static class Builder {
         private String userEmail;
-        private String spellName;
+        private String objectName;
         private String spellDescription;
         private String spellHigherLevel;
         private String spellRange;
@@ -114,8 +114,8 @@ public class CreateSpellRequest {
             return this;
         }
 
-        public Builder withSpellName(String spellName) {
-            this.spellName = spellName;
+        public Builder withObjectName(String objectName) {
+            this.objectName = objectName;
             return this;
         }
         public Builder withSpellDescription(String spellDescription) {
@@ -159,7 +159,7 @@ public class CreateSpellRequest {
 
         public CreateSpellRequest build() {
             return new CreateSpellRequest(userEmail,
-                                            spellName,
+                                            objectName,
                                             spellDescription,
                                             spellHigherLevel,
                                             spellRange,

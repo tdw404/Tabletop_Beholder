@@ -38,7 +38,7 @@ public class CreateSpellActivity {
     public CreateSpellResult handleRequest(CreateSpellRequest createSpellRequest) {
         Spell spell = new Spell();
         spell.setUserEmail(createSpellRequest.getUserEmail());
-        spell.setSpellName(createSpellRequest.getSpellName());
+        spell.setObjectName(createSpellRequest.getObjectName());
         spell.setSpellDescription(createSpellRequest.getSpellDescription());
         spell.setSpellHigherLevel(createSpellRequest.getSpellHigherLevel());
         spell.setSpellRange(createSpellRequest.getSpellRange());

@@ -21,15 +21,15 @@ public class ActionConverterTest {
     public void setup() {
         converter = new ActionConverter();
         object1 = new Action();
-        object1.setActionId("id1");
+        object1.setObjectId("id1");
         object1.setUserEmail("email1");
         object2 = new Action();
-        object2.setActionId("id2");
+        object2.setObjectId("id2");
         object2.setUserEmail("email2");
         objectList = new ArrayList<>();
         objectList.add(object1);
         objectList.add(object2);
-        serial = "[{\"actionId\":\"id1\",\"userEmail\":\"email1\"},{\"actionId\":\"id2\",\"userEmail\":\"email2\"}]";
+        serial = "[{\"objectId\":\"id1\",\"userEmail\":\"email1\"},{\"objectId\":\"id2\",\"userEmail\":\"email2\"}]";
     }
 
     @Test
@@ -40,7 +40,7 @@ public class ActionConverterTest {
 
         //THEN
         assertEquals(String.class, result.getClass(), "Expected result to be a string");
-        assertTrue(result.contains(object1.getActionId()) && result.contains(object2.getActionId()), "Expected result to contain serialized elements");
+        assertTrue(result.contains(object1.getObjectId()) && result.contains(object2.getObjectId()), "Expected result to contain serialized elements");
     }
 
     @Test
@@ -51,7 +51,7 @@ public class ActionConverterTest {
 
         //THEN
         assertEquals(Action.class, result.get(0).getClass(), "Expected result class to match original object");
-        assertTrue(result.get(0).getActionId().equals("id1") || result.get(0).getActionId().equals("id2"), "Expected result to contain elements of serialized string");
+        assertTrue(result.get(0).getObjectId().equals("id1") || result.get(0).getObjectId().equals("id2"), "Expected result to contain elements of serialized string");
     }
 
     @Test
