@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Objects;
 
 @DynamoDBTable(tableName = "TabletopBeholder_SpellTable")
-public class Spell {
+public class Spell extends BeholderObject {
     private String userEmail;
     private String spellId;
     private String spellName;
@@ -169,5 +169,20 @@ public class Spell {
         }
         Spell other = (Spell) o;
         return (this.userEmail.equals(other.userEmail)) && (this.spellId.equals(other.spellId));
+    }
+
+    @Override
+    public String getObjectId() {
+        return this.spellId;
+    }
+
+    @Override
+    public String getObjectUserEmail() {
+        return this.userEmail;
+    }
+
+    @Override
+    public String getObjectName() {
+        return this.spellName;
     }
 }

@@ -4,12 +4,13 @@ import com.amazonaws.services.dynamodbv2.datamodeling.*;
 import dev.tdwalsh.project.tabletopBeholder.converters.EncounterConverter;
 import dev.tdwalsh.project.tabletopBeholder.converters.ZonedDateTimeConverter;
 
+import java.net.http.HttpResponse;
 import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Objects;
 
 @DynamoDBTable(tableName = "ProjectBeholder_SessionTable")
-public class Session {
+public class Session implements BeholderObject {
     private String userEmail;
     private String sessionId;
     private String sessionName;
@@ -95,5 +96,20 @@ public class Session {
 
         Session other = (Session) o;
         return this.userEmail.equals(other.userEmail) && this.sessionId.equals(other.sessionId);
+    }
+
+    @Override
+    public String getObjectId() {
+        return this.sessionId;
+    }
+
+    @Override
+    public String getObjectUserEmail() {
+        return this.userEmail;
+    }
+
+    @Override
+    public String getObjectName() {
+        return this.sessionName;
     }
 }

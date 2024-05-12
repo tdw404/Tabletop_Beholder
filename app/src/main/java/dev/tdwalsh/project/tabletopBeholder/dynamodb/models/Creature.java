@@ -12,7 +12,7 @@ import java.util.Objects;
 import static com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapperFieldModel.*;
 
 @DynamoDBTable(tableName = "TabletopBeholder_CreatureTable")
-public class Creature {
+public class Creature implements BeholderObject {
     private String userEmail;
     private String creatureId;
     private String encounterCreatureId;
@@ -513,5 +513,20 @@ public class Creature {
         }
         Creature other = (Creature) o;
         return (this.userEmail.equals(other.userEmail)) && (this.creatureId.equals(other.creatureId));
+    }
+
+    @Override
+    public String getObjectId() {
+        return this.creatureId;
+    }
+
+    @Override
+    public String getObjectUserEmail() {
+        return this.userEmail;
+    }
+
+    @Override
+    public String getObjectName() {
+        return this.creatureName;
     }
 }

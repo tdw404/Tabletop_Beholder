@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.Objects;
 
 @DynamoDBTable(tableName = "TabletopBeholder_EncounterTable")
-public class Encounter {
+public class Encounter implements BeholderObject {
     private String userEmail;
     private String encounterId;
     private String encounterName;
@@ -92,5 +92,20 @@ public class Encounter {
         }
         Encounter other = (Encounter) o;
         return (this.userEmail.equals(other.userEmail)) && (this.encounterId.equals(other.encounterId));
+    }
+
+    @Override
+    public String getObjectId() {
+        return this.encounterId;
+    }
+
+    @Override
+    public String getObjectUserEmail() {
+        return this.userEmail;
+    }
+
+    @Override
+    public String getObjectName() {
+        return this.encounterName;
     }
 }

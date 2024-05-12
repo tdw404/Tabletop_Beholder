@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Objects;
 
 @DynamoDBTable(tableName = "TabletopBeholder_ActionTable")
-public class Action {
+public class Action implements BeholderObject {
     private String userEmail;
     private String actionId;
     private String actionName;
@@ -108,5 +108,20 @@ public class Action {
         }
         Action other = (Action) o;
         return (this.userEmail.equals(other.userEmail)) && (this.actionId.equals(other.actionId));
+    }
+
+    @Override
+    public String getObjectId() {
+        return this.actionId;
+    }
+
+    @Override
+    public String getObjectUserEmail() {
+        return this.userEmail;
+    }
+
+    @Override
+    public String getObjectName() {
+        return this.actionName;
     }
 }
