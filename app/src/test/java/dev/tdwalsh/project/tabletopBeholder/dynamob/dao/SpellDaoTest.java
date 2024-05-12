@@ -11,7 +11,6 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -38,7 +37,7 @@ public class SpellDaoTest {
         spellId = "testSpellId";
         spell = new Spell();
         spell.setUserEmail(userEmail);
-        spell.setSpellId(spellId);
+        spell.setObjectId(spellId);
     }
 
     @Test
@@ -47,7 +46,7 @@ public class SpellDaoTest {
         doReturn(spell).when(mapper).load(Spell.class, userEmail, spellId);
 
         //WHEN
-        Spell result = dao.getSingleSpell(userEmail, spellId);
+        Spell result = dao.getSingle(userEmail, spellId);
 
         //THEN
         assertEquals(spell, result, "Expected dao to return single result");
@@ -59,7 +58,7 @@ public class SpellDaoTest {
         doReturn(null).when(mapper).load(Spell.class, userEmail, spellId);
 
         //WHEN
-        Spell result = dao.getSingleSpell(userEmail, spellId);
+        Spell result = dao.getSingle(userEmail, spellId);
 
         //THEN
         assertEquals(null, result, "Expected dao to return null result");
@@ -72,7 +71,7 @@ public class SpellDaoTest {
         doReturn(paginatedQueryList).when(mapper).query(eq(Spell.class), any(DynamoDBQueryExpression.class));
 
         //WHEN
-        List<Spell> result = dao.getSpellsByUser(userEmail);
+        List<Spell> result = (List<Spell>) dao.getMultiple(userEmail);
         verify(mapper).query(eq(Spell.class), argumentCaptor.capture());
 
         //THEN
@@ -86,11 +85,11 @@ public class SpellDaoTest {
         ArgumentCaptor<Spell> argumentCaptor = ArgumentCaptor.forClass(Spell.class);
 
         //WHEN
-        dao.writeSpell(spell);
+        dao.writeObject(spell);
 
         //THEN
         verify(mapper, times(1)).save(argumentCaptor.capture());
-        assertEquals(spell.getSpellId(), argumentCaptor.getValue().getSpellId());
+        assertEquals(spell.getObjectId(), argumentCaptor.getValue().getObjectId());
         assertEquals(spell.getUserEmail(), argumentCaptor.getValue().getUserEmail());
     }
 
@@ -100,11 +99,11 @@ public class SpellDaoTest {
         ArgumentCaptor<Spell> argumentCaptor = ArgumentCaptor.forClass(Spell.class);
 
         //WHEN
-        dao.deleteSpell(userEmail, spellId);
+        dao.deleteObject(userEmail, spellId);
 
         //THEN
         verify(mapper, times(1)).delete(argumentCaptor.capture());
-        assertEquals(spell.getSpellId(), argumentCaptor.getValue().getSpellId());
+        assertEquals(spell.getObjectId(), argumentCaptor.getValue().getObjectId());
         assertEquals(spell.getUserEmail(), argumentCaptor.getValue().getUserEmail());
     }
 }

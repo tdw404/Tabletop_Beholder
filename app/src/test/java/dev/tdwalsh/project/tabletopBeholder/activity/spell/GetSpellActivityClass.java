@@ -42,8 +42,8 @@ public class GetSpellActivityClass {
 
         spell = new Spell();
         spell.setUserEmail(userEmail);
-        spell.setSpellId(spellId);
-        spell.setSpellName("testName");
+        spell.setObjectId(spellId);
+        spell.setObjectName("testName");
         spell.setSpellDescription("testDescription");
         spell.setSpellHigherLevel("testSHL");
         spell.setSpellRange("testRange");
@@ -65,7 +65,7 @@ public class GetSpellActivityClass {
     @Test
     public void handleRequest_objectsExistsOnDB_returnsResult() {
         //GIVEN
-        doReturn(spell).when(spellDao).getSingleSpell(userEmail, spellId);
+        doReturn(spell).when(spellDao).getSingle(userEmail, spellId);
 
         //WHEN
         GetSpellResult result = getSpellActivity.handleRequest(getSpellRequest);
@@ -77,7 +77,7 @@ public class GetSpellActivityClass {
     @Test
     public void handleRequest_objectsDoesNotExists_throwsError() {
         //GIVEN
-        doReturn(null).when(spellDao).getSingleSpell(userEmail, spellId);
+        doReturn(null).when(spellDao).getSingle(userEmail, spellId);
 
         //WHEN
         //THEN

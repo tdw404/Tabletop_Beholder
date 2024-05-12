@@ -1,16 +1,13 @@
 package dev.tdwalsh.project.tabletopBeholder.activity.spell;
 
-import dev.tdwalsh.project.tabletopBeholder.activity.helpers.CreateSpellHelper;
+import dev.tdwalsh.project.tabletopBeholder.activity.helpers.CreateObjectHelper;
+import dev.tdwalsh.project.tabletopBeholder.activity.helpers.NameHelper;
 import dev.tdwalsh.project.tabletopBeholder.activity.spell.request.CreateSpellRequest;
-import dev.tdwalsh.project.tabletopBeholder.activity.spell.request.GetAllSpellsRequest;
 import dev.tdwalsh.project.tabletopBeholder.activity.spell.result.CreateSpellResult;
-import dev.tdwalsh.project.tabletopBeholder.activity.spell.result.GetAllSpellsResult;
 import dev.tdwalsh.project.tabletopBeholder.dynamodb.dao.SpellDao;
 import dev.tdwalsh.project.tabletopBeholder.dynamodb.models.Spell;
-import dev.tdwalsh.project.tabletopBeholder.exceptions.DuplicateResourceException;
 
 import javax.inject.Inject;
-import java.util.UUID;
 
 /**
  * GetSpellActivity handles negotiation with {@link SpellDao} to create a {@link Spell}.
@@ -41,7 +38,7 @@ public class CreateSpellActivity {
     public CreateSpellResult handleRequest(CreateSpellRequest createSpellRequest) {
         Spell spell = new Spell();
         spell.setUserEmail(createSpellRequest.getUserEmail());
-        spell.setSpellName(createSpellRequest.getSpellName());
+        spell.setObjectName(createSpellRequest.getObjectName());
         spell.setSpellDescription(createSpellRequest.getSpellDescription());
         spell.setSpellHigherLevel(createSpellRequest.getSpellHigherLevel());
         spell.setSpellRange(createSpellRequest.getSpellRange());
@@ -53,8 +50,10 @@ public class CreateSpellActivity {
         spell.setSpellSchool(createSpellRequest.getSpellSchool());
         spell.setAppliesEffects(createSpellRequest.getAppliesEffects());
 
+        NameHelper.objectNameUniqueness(spellDao, spell);
+
         return CreateSpellResult.builder()
-                .withSpell(CreateSpellHelper.createSpell(spellDao, spell))
+                .withSpell((Spell)CreateObjectHelper.createObject(spellDao, spell))
                 .build();
     }
 }

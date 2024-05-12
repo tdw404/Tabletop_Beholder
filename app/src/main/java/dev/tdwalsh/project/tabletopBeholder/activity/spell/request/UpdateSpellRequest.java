@@ -9,7 +9,7 @@ import java.util.List;
 public class UpdateSpellRequest {
     private final String userEmail;
     private final String spellId;
-    private final String spellName;
+    private final String objectName;
     private final String spellDescription;
     private final String spellHigherLevel;
     private final String spellRange;
@@ -23,7 +23,7 @@ public class UpdateSpellRequest {
 
     private UpdateSpellRequest(String userEmail,
                                String spellId,
-                               String spellName,
+                               String objectName,
                                String spellDescription,
                                String spellHigherLevel,
                                String spellRange,
@@ -36,7 +36,7 @@ public class UpdateSpellRequest {
                                List<Effect> appliesEffects) {
         this.userEmail = userEmail;
         this.spellId = spellId;
-        this.spellName = spellName;
+        this.objectName = objectName;
         this.spellDescription = spellDescription;
         this.spellHigherLevel = spellHigherLevel;
         this.spellRange = spellRange;
@@ -55,7 +55,7 @@ public class UpdateSpellRequest {
 
     public String getSpellId() { return this.spellId; }
 
-    public String getSpellName() { return this.spellName; }
+    public String getObjectName() { return this.objectName; }
 
     public String getSpellDescription() {
         return spellDescription;
@@ -103,7 +103,7 @@ public class UpdateSpellRequest {
     public static class Builder {
         private String userEmail;
         private String spellId;
-        private String spellName;
+        private String objectName;
         private String spellDescription;
         private String spellHigherLevel;
         private String spellRange;
@@ -125,8 +125,8 @@ public class UpdateSpellRequest {
             return this;
         }
 
-        public Builder withSpellName(String spellName) {
-            this.spellName = spellName;
+        public Builder withObjectName(String objectName) {
+            this.objectName = objectName;
             return this;
         }
         public Builder withSpellDescription(String spellDescription) {
@@ -171,7 +171,7 @@ public class UpdateSpellRequest {
         public UpdateSpellRequest build() {
             return new UpdateSpellRequest(userEmail,
                                             spellId,
-                                            spellName,
+                                            objectName,
                                             spellDescription,
                                             spellHigherLevel,
                                             spellRange,

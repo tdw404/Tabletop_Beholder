@@ -75,7 +75,7 @@ public class ActionDao {
     public void deleteAction(String userEmail, String actionId) {
         Action action = new Action();
         action.setUserEmail(userEmail);
-        action.setActionId(actionId);
+        action.setObjectId(actionId);
         mapper.delete(action);
     }
 

@@ -12,13 +12,13 @@ import java.util.Objects;
 import static com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapperFieldModel.*;
 
 @DynamoDBTable(tableName = "TabletopBeholder_CreatureTable")
-public class Creature {
+public class Creature implements BeholderObject {
     private String userEmail;
-    private String creatureId;
+    private String objectId;
     private String encounterCreatureId;
     private String encounterCreatureName;
     private Boolean draftStatus;
-    private String creatureName;
+    private String objectName;
     private Boolean isPC;
     private Integer pcLevel;
     private String sourceBook;
@@ -61,6 +61,7 @@ public class Creature {
     private Integer spellSaveDC;
     private Integer spellAttackModifier;
 
+    @Override
     @DynamoDBHashKey(attributeName = "userEmail")
     public String getUserEmail() {
         return userEmail;
@@ -70,13 +71,24 @@ public class Creature {
         this.userEmail = userEmail;
     }
 
-    @DynamoDBRangeKey(attributeName = "creatureId")
-    public String getCreatureId() {
-        return creatureId;
+    @Override
+    @DynamoDBRangeKey(attributeName = "objectId")
+    public String getObjectId() {
+        return objectId;
     }
 
-    public void setCreatureId(String creatureId) {
-        this.creatureId = creatureId;
+    public void setObjectId(String objectId) {
+        this.objectId = objectId;
+    }
+
+    @Override
+    @DynamoDBAttribute(attributeName = "objectName")
+    public String getObjectName() {
+        return objectName;
+    }
+
+    public void setObjectName(String objectName) {
+        this.objectName = objectName;
     }
 
     @DynamoDBAttribute(attributeName = "encounterCreatureId")
@@ -105,15 +117,6 @@ public class Creature {
 
     public void setDraftStatus(Boolean draftStatus) {
         this.draftStatus = draftStatus;
-    }
-
-    @DynamoDBAttribute(attributeName = "creatureName")
-    public String getCreatureName() {
-        return creatureName;
-    }
-
-    public void setCreatureName(String creatureName) {
-        this.creatureName = creatureName;
     }
 
     @DynamoDBAttribute(attributeName = "isPC")
@@ -497,7 +500,7 @@ public class Creature {
 
     @Override
     public int hashCode() {
-        return Objects.hash(this.userEmail + this.creatureId);
+        return Objects.hash(this.userEmail + this.objectId);
     }
 
     @Override
@@ -512,6 +515,6 @@ public class Creature {
             return false;
         }
         Creature other = (Creature) o;
-        return (this.userEmail.equals(other.userEmail)) && (this.creatureId.equals(other.creatureId));
+        return (this.userEmail.equals(other.userEmail)) && (this.objectId.equals(other.objectId));
     }
 }

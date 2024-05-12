@@ -1,12 +1,9 @@
 package dev.tdwalsh.project.tabletopBeholder.activity.spell;
 
 import dev.tdwalsh.project.tabletopBeholder.activity.spell.request.GetAllSpellsRequest;
-import dev.tdwalsh.project.tabletopBeholder.activity.spell.request.GetSpellRequest;
 import dev.tdwalsh.project.tabletopBeholder.activity.spell.result.GetAllSpellsResult;
-import dev.tdwalsh.project.tabletopBeholder.activity.spell.result.GetSpellResult;
 import dev.tdwalsh.project.tabletopBeholder.dynamodb.dao.SpellDao;
 import dev.tdwalsh.project.tabletopBeholder.dynamodb.models.Spell;
-import dev.tdwalsh.project.tabletopBeholder.exceptions.resourceNotFoundExceptions.SpellNotFoundException;
 
 import javax.inject.Inject;
 import java.util.List;
@@ -39,7 +36,7 @@ public class GetAllSpellsActivity {
 
     public GetAllSpellsResult handleRequest(GetAllSpellsRequest getAllSpellsRequest) {
         return GetAllSpellsResult.builder()
-                .withSpellList(spellDao.getSpellsByUser(getAllSpellsRequest.getUserEmail()))
+                .withSpellList((List<Spell>) spellDao.getMultiple(getAllSpellsRequest.getUserEmail()))
                 .build();
     }
 }

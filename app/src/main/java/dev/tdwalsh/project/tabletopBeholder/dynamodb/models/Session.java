@@ -4,19 +4,21 @@ import com.amazonaws.services.dynamodbv2.datamodeling.*;
 import dev.tdwalsh.project.tabletopBeholder.converters.EncounterConverter;
 import dev.tdwalsh.project.tabletopBeholder.converters.ZonedDateTimeConverter;
 
+import java.net.http.HttpResponse;
 import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Objects;
 
 @DynamoDBTable(tableName = "ProjectBeholder_SessionTable")
-public class Session {
+public class Session implements BeholderObject {
     private String userEmail;
-    private String sessionId;
-    private String sessionName;
+    private String objectId;
+    private String objectName;
     private List<Encounter> encounterList;
     private ZonedDateTime createDateTime;
     private ZonedDateTime editDateTime;
 
+    @Override
     @DynamoDBHashKey(attributeName = "userEmail")
     public String getUserEmail() {
         return userEmail;
@@ -26,22 +28,24 @@ public class Session {
         this.userEmail = userEmail;
     }
 
-    @DynamoDBRangeKey(attributeName = "sessionId")
-    public String getSessionId() {
-        return sessionId;
+    @Override
+    @DynamoDBRangeKey(attributeName = "objectId")
+    public String getObjectId() {
+        return objectId;
     }
 
-    public void setSessionId(String sessionId) {
-        this.sessionId = sessionId;
+    public void setObjectId(String objectId) {
+        this.objectId = objectId;
     }
 
-    @DynamoDBAttribute(attributeName = "sessionName")
-    public String getSessionName() {
-        return sessionName;
+    @Override
+    @DynamoDBAttribute(attributeName = "objectName")
+    public String getObjectName() {
+        return objectName;
     }
 
-    public void setSessionName(String sessionName) {
-        this.sessionName = sessionName;
+    public void setObjectName(String objectName) {
+        this.objectName = objectName;
     }
 
     @DynamoDBAttribute(attributeName = "encounterList")
@@ -76,7 +80,7 @@ public class Session {
 
     @Override
     public int hashCode() {
-        return Objects.hash(this.userEmail + this.sessionId);
+        return Objects.hash(this.userEmail + this.objectId);
     }
 
     @Override
@@ -94,6 +98,6 @@ public class Session {
         }
 
         Session other = (Session) o;
-        return this.userEmail.equals(other.userEmail) && this.sessionId.equals(other.sessionId);
+        return this.userEmail.equals(other.userEmail) && this.objectId.equals(other.objectId);
     }
 }
