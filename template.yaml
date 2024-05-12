@@ -80,15 +80,15 @@ Resources:
       CallbackURLs:
         - http://localhost:8000
         - !If
-          - DeployCloudFront
-          - !Sub "https://${CloudFrontDistribution.DomainName}"
-          - !Ref "AWS::NoValue"
+            - DeployCloudFront
+            - !Sub "https://${CloudFrontDistribution.DomainName}"
+            - !Ref "AWS::NoValue"
       LogoutURLs:
         - http://localhost:8000
         - !If
-          - DeployCloudFront
-          - !Sub "https://${CloudFrontDistribution.DomainName}"
-          - !Ref "AWS::NoValue"
+            - DeployCloudFront
+            - !Sub "https://${CloudFrontDistribution.DomainName}"
+            - !Ref "AWS::NoValue"
       AllowedOAuthFlows:
         - code
         - implicit
@@ -193,21 +193,21 @@ Resources:
           PolicyDocument:
             Version: '2012-10-17'
             Statement:
-              - Effect: Allow
-                Action:
-                  - logs:CreateLogGroup
-                  - logs:CreateLogStream
-                  - logs:PutLogEvents
-                  - cloudwatch:PutMetricData
-                Resource: '*'
+            - Effect: Allow
+              Action:
+                - logs:CreateLogGroup
+                - logs:CreateLogStream
+                - logs:PutLogEvents
+                - cloudwatch:PutMetricData
+              Resource: '*'
 
         - PolicyName: 'AccessEncounterTable'
           PolicyDocument:
             Version: '2012-10-17'
             Statement:
-              - Effect: Allow
-                Action: dynamodb:*
-                Resource: !Sub "arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/TabletopBeholder_EncounterTable"
+            - Effect: Allow
+              Action: dynamodb:*
+              Resource: !Sub "arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/TabletopBeholder_EncounterTable"
 
         - PolicyName: 'AccessSessionTable'
           PolicyDocument:
@@ -386,6 +386,7 @@ Resources:
               KeyType: "RANGE"
           Projection:
             ProjectionType: "KEYS_ONLY"
+
   EncounterTable:
     Type: AWS::DynamoDB::Table
     Properties:
@@ -401,6 +402,7 @@ Resources:
           KeyType: "RANGE"
       BillingMode: PAY_PER_REQUEST
       TableName: "TabletopBeholder_EncounterTable"
+
   CreatureTable:
     Type: AWS::DynamoDB::Table
     Properties:
@@ -427,6 +429,7 @@ Resources:
               KeyType: "RANGE"
           Projection:
             ProjectionType: "KEYS_ONLY"
+
   ActionTable:
     Type: AWS::DynamoDB::Table
     Properties:
@@ -453,6 +456,7 @@ Resources:
               KeyType: "RANGE"
           Projection:
             ProjectionType: "KEYS_ONLY"
+
   SpellTable:
     Type: AWS::DynamoDB::Table
     Properties:
