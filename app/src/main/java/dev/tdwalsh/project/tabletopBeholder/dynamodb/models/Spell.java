@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Objects;
 
 @DynamoDBTable(tableName = "TabletopBeholder_SpellTable")
-public class Spell extends BeholderObject {
+public class Spell implements BeholderObject {
     private String userEmail;
     private String spellId;
     private String spellName;
@@ -184,5 +184,10 @@ public class Spell extends BeholderObject {
     @Override
     public String getObjectName() {
         return this.spellName;
+    }
+
+    @Override
+    public void setObjectId(String objectId) {
+        this.setSpellId(objectId);
     }
 }

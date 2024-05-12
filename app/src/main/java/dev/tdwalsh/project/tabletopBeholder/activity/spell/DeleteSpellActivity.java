@@ -37,7 +37,7 @@ public class DeleteSpellActivity {
      */
 
     public DeleteSpellResult handleRequest(DeleteSpellRequest deleteSpellRequest) {
-        spellDao.deleteSpell(deleteSpellRequest.getUserEmail(), deleteSpellRequest.getSpellId());
+        spellDao.deleteObject(deleteSpellRequest.getUserEmail(), deleteSpellRequest.getSpellId());
         return null;
     }
 }

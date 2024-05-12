@@ -124,4 +124,9 @@ public class Action implements BeholderObject {
     public String getObjectName() {
         return this.actionName;
     }
+
+    @Override
+    public void setObjectId(String objectId) {
+        this.setActionId(objectId);
+    }
 }

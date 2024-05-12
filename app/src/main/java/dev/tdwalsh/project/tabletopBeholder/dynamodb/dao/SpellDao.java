@@ -3,6 +3,7 @@ package dev.tdwalsh.project.tabletopBeholder.dynamodb.dao;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBQueryExpression;
 import com.amazonaws.services.dynamodbv2.model.AttributeValue;
+import dev.tdwalsh.project.tabletopBeholder.dynamodb.models.BeholderObject;
 import dev.tdwalsh.project.tabletopBeholder.dynamodb.models.Spell;
 
 import javax.inject.Inject;
@@ -16,7 +17,7 @@ import java.util.Map;
  */
 
 @Singleton
-public class SpellDao {
+public class SpellDao implements BeholderDao {
     private final DynamoDBMapper mapper;
 
     /**
@@ -36,7 +37,8 @@ public class SpellDao {
      * @return A single {@link Spell} if found, or null if none found
      */
 
-    public Spell getSingleSpell(String userEmail, String spellId) {
+    @Override
+    public Spell getSingle(String userEmail, String spellId) {
         return mapper.load(Spell.class, userEmail, spellId);
     }
 
@@ -47,7 +49,8 @@ public class SpellDao {
      * @return A list of {@link Spell}, or an empty list if none found
      */
 
-    public List<Spell> getSpellsByUser(String userEmail) {
+    @Override
+    public List<? extends BeholderObject> getMultiple(String userEmail) {
         Spell spell = new Spell();
         spell.setUserEmail(userEmail);
         DynamoDBQueryExpression<Spell> queryExpression = new DynamoDBQueryExpression<Spell>()
@@ -58,11 +61,12 @@ public class SpellDao {
     /**
      * Updates a DynamoDB Spell record with provided {@link Spell} object, or creates a new record if one does not exist.
      *
-     * @param spell The {@link Spell} to be saved
+     * @param beholderObject The {@link Spell} to be saved
      */
 
-    public void writeSpell(Spell spell) {
-        mapper.save(spell);
+    @Override
+    public void writeObject(BeholderObject beholderObject) {
+        mapper.save((Spell) beholderObject);
     }
 
     /**
@@ -72,7 +76,8 @@ public class SpellDao {
      * @param userEmail The userEmail to search
      */
 
-    public void deleteSpell(String userEmail, String spellId) {
+    @Override
+    public void deleteObject(String userEmail, String spellId) {
         Spell spell = new Spell();
         spell.setUserEmail(userEmail);
         spell.setSpellId(spellId);
@@ -85,10 +90,11 @@ public class SpellDao {
      * @param userEmail The userEmail to search
      * @param spellName The userEmail to search
      */
-    public Boolean spellNameExists(String userEmail, String spellName) {
+    @Override
+    public Boolean objectNameExists(String userEmail, String spellName) {
         Map<String, AttributeValue> valueMap = new HashMap<>();
         valueMap.put(":userEmail", new AttributeValue(userEmail));
-        valueMap.put(":spellName", new AttributeValue(spellName));
+        valueMap.put((":spellName"), new AttributeValue(spellName));
         DynamoDBQueryExpression<Spell> queryExpression = new DynamoDBQueryExpression<Spell>()
                 .withIndexName("SpellsSortByNameIndex")
                 .withConsistentRead(false)

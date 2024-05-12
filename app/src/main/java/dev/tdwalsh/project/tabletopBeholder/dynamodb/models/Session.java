@@ -112,4 +112,9 @@ public class Session implements BeholderObject {
     public String getObjectName() {
         return this.sessionName;
     }
+
+    @Override
+    public void setObjectId(String objectId) {
+        this.setSessionId(objectId);
+    }
 }

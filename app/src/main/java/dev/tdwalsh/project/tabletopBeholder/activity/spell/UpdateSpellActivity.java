@@ -55,14 +55,14 @@ public class UpdateSpellActivity {
         spell.setAppliesEffects(updateSpellRequest.getAppliesEffects());
 
         spellExists(spell.getUserEmail(), spell.getSpellId());
-        spellDao.writeSpell(spell);
+        spellDao.writeObject(spell);
         return UpdateSpellResult.builder()
                 .withSpell(spell)
                 .build();
     }
 
     private void spellExists(String userName, String spellId) {
-        if (spellDao.getSingleSpell(userName, spellId) == null) {
+        if (spellDao.getSingle(userName, spellId) == null) {
             throw new MissingResourceException(String.format("Resource with id [%s] could not be retrieved from database", spellId));
         }
     }

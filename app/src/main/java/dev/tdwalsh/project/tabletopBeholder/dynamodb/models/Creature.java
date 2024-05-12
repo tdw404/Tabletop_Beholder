@@ -529,4 +529,9 @@ public class Creature implements BeholderObject {
     public String getObjectName() {
         return this.creatureName;
     }
+
+    @Override
+    public void setObjectId(String objectId) {
+        this.setCreatureId(objectId);
+    }
 }

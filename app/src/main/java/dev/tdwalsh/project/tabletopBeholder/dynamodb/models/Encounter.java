@@ -108,4 +108,9 @@ public class Encounter implements BeholderObject {
     public String getObjectName() {
         return this.encounterName;
     }
+
+    @Override
+    public void setObjectId(String objectId) {
+        this.setEncounterId(objectId);
+    }
 }
