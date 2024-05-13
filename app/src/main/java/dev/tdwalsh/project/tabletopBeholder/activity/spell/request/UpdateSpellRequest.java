@@ -8,7 +8,7 @@ import java.util.List;
 @JsonDeserialize(builder = UpdateSpellRequest.Builder.class)
 public class UpdateSpellRequest {
     private final String userEmail;
-    private final String spellId;
+    private final String objectId;
     private final String objectName;
     private final String spellDescription;
     private final String spellHigherLevel;
@@ -22,7 +22,7 @@ public class UpdateSpellRequest {
     private final List<Effect> appliesEffects;
 
     private UpdateSpellRequest(String userEmail,
-                               String spellId,
+                               String objectId,
                                String objectName,
                                String spellDescription,
                                String spellHigherLevel,
@@ -35,7 +35,7 @@ public class UpdateSpellRequest {
                                String spellSchool,
                                List<Effect> appliesEffects) {
         this.userEmail = userEmail;
-        this.spellId = spellId;
+        this.objectId = objectId;
         this.objectName = objectName;
         this.spellDescription = spellDescription;
         this.spellHigherLevel = spellHigherLevel;
@@ -53,7 +53,7 @@ public class UpdateSpellRequest {
         return this.userEmail;
     }
 
-    public String getSpellId() { return this.spellId; }
+    public String getObjectId() { return this.objectId; }
 
     public String getObjectName() { return this.objectName; }
 
@@ -102,7 +102,7 @@ public class UpdateSpellRequest {
     }
     public static class Builder {
         private String userEmail;
-        private String spellId;
+        private String objectId;
         private String objectName;
         private String spellDescription;
         private String spellHigherLevel;
@@ -120,8 +120,8 @@ public class UpdateSpellRequest {
             return this;
         }
 
-        public Builder withSpellId(String spellId) {
-            this.spellId = spellId;
+        public Builder withObjectId(String objectId) {
+            this.objectId = objectId;
             return this;
         }
 
@@ -170,7 +170,7 @@ public class UpdateSpellRequest {
 
         public UpdateSpellRequest build() {
             return new UpdateSpellRequest(userEmail,
-                                            spellId,
+                                            objectId,
                                             objectName,
                                             spellDescription,
                                             spellHigherLevel,

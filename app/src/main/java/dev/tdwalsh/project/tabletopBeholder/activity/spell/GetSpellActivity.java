@@ -35,7 +35,7 @@ public class GetSpellActivity {
      */
 
     public GetSpellResult handleRequest(GetSpellRequest getSpellRequest) {
-        Spell spell = spellDao.getSingle(getSpellRequest.getUserEmail(), getSpellRequest.getSpellId());
+        Spell spell = spellDao.getSingle(getSpellRequest.getUserEmail(), getSpellRequest.getObjectId());
         if (spell == null) {
             throw new SpellNotFoundException();
         }

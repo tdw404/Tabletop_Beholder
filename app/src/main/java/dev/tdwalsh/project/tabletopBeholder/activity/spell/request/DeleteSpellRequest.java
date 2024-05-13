@@ -2,19 +2,19 @@ package dev.tdwalsh.project.tabletopBeholder.activity.spell.request;
 
 public class DeleteSpellRequest {
     private final String userEmail;
-    private final String spellId;
+    private final String objectId;
 
-    private DeleteSpellRequest(String userEmail, String spellId) {
+    private DeleteSpellRequest(String userEmail, String objectId) {
         this.userEmail = userEmail;
-        this.spellId = spellId;
+        this.objectId = objectId;
     }
 
     public String getUserEmail() {
         return this.userEmail;
     }
 
-    public String getSpellId() {
-        return this.spellId;
+    public String getObjectId() {
+        return this.objectId;
     }
 
     public static Builder builder() {
@@ -22,20 +22,20 @@ public class DeleteSpellRequest {
     }
     public static class Builder {
         private String userEmail;
-        private String spellId;
+        private String objectId;
 
         public Builder withUserEmail(String userEmail) {
             this.userEmail = userEmail;
             return this;
         }
 
-        public Builder withSpellId(String spellId) {
-            this.spellId = spellId;
+        public Builder withObjectId(String objectId) {
+            this.objectId = objectId;
             return this;
         }
 
         public DeleteSpellRequest build() {
-            return new DeleteSpellRequest(userEmail, spellId);
+            return new DeleteSpellRequest(userEmail, objectId);
         }
     }
 }

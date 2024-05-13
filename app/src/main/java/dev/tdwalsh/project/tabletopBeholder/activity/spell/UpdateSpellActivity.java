@@ -41,7 +41,7 @@ public class UpdateSpellActivity {
     public UpdateSpellResult handleRequest(UpdateSpellRequest updateSpellRequest) {
         Spell spell = new Spell();
         spell.setUserEmail(updateSpellRequest.getUserEmail());
-        spell.setObjectId(updateSpellRequest.getSpellId());
+        spell.setObjectId(updateSpellRequest.getObjectId());
         spell.setObjectName(updateSpellRequest.getObjectName());
         spell.setSpellDescription(updateSpellRequest.getSpellDescription());
         spell.setSpellHigherLevel(updateSpellRequest.getSpellHigherLevel());
@@ -61,9 +61,9 @@ public class UpdateSpellActivity {
                 .build();
     }
 
-    private void spellExists(String userName, String spellId) {
-        if (spellDao.getSingle(userName, spellId) == null) {
-            throw new MissingResourceException(String.format("Resource with id [%s] could not be retrieved from database", spellId));
+    private void spellExists(String userName, String objectId) {
+        if (spellDao.getSingle(userName, objectId) == null) {
+            throw new MissingResourceException(String.format("Resource with id [%s] could not be retrieved from database", objectId));
         }
     }
 }

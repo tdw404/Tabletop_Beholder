@@ -22,7 +22,7 @@ public class UpdateSpellLambda
                     return input.fromPath(path ->
                             UpdateSpellRequest.builder()
                                     .withUserEmail(path.get("userEmail"))
-                                    .withSpellId(path.get("spellId"))
+                                    .withObjectId(path.get("objectId"))
                                     .withObjectName(partialSpellRequest.getObjectName())
                                     .withSpellDescription(partialSpellRequest.getSpellDescription())
                                     .withSpellHigherLevel(partialSpellRequest.getSpellHigherLevel())

@@ -25,7 +25,7 @@ public class SpellDaoTest {
     @Mock
     private DynamoDBMapper mapper;
     private String userEmail;
-    private String spellId;
+    private String objectId;
     private Spell spell;
     @Mock
     private PaginatedQueryList<Spell> paginatedQueryList;
@@ -34,19 +34,19 @@ public class SpellDaoTest {
     public void setup() {
         openMocks(this);
         userEmail = "testEmail";
-        spellId = "testSpellId";
+        objectId = "testId";
         spell = new Spell();
         spell.setUserEmail(userEmail);
-        spell.setObjectId(spellId);
+        spell.setObjectId(objectId);
     }
 
     @Test
     public void getSingleSpell_spellExists_returnsSpell() {
         //GIVEN
-        doReturn(spell).when(mapper).load(Spell.class, userEmail, spellId);
+        doReturn(spell).when(mapper).load(Spell.class, userEmail, objectId);
 
         //WHEN
-        Spell result = dao.getSingle(userEmail, spellId);
+        Spell result = dao.getSingle(userEmail, objectId);
 
         //THEN
         assertEquals(spell, result, "Expected dao to return single result");
@@ -55,10 +55,10 @@ public class SpellDaoTest {
     @Test
     public void getSingleSpell_spellDoesNotExist_returnsNull() {
         //GIVEN
-        doReturn(null).when(mapper).load(Spell.class, userEmail, spellId);
+        doReturn(null).when(mapper).load(Spell.class, userEmail, objectId);
 
         //WHEN
-        Spell result = dao.getSingle(userEmail, spellId);
+        Spell result = dao.getSingle(userEmail, objectId);
 
         //THEN
         assertEquals(null, result, "Expected dao to return null result");
@@ -94,12 +94,12 @@ public class SpellDaoTest {
     }
 
     @Test
-    public void deleteSpell_withSpellIdAndUserEmail_callsDynamoDBDelete() {
+    public void deleteSpell_withObjectIdAndUserEmail_callsDynamoDBDelete() {
         //GIVEN
         ArgumentCaptor<Spell> argumentCaptor = ArgumentCaptor.forClass(Spell.class);
 
         //WHEN
-        dao.deleteObject(userEmail, spellId);
+        dao.deleteObject(userEmail, objectId);
 
         //THEN
         verify(mapper, times(1)).delete(argumentCaptor.capture());
