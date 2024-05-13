@@ -274,7 +274,7 @@ Resources:
         TabletopBeholder:
           Type: Api
           Properties:
-            Path: /spell/{objectId}/user/{userEmail}
+            Path: /spell/{objectId}
             Method: get
 
   GetAllSpellsLambda:
