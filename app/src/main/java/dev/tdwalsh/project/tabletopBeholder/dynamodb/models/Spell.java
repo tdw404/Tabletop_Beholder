@@ -2,7 +2,9 @@ package dev.tdwalsh.project.tabletopBeholder.dynamodb.models;
 
 import com.amazonaws.services.dynamodbv2.datamodeling.*;
 import dev.tdwalsh.project.tabletopBeholder.converters.EffectConverter;
+import dev.tdwalsh.project.tabletopBeholder.converters.ZonedDateTimeConverter;
 
+import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Objects;
 
@@ -22,6 +24,8 @@ public class Spell implements BeholderObject {
     private String spellSchool;
     private Integer innateCasts;
     private List<Effect> appliesEffects;
+    private ZonedDateTime createDateTime;
+    private ZonedDateTime editDateTime;
 
     @Override
     @DynamoDBHashKey(attributeName = "userEmail")
@@ -152,6 +156,25 @@ public class Spell implements BeholderObject {
 
     public void setAppliesEffects(List<Effect> appliesEffects) {
         this.appliesEffects = appliesEffects;
+    }
+    @DynamoDBAttribute(attributeName= "createDateTime")
+    @DynamoDBTypeConverted(converter = ZonedDateTimeConverter.class)
+    public ZonedDateTime getCreateDateTime() {
+        return createDateTime;
+    }
+
+    public void setCreateDateTime(ZonedDateTime createDateTime) {
+        this.createDateTime = createDateTime;
+    }
+
+    @DynamoDBAttribute(attributeName = "editDateTime")
+    @DynamoDBTypeConverted(converter = ZonedDateTimeConverter.class)
+    public ZonedDateTime getEditDateTime() {
+        return editDateTime;
+    }
+
+    public void setEditDateTime(ZonedDateTime editDateTime) {
+        this.editDateTime = editDateTime;
     }
 
     @Override

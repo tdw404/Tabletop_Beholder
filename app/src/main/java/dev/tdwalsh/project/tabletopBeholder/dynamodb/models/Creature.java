@@ -4,7 +4,9 @@ import com.amazonaws.services.dynamodbv2.datamodeling.*;
 import dev.tdwalsh.project.tabletopBeholder.converters.ActionConverter;
 import dev.tdwalsh.project.tabletopBeholder.converters.EffectConverter;
 import dev.tdwalsh.project.tabletopBeholder.converters.SpellConverter;
+import dev.tdwalsh.project.tabletopBeholder.converters.ZonedDateTimeConverter;
 
+import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -60,6 +62,8 @@ public class Creature implements BeholderObject {
     private String spellcastingAbility;
     private Integer spellSaveDC;
     private Integer spellAttackModifier;
+    private ZonedDateTime createDateTime;
+    private ZonedDateTime editDateTime;
 
     @Override
     @DynamoDBHashKey(attributeName = "userEmail")
@@ -496,6 +500,25 @@ public class Creature implements BeholderObject {
 
     public void setSpellAttackModifier(Integer spellAttackModifier) {
         this.spellAttackModifier = spellAttackModifier;
+    }
+    @DynamoDBAttribute(attributeName= "createDateTime")
+    @DynamoDBTypeConverted(converter = ZonedDateTimeConverter.class)
+    public ZonedDateTime getCreateDateTime() {
+        return createDateTime;
+    }
+
+    public void setCreateDateTime(ZonedDateTime createDateTime) {
+        this.createDateTime = createDateTime;
+    }
+
+    @DynamoDBAttribute(attributeName = "editDateTime")
+    @DynamoDBTypeConverted(converter = ZonedDateTimeConverter.class)
+    public ZonedDateTime getEditDateTime() {
+        return editDateTime;
+    }
+
+    public void setEditDateTime(ZonedDateTime editDateTime) {
+        this.editDateTime = editDateTime;
     }
 
     @Override
