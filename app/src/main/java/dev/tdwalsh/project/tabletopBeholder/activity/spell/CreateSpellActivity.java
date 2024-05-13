@@ -36,20 +36,11 @@ public class CreateSpellActivity {
      */
 
     public CreateSpellResult handleRequest(CreateSpellRequest createSpellRequest) {
-        Spell spell = new Spell();
-        spell.setUserEmail(createSpellRequest.getUserEmail());
-        spell.setObjectName(createSpellRequest.getObjectName());
-        spell.setSpellDescription(createSpellRequest.getSpellDescription());
-        spell.setSpellHigherLevel(createSpellRequest.getSpellHigherLevel());
-        spell.setSpellRange(createSpellRequest.getSpellRange());
-        spell.setSpellComponents(createSpellRequest.getSpellComponents());
-        spell.setSpellMaterial(createSpellRequest.getSpellMaterial());
-        spell.setRitualCast(createSpellRequest.getRitualCast());
-        spell.setCastingTime(createSpellRequest.getCastingTime());
-        spell.setSpellLevel(createSpellRequest.getSpellLevel());
-        spell.setSpellSchool(createSpellRequest.getSpellSchool());
-        spell.setAppliesEffects(createSpellRequest.getAppliesEffects());
-
+        //First, assigned contained object to new variable
+        //Then, checks name for uniqueness
+        //Then, uses the create helper to finish building the object
+        //Finally, returns the newly created object
+        Spell spell = createSpellRequest.getSpell();
         NameHelper.objectNameUniqueness(spellDao, spell);
 
         return CreateSpellResult.builder()

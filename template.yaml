@@ -274,7 +274,7 @@ Resources:
         TabletopBeholder:
           Type: Api
           Properties:
-            Path: /user/{userEmail}/spell/{spellId}
+            Path: /spell/{objectId}/user/{userEmail}
             Method: get
 
   GetAllSpellsLambda:
@@ -294,7 +294,7 @@ Resources:
         TabletopBeholder:
           Type: Api
           Properties:
-            Path: /user/{userEmail}/spell
+            Path: /spell/user/{userEmail}
             Method: get
 
   CreateSpellLambda:
@@ -314,7 +314,7 @@ Resources:
         TabletopBeholder:
           Type: Api
           Properties:
-            Path: /user/{userEmail}/spell
+            Path: /spell
             Method: post
 
   UpdateSpellLambda:
@@ -334,7 +334,7 @@ Resources:
         TabletopBeholder:
           Type: Api
           Properties:
-            Path: /user/{userEmail}/spell/{spellId}
+            Path: /spell
             Method: put
 
   DeleteSpellLambda:
@@ -354,7 +354,7 @@ Resources:
         TabletopBeholder:
           Type: Api
           Properties:
-            Path: /user/{userEmail}/spell/{spellId}
+            Path: /spell/{objectId}/user/{userEmail}
             Method: delete
 
   #-----------------------------------------------------

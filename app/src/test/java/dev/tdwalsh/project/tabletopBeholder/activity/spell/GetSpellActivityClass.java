@@ -31,18 +31,18 @@ public class GetSpellActivityClass {
     private GetSpellResult getSpellResult;
     private Spell spell;
     private String userEmail;
-    private String spellId;
+    private String objectId;
 
     @BeforeEach
     public void setup() {
         openMocks(this);
 
         userEmail = "testEmail";
-        spellId = "testId";
+        objectId = "testId";
 
         spell = new Spell();
         spell.setUserEmail(userEmail);
-        spell.setObjectId(spellId);
+        spell.setObjectId(objectId);
         spell.setObjectName("testName");
         spell.setSpellDescription("testDescription");
         spell.setSpellHigherLevel("testSHL");
@@ -57,7 +57,7 @@ public class GetSpellActivityClass {
         spell.setAppliesEffects(new ArrayList<>());
 
         getSpellRequest = GetSpellRequest.builder()
-                .withSpellId(spellId)
+                .withObjectId(objectId)
                 .withUserEmail(userEmail)
                 .build();
     }
@@ -65,7 +65,7 @@ public class GetSpellActivityClass {
     @Test
     public void handleRequest_objectsExistsOnDB_returnsResult() {
         //GIVEN
-        doReturn(spell).when(spellDao).getSingle(userEmail, spellId);
+        doReturn(spell).when(spellDao).getSingle(userEmail, objectId);
 
         //WHEN
         GetSpellResult result = getSpellActivity.handleRequest(getSpellRequest);
@@ -77,7 +77,7 @@ public class GetSpellActivityClass {
     @Test
     public void handleRequest_objectsDoesNotExists_throwsError() {
         //GIVEN
-        doReturn(null).when(spellDao).getSingle(userEmail, spellId);
+        doReturn(null).when(spellDao).getSingle(userEmail, objectId);
 
         //WHEN
         //THEN

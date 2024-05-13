@@ -1,5 +1,6 @@
 package dev.tdwalsh.project.tabletopBeholder.activity.spell;
 
+import dev.tdwalsh.project.tabletopBeholder.activity.helpers.NameHelper;
 import dev.tdwalsh.project.tabletopBeholder.activity.spell.request.CreateSpellRequest;
 import dev.tdwalsh.project.tabletopBeholder.activity.spell.request.UpdateSpellRequest;
 import dev.tdwalsh.project.tabletopBeholder.activity.spell.result.CreateSpellResult;
@@ -10,6 +11,8 @@ import dev.tdwalsh.project.tabletopBeholder.exceptions.DuplicateResourceExceptio
 import dev.tdwalsh.project.tabletopBeholder.exceptions.MissingResourceException;
 
 import javax.inject.Inject;
+import java.time.ZonedDateTime;
+import java.util.Optional;
 import java.util.UUID;
 
 /**
@@ -39,31 +42,21 @@ public class UpdateSpellActivity {
      */
 
     public UpdateSpellResult handleRequest(UpdateSpellRequest updateSpellRequest) {
-        Spell spell = new Spell();
-        spell.setUserEmail(updateSpellRequest.getUserEmail());
-        spell.setObjectId(updateSpellRequest.getSpellId());
-        spell.setObjectName(updateSpellRequest.getObjectName());
-        spell.setSpellDescription(updateSpellRequest.getSpellDescription());
-        spell.setSpellHigherLevel(updateSpellRequest.getSpellHigherLevel());
-        spell.setSpellRange(updateSpellRequest.getSpellRange());
-        spell.setSpellComponents(updateSpellRequest.getSpellComponents());
-        spell.setSpellMaterial(updateSpellRequest.getSpellMaterial());
-        spell.setRitualCast(updateSpellRequest.getRitualCast());
-        spell.setCastingTime(updateSpellRequest.getCastingTime());
-        spell.setSpellLevel(updateSpellRequest.getSpellLevel());
-        spell.setSpellSchool(updateSpellRequest.getSpellSchool());
-        spell.setAppliesEffects(updateSpellRequest.getAppliesEffects());
-
-        spellExists(spell.getUserEmail(), spell.getObjectId());
-        spellDao.writeObject(spell);
-        return UpdateSpellResult.builder()
-                .withSpell(spell)
-                .build();
-    }
-
-    private void spellExists(String userName, String spellId) {
-        if (spellDao.getSingle(userName, spellId) == null) {
-            throw new MissingResourceException(String.format("Resource with id [%s] could not be retrieved from database", spellId));
+        //First, assigns the updated object to a new variable
+        //Then, retrieves the previous version from the DB, or throws an error if it does not exist
+        //Then, if the name has changed, checks for name uniqueness, and throws an error if violated
+        //Then, writes the new version to the DB
+        //Finally, returns the updated version
+        Spell newSpell  = updateSpellRequest.getSpell();
+        Spell oldSpell = Optional.ofNullable(spellDao.getSingle(newSpell.getUserEmail(), newSpell.getObjectId())).orElseThrow(() -> new MissingResourceException(String.format("Resource with id [%s] could not be retrieved from database", newSpell.getObjectId())));
+        if (!newSpell.getObjectName().equals(oldSpell.getObjectName())) {
+            NameHelper.objectNameUniqueness(spellDao, newSpell);
         }
+        newSpell.setCreateDateTime(oldSpell.getCreateDateTime());
+        newSpell.setEditDateTime(ZonedDateTime.now());
+        spellDao.writeObject(newSpell);
+        return UpdateSpellResult.builder()
+                .withSpell(newSpell)
+                .build();
     }
 }

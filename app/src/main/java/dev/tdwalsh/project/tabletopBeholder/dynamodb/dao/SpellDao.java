@@ -30,16 +30,16 @@ public class SpellDao implements BeholderDao {
     public SpellDao(DynamoDBMapper mapper) { this.mapper = mapper; }
 
     /**
-     * Retrieves a spell by spellId and userEmail.
+     * Retrieves a spell by objectId and userEmail.
      *
-     * @param spellId The spellId to search
+     * @param objectId The objectId to search
      * @param userEmail The userEmail to search
      * @return A single {@link Spell} if found, or null if none found
      */
 
     @Override
-    public Spell getSingle(String userEmail, String spellId) {
-        return mapper.load(Spell.class, userEmail, spellId);
+    public Spell getSingle(String userEmail, String objectId) {
+        return mapper.load(Spell.class, userEmail, objectId);
     }
 
     /**
@@ -70,17 +70,17 @@ public class SpellDao implements BeholderDao {
     }
 
     /**
-     * Removes a DynamoDB Spell record matching provided userEmail and spellId.
+     * Removes a DynamoDB Spell record matching provided userEmail and objectId.
      *
-     * @param spellId The spellId to search
+     * @param objectId The objectId to search
      * @param userEmail The userEmail to search
      */
 
     @Override
-    public void deleteObject(String userEmail, String spellId) {
+    public void deleteObject(String userEmail, String objectId) {
         Spell spell = new Spell();
         spell.setUserEmail(userEmail);
-        spell.setObjectId(spellId);
+        spell.setObjectId(objectId);
         mapper.delete(spell);
     }
 
@@ -88,17 +88,17 @@ public class SpellDao implements BeholderDao {
      * Searches to determine whether a name exists already.
      *
      * @param userEmail The userEmail to search
-     * @param spellName The userEmail to search
+     * @param objectName The objectName to search
      */
     @Override
-    public Boolean objectNameExists(String userEmail, String spellName) {
+    public Boolean objectNameExists(String userEmail, String objectName) {
         Map<String, AttributeValue> valueMap = new HashMap<>();
         valueMap.put(":userEmail", new AttributeValue(userEmail));
-        valueMap.put((":spellName"), new AttributeValue(spellName));
+        valueMap.put((":objectName"), new AttributeValue(objectName));
         DynamoDBQueryExpression<Spell> queryExpression = new DynamoDBQueryExpression<Spell>()
                 .withIndexName("SpellsSortByNameIndex")
                 .withConsistentRead(false)
-                .withKeyConditionExpression("userEmail = :userEmail and spellName = :spellName")
+                .withKeyConditionExpression("userEmail = :userEmail and objectName = :objectName")
                 .withExpressionAttributeValues(valueMap);
         return !mapper.query(Spell.class, queryExpression).isEmpty();
     }

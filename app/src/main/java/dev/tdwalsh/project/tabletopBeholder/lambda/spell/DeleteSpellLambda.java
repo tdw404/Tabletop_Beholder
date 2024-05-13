@@ -20,7 +20,7 @@ public class DeleteSpellLambda
                 () -> input.fromPath(path ->
                         DeleteSpellRequest.builder()
                                 .withUserEmail(path.get("userEmail"))
-                                .withSpellId(path.get("spellId"))
+                                .withObjectId(path.get("objectId"))
                                 .build()),
                 (request, serviceComponent) ->
                         serviceComponent.provideDeleteSpellActivity().handleRequest(request)

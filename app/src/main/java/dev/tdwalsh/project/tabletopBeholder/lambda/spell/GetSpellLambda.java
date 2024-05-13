@@ -18,7 +18,7 @@ public class GetSpellLambda
                 () -> input.fromPath(path ->
                         GetSpellRequest.builder()
                                 .withUserEmail(path.get("userEmail"))
-                                .withSpellId(path.get("spellId"))
+                                .withObjectId(path.get("objectId"))
                                 .build()),
                 (request, serviceComponent) ->
                         serviceComponent.provideGetSpellActivity().handleRequest(request)
