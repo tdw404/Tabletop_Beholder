@@ -6,6 +6,7 @@ import dev.tdwalsh.project.tabletopBeholder.dynamodb.models.BeholderObject;
 import dev.tdwalsh.project.tabletopBeholder.dynamodb.models.Spell;
 import dev.tdwalsh.project.tabletopBeholder.exceptions.DuplicateResourceException;
 
+import java.time.ZonedDateTime;
 import java.util.UUID;
 
 /**
@@ -27,6 +28,9 @@ public class CreateObjectHelper {
         while (dao.getSingle(beholderObject.getUserEmail(), beholderObject.getObjectId()) != null) {
             beholderObject.setObjectId(UUID.randomUUID().toString());
         }
+        ZonedDateTime now = ZonedDateTime.now();
+        beholderObject.setCreateDateTime(now);
+        beholderObject.setEditDateTime(now);
         dao.writeObject(beholderObject);
         return beholderObject;
     }

@@ -163,6 +163,7 @@ public class Spell implements BeholderObject {
         return createDateTime;
     }
 
+    @Override
     public void setCreateDateTime(ZonedDateTime createDateTime) {
         this.createDateTime = createDateTime;
     }
@@ -173,6 +174,7 @@ public class Spell implements BeholderObject {
         return editDateTime;
     }
 
+    @Override
     public void setEditDateTime(ZonedDateTime editDateTime) {
         this.editDateTime = editDateTime;
     }
