@@ -37,10 +37,12 @@ public class CreateSpellActivity {
 
     public CreateSpellResult handleRequest(CreateSpellRequest createSpellRequest) {
         //First, assigned contained object to new variable
+        //Then, pulls userEmail from the authenticated email field in the request
         //Then, checks name for uniqueness
         //Then, uses the create helper to finish building the object
         //Finally, returns the newly created object
         Spell spell = createSpellRequest.getSpell();
+        spell.setUserEmail(createSpellRequest.getUserEmail());
         NameHelper.objectNameUniqueness(spellDao, spell);
 
         return CreateSpellResult.builder()

@@ -6,22 +6,30 @@ import dev.tdwalsh.project.tabletopBeholder.activity.spell.request.DeleteSpellRe
 import dev.tdwalsh.project.tabletopBeholder.activity.spell.request.GetSpellRequest;
 import dev.tdwalsh.project.tabletopBeholder.activity.spell.result.DeleteSpellResult;
 import dev.tdwalsh.project.tabletopBeholder.activity.spell.result.GetSpellResult;
+import dev.tdwalsh.project.tabletopBeholder.lambda.AuthenticatedLambdaRequest;
 import dev.tdwalsh.project.tabletopBeholder.lambda.LambdaActivityRunner;
 import dev.tdwalsh.project.tabletopBeholder.lambda.LambdaRequest;
 import dev.tdwalsh.project.tabletopBeholder.lambda.LambdaResponse;
 
 public class DeleteSpellLambda
         extends LambdaActivityRunner<DeleteSpellRequest, DeleteSpellResult>
-        implements RequestHandler<LambdaRequest<DeleteSpellRequest>, LambdaResponse> {
+        implements RequestHandler<AuthenticatedLambdaRequest<DeleteSpellRequest>, LambdaResponse> {
 
     @Override
-    public LambdaResponse handleRequest(LambdaRequest<DeleteSpellRequest> input, Context context) {
+    public LambdaResponse handleRequest(AuthenticatedLambdaRequest<DeleteSpellRequest> input, Context context) {
         return super.runActivity(
-                () -> input.fromPath(path ->
-                        DeleteSpellRequest.builder()
-                                .withUserEmail(path.get("userEmail"))
-                                .withObjectId(path.get("objectId"))
-                                .build()),
+                () -> {
+                    DeleteSpellRequest stageRequest = input.fromUserClaims(claims ->
+                            DeleteSpellRequest.builder()
+                                    .withUserEmail(claims.get("email"))
+                                    .build());
+
+                    return input.fromPath(path ->
+                            DeleteSpellRequest.builder()
+                                    .withUserEmail(stageRequest.getUserEmail())
+                                    .withObjectId(path.get("objectId"))
+                                    .build());
+                },
                 (request, serviceComponent) ->
                         serviceComponent.provideDeleteSpellActivity().handleRequest(request)
         );
