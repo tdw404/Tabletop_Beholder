@@ -3,6 +3,7 @@ package dev.tdwalsh.project.tabletopBeholder.dependency;
 import dagger.Component;
 import dev.tdwalsh.project.tabletopBeholder.activity.action.*;
 import dev.tdwalsh.project.tabletopBeholder.activity.creature.*;
+import dev.tdwalsh.project.tabletopBeholder.activity.encounter.*;
 import dev.tdwalsh.project.tabletopBeholder.activity.spell.*;
 
 import javax.inject.Singleton;
@@ -103,4 +104,34 @@ public interface ServiceComponent {
      * @return UpdateCreatureActivity
      */
     UpdateCreatureActivity provideUpdateCreatureActivity();
+
+    /**
+     * Provides the relevant activity.
+     * @return GetEncounterActivity
+     */
+    GetEncounterActivity provideGetEncounterActivity();
+
+    /**
+     * Provides the relevant activity.
+     * @return GetAllEncountersActivity
+     */
+    GetAllEncountersActivity provideGetAllEncountersActivity();
+
+    /**
+     * Provides the relevant activity.
+     * @return CreateEncounterActivity
+     */
+    CreateEncounterActivity provideCreateEncounterActivity();
+
+    /**
+     * Provides the relevant activity.
+     * @return UpdateEncounterActivity
+     */
+    UpdateEncounterActivity provideUpdateEncounterActivity();
+
+    /**
+     * Provides the relevant activity.
+     * @return DeleteEncounterActivity
+     */
+    DeleteEncounterActivity provideDeleteEncounterActivity();
 }
