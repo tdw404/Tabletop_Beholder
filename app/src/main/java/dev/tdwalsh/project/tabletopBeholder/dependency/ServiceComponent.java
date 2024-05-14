@@ -4,6 +4,7 @@ import dagger.Component;
 import dev.tdwalsh.project.tabletopBeholder.activity.action.*;
 import dev.tdwalsh.project.tabletopBeholder.activity.creature.*;
 import dev.tdwalsh.project.tabletopBeholder.activity.encounter.*;
+import dev.tdwalsh.project.tabletopBeholder.activity.session.*;
 import dev.tdwalsh.project.tabletopBeholder.activity.spell.*;
 
 import javax.inject.Singleton;
@@ -134,4 +135,34 @@ public interface ServiceComponent {
      * @return DeleteEncounterActivity
      */
     DeleteEncounterActivity provideDeleteEncounterActivity();
+
+    /**
+     * Provides the relevant activity.
+     * @return GetSessionActivity
+     */
+    GetSessionActivity provideGetSessionActivity();
+
+    /**
+     * Provides the relevant activity.
+     * @return GetAllSessionsActivity
+     */
+    GetAllSessionsActivity provideGetAllSessionsActivity();
+
+    /**
+     * Provides the relevant activity.
+     * @return CreateSessionActivity
+     */
+    CreateSessionActivity provideCreateSessionActivity();
+
+    /**
+     * Provides the relevant activity.
+     * @return UpdateSessionActivity
+     */
+    UpdateSessionActivity provideUpdateSessionActivity();
+
+    /**
+     * Provides the relevant activity.
+     * @return DeleteSessionActivity
+     */
+    DeleteSessionActivity provideDeleteSessionActivity();
 }
