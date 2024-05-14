@@ -1,10 +1,10 @@
 package dev.tdwalsh.project.tabletopBeholder.activity.action.request;
 
-public class GetActionRequest {
+public class DeleteActionRequest {
     private final String userEmail;
     private final String objectId;
 
-    private GetActionRequest(String userEmail, String objectId) {
+    private DeleteActionRequest(String userEmail, String objectId) {
         this.userEmail = userEmail;
         this.objectId = objectId;
     }
@@ -34,8 +34,8 @@ public class GetActionRequest {
             return this;
         }
 
-        public GetActionRequest build() {
-            return new GetActionRequest(userEmail, objectId);
+        public DeleteActionRequest build() {
+            return new DeleteActionRequest(userEmail, objectId);
         }
     }
 }

@@ -2,10 +2,10 @@ package dev.tdwalsh.project.tabletopBeholder.activity.action.result;
 
 import dev.tdwalsh.project.tabletopBeholder.dynamodb.models.Action;
 
-public class GetActionResult {
+public class UpdateActionResult {
     private final Action action;
 
-    private GetActionResult(Action action) {
+    private UpdateActionResult(Action action) {
         this.action = action;
     }
 
@@ -25,8 +25,8 @@ public class GetActionResult {
             return this;
         }
 
-        public GetActionResult build() {
-            return new GetActionResult(action);
+        public UpdateActionResult build() {
+            return new UpdateActionResult(action);
         }
     }
 }

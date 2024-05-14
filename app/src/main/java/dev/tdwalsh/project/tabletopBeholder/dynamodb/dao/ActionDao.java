@@ -4,6 +4,7 @@ import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBQueryExpression;
 import com.amazonaws.services.dynamodbv2.model.AttributeValue;
 import dev.tdwalsh.project.tabletopBeholder.dynamodb.models.Action;
+import dev.tdwalsh.project.tabletopBeholder.dynamodb.models.BeholderObject;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -16,7 +17,7 @@ import java.util.Map;
  */
 
 @Singleton
-public class ActionDao {
+public class ActionDao implements BeholderDao {
     private final DynamoDBMapper mapper;
 
     /**
@@ -29,15 +30,16 @@ public class ActionDao {
     public ActionDao(DynamoDBMapper mapper) { this.mapper = mapper; }
 
     /**
-     * Retrieves an action by actionId and userEmail.
+     * Retrieves a action by objectId and userEmail.
      *
-     * @param actionId The actionId to search
+     * @param objectId The objectId to search
      * @param userEmail The userEmail to search
      * @return A single {@link Action} if found, or null if none found
      */
 
-    public Action getSingleAction(String userEmail, String actionId) {
-        return mapper.load(Action.class, userEmail, actionId);
+    @Override
+    public Action getSingle(String userEmail, String objectId) {
+        return mapper.load(Action.class, userEmail, objectId);
     }
 
     /**
@@ -47,7 +49,8 @@ public class ActionDao {
      * @return A list of {@link Action}, or an empty list if none found
      */
 
-    public List<Action> getActionsByUser(String userEmail) {
+    @Override
+    public List<? extends BeholderObject> getMultiple(String userEmail) {
         Action action = new Action();
         action.setUserEmail(userEmail);
         DynamoDBQueryExpression<Action> queryExpression = new DynamoDBQueryExpression<Action>()
@@ -58,24 +61,26 @@ public class ActionDao {
     /**
      * Updates a DynamoDB Action record with provided {@link Action} object, or creates a new record if one does not exist.
      *
-     * @param action The {@link Action} to be saved
+     * @param beholderObject The {@link Action} to be saved
      */
 
-    public void writeAction(Action action) {
-        mapper.save(action);
+    @Override
+    public void writeObject(BeholderObject beholderObject) {
+        mapper.save((Action) beholderObject);
     }
 
     /**
-     * Removes a DynamoDB Action record matching provided userEmail and actionId.
+     * Removes a DynamoDB Action record matching provided userEmail and objectId.
      *
-     * @param actionId The actionId to search
+     * @param objectId The objectId to search
      * @param userEmail The userEmail to search
      */
 
-    public void deleteAction(String userEmail, String actionId) {
+    @Override
+    public void deleteObject(String userEmail, String objectId) {
         Action action = new Action();
         action.setUserEmail(userEmail);
-        action.setObjectId(actionId);
+        action.setObjectId(objectId);
         mapper.delete(action);
     }
 
@@ -83,16 +88,17 @@ public class ActionDao {
      * Searches to determine whether a name exists already.
      *
      * @param userEmail The userEmail to search
-     * @param actionName The name to search
+     * @param objectName The objectName to search
      */
-    public Boolean actionNameExists(String userEmail, String actionName) {
+    @Override
+    public Boolean objectNameExists(String userEmail, String objectName) {
         Map<String, AttributeValue> valueMap = new HashMap<>();
         valueMap.put(":userEmail", new AttributeValue(userEmail));
-        valueMap.put(":actionName", new AttributeValue(actionName));
+        valueMap.put((":objectName"), new AttributeValue(objectName));
         DynamoDBQueryExpression<Action> queryExpression = new DynamoDBQueryExpression<Action>()
                 .withIndexName("ActionsSortByNameIndex")
                 .withConsistentRead(false)
-                .withKeyConditionExpression("userEmail = :userEmail and actionName = :actionName")
+                .withKeyConditionExpression("userEmail = :userEmail and objectName = :objectName")
                 .withExpressionAttributeValues(valueMap);
         return !mapper.query(Action.class, queryExpression).isEmpty();
     }

@@ -1,7 +1,5 @@
 package dev.tdwalsh.project.tabletopBeholder.activity.action;
 
-
-
 import dev.tdwalsh.project.tabletopBeholder.activity.action.request.GetActionRequest;
 import dev.tdwalsh.project.tabletopBeholder.activity.action.result.GetActionResult;
 import dev.tdwalsh.project.tabletopBeholder.dynamodb.dao.ActionDao;
@@ -37,9 +35,9 @@ public class GetActionActivity {
      */
 
     public GetActionResult handleRequest(GetActionRequest getActionRequest) {
-        Action action = actionDao.getSingleAction(getActionRequest.getUserEmail(), getActionRequest.getActionId());
+        Action action = actionDao.getSingle(getActionRequest.getUserEmail(), getActionRequest.getObjectId());
         if (action == null) {
-            throw new ActionNotFoundException();
+            throw new ActionNotFoundException(String.format("Could not find a action for [%s] with id [%s]", getActionRequest.getUserEmail(), getActionRequest.getObjectId()));
         }
         return GetActionResult.builder()
                 .withAction(action)
