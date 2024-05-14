@@ -9,10 +9,10 @@ on:
 env:
 
   # STUDENTS: Set these environment variables 
-  API_BASE_URL: https://3mwop73rjh.execute-api.us-east-2.amazonaws.com/Prod/
-  COGNITO_DOMAIN: project-tabletop-beholder
-  COGNITO_REDIRECT_SIGNIN: https://d25foyeut99z3u.cloudfront.net
-  COGNITO_REDIRECT_SIGNOUT: https://d25foyeut99z3u.cloudfront.net
+  API_BASE_URL: https://vcvqkwla57.execute-api.us-east-2.amazonaws.com/Prod/
+  COGNITO_DOMAIN: tabletop-beholder
+  COGNITO_REDIRECT_SIGNIN: https://df5r0wzha0bpp.cloudfront.net
+  COGNITO_REDIRECT_SIGNOUT: https://df5r0wzha0bpp.cloudfront.net
 
   COGNITO_USER_POOL_ID: ${{ secrets.COGNITO_USER_POOL_ID }}
   COGNITO_USER_POOL_CLIENT_ID: ${{ secrets.COGNITO_USER_POOL_CLIENT_ID }}
@@ -24,10 +24,10 @@ env:
   PIPELINE_USER_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
   SAM_TEMPLATE: template.yaml
 
-  STACK_NAME: tabletop-beholder-service
-  PIPELINE_EXECUTION_ROLE: arn:aws:iam::211125563089:role/aws-sam-cli-managed-BeholderS-PipelineExecutionRole-LYVOXB0rO7QD
-  CLOUDFORMATION_EXECUTION_ROLE: arn:aws:iam::211125563089:role/aws-sam-cli-managed-Behol-CloudFormationExecutionRo-BTlpPUeLqedQ
-  ARTIFACTS_BUCKET: aws-sam-cli-managed-beholderstage--artifactsbucket-tvoa5vbjxaja
+  STACK_NAME: project-tabletop-beholder
+  PIPELINE_EXECUTION_ROLE: arn:aws:iam::211125563089:role/aws-sam-cli-managed-TBService-PipelineExecutionRole-JKhstuQutVQK
+  CLOUDFORMATION_EXECUTION_ROLE: arn:aws:iam::211125563089:role/aws-sam-cli-managed-TBSer-CloudFormationExecutionRo-gRAEdNgVX2jq
+  ARTIFACTS_BUCKET: aws-sam-cli-managed-tbservice-pipe-artifactsbucket-lzsaji7dwcmf
   REGION: us-east-2
 
 jobs:
