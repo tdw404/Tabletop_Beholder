@@ -43,11 +43,13 @@ public class UpdateSpellActivity {
 
     public UpdateSpellResult handleRequest(UpdateSpellRequest updateSpellRequest) {
         //First, assigns the updated object to a new variable
+        //Then, pulls userEmail from the authenticated email field in the request
         //Then, retrieves the previous version from the DB, or throws an error if it does not exist
         //Then, if the name has changed, checks for name uniqueness, and throws an error if violated
         //Then, writes the new version to the DB
         //Finally, returns the updated version
         Spell newSpell  = updateSpellRequest.getSpell();
+        newSpell.setUserEmail(updateSpellRequest.getUserEmail());
         Spell oldSpell = Optional.ofNullable(spellDao.getSingle(newSpell.getUserEmail(), newSpell.getObjectId())).orElseThrow(() -> new MissingResourceException(String.format("Resource with id [%s] could not be retrieved from database", newSpell.getObjectId())));
         if (!newSpell.getObjectName().equals(oldSpell.getObjectName())) {
             NameHelper.objectNameUniqueness(spellDao, newSpell);
