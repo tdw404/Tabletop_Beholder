@@ -294,7 +294,7 @@ Resources:
         TabletopBeholder:
           Type: Api
           Properties:
-            Path: /spell/user/{userEmail}
+            Path: /spell
             Method: get
 
   CreateSpellLambda:
@@ -354,7 +354,7 @@ Resources:
         TabletopBeholder:
           Type: Api
           Properties:
-            Path: /spell/{objectId}/user/{userEmail}
+            Path: /spell/{objectId}
             Method: delete
 
   #-----------------------------------------------------
