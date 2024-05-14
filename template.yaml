@@ -656,6 +656,106 @@ Resources:
           Properties:
             Path: /encounter/{objectId}
             Method: delete
+            
+  GetSessionLambda:
+    Type: AWS::Serverless::Function
+    Properties:
+      Role: !GetAtt AccessRole.Arn
+      CodeUri: app
+      Handler: dev.tdwalsh.project.tabletopBeholder.lambda.session.GetSessionLambda::handleRequest
+      Runtime: java11
+      Architectures:
+        - x86_64
+      MemorySize: 512
+      Environment:
+        Variables:
+          JAVA_TOOL_OPTIONS: -XX:+TieredCompilation -XX:TieredStopAtLevel=1
+      Events:
+        TabletopBeholder:
+          Type: Api
+          Properties:
+            Path: /session/{objectId}
+            Method: get
+
+  GetAllSessionsLambda:
+    Type: AWS::Serverless::Function
+    Properties:
+      Role: !GetAtt AccessRole.Arn
+      CodeUri: app
+      Handler: dev.tdwalsh.project.tabletopBeholder.lambda.session.GetAllSessionsLambda::handleRequest
+      Runtime: java11
+      Architectures:
+        - x86_64
+      MemorySize: 512
+      Environment:
+        Variables:
+          JAVA_TOOL_OPTIONS: -XX:+TieredCompilation -XX:TieredStopAtLevel=1
+      Events:
+        TabletopBeholder:
+          Type: Api
+          Properties:
+            Path: /session
+            Method: get
+
+  CreateSessionLambda:
+    Type: AWS::Serverless::Function
+    Properties:
+      Role: !GetAtt AccessRole.Arn
+      CodeUri: app
+      Handler: dev.tdwalsh.project.tabletopBeholder.lambda.session.CreateSessionLambda::handleRequest
+      Runtime: java11
+      Architectures:
+        - x86_64
+      MemorySize: 512
+      Environment:
+        Variables:
+          JAVA_TOOL_OPTIONS: -XX:+TieredCompilation -XX:TieredStopAtLevel=1
+      Events:
+        TabletopBeholder:
+          Type: Api
+          Properties:
+            Path: /session
+            Method: post
+
+  UpdateSessionLambda:
+    Type: AWS::Serverless::Function
+    Properties:
+      Role: !GetAtt AccessRole.Arn
+      CodeUri: app
+      Handler: dev.tdwalsh.project.tabletopBeholder.lambda.session.UpdateSessionLambda::handleRequest
+      Runtime: java11
+      Architectures:
+        - x86_64
+      MemorySize: 512
+      Environment:
+        Variables:
+          JAVA_TOOL_OPTIONS: -XX:+TieredCompilation -XX:TieredStopAtLevel=1
+      Events:
+        TabletopBeholder:
+          Type: Api
+          Properties:
+            Path: /session
+            Method: put
+
+  DeleteSessionLambda:
+    Type: AWS::Serverless::Function
+    Properties:
+      Role: !GetAtt AccessRole.Arn
+      CodeUri: app
+      Handler: dev.tdwalsh.project.tabletopBeholder.lambda.session.DeleteSessionLambda::handleRequest
+      Runtime: java11
+      Architectures:
+        - x86_64
+      MemorySize: 512
+      Environment:
+        Variables:
+          JAVA_TOOL_OPTIONS: -XX:+TieredCompilation -XX:TieredStopAtLevel=1
+      Events:
+        TabletopBeholder:
+          Type: Api
+          Properties:
+            Path: /session/{objectId}
+            Method: delete
   #-----------------------------------------------------
   # DynamoDB Configuration
   #-----------------------------------------------------
