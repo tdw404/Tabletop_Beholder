@@ -357,6 +357,106 @@ Resources:
             Path: /spell/{objectId}
             Method: delete
 
+  GetActionLambda:
+    Type: AWS::Serverless::Function
+    Properties:
+      Role: !GetAtt AccessRole.Arn
+      CodeUri: app
+      Handler: dev.tdwalsh.project.tabletopBeholder.lambda.action.GetActionLambda::handleRequest
+      Runtime: java11
+      Architectures:
+        - x86_64
+      MemorySize: 512
+      Environment:
+        Variables:
+          JAVA_TOOL_OPTIONS: -XX:+TieredCompilation -XX:TieredStopAtLevel=1
+      Events:
+        TabletopBeholder:
+          Type: Api
+          Properties:
+            Path: /action/{objectId}
+            Method: get
+
+  GetAllActionsLambda:
+    Type: AWS::Serverless::Function
+    Properties:
+      Role: !GetAtt AccessRole.Arn
+      CodeUri: app
+      Handler: dev.tdwalsh.project.tabletopBeholder.lambda.action.GetAllActionsLambda::handleRequest
+      Runtime: java11
+      Architectures:
+        - x86_64
+      MemorySize: 512
+      Environment:
+        Variables:
+          JAVA_TOOL_OPTIONS: -XX:+TieredCompilation -XX:TieredStopAtLevel=1
+      Events:
+        TabletopBeholder:
+          Type: Api
+          Properties:
+            Path: /action
+            Method: get
+
+  CreateActionLambda:
+    Type: AWS::Serverless::Function
+    Properties:
+      Role: !GetAtt AccessRole.Arn
+      CodeUri: app
+      Handler: dev.tdwalsh.project.tabletopBeholder.lambda.action.CreateActionLambda::handleRequest
+      Runtime: java11
+      Architectures:
+        - x86_64
+      MemorySize: 512
+      Environment:
+        Variables:
+          JAVA_TOOL_OPTIONS: -XX:+TieredCompilation -XX:TieredStopAtLevel=1
+      Events:
+        TabletopBeholder:
+          Type: Api
+          Properties:
+            Path: /action
+            Method: post
+
+  UpdateActionLambda:
+    Type: AWS::Serverless::Function
+    Properties:
+      Role: !GetAtt AccessRole.Arn
+      CodeUri: app
+      Handler: dev.tdwalsh.project.tabletopBeholder.lambda.action.UpdateActionLambda::handleRequest
+      Runtime: java11
+      Architectures:
+        - x86_64
+      MemorySize: 512
+      Environment:
+        Variables:
+          JAVA_TOOL_OPTIONS: -XX:+TieredCompilation -XX:TieredStopAtLevel=1
+      Events:
+        TabletopBeholder:
+          Type: Api
+          Properties:
+            Path: /action
+            Method: put
+
+  DeleteActionLambda:
+    Type: AWS::Serverless::Function
+    Properties:
+      Role: !GetAtt AccessRole.Arn
+      CodeUri: app
+      Handler: dev.tdwalsh.project.tabletopBeholder.lambda.action.DeleteActionLambda::handleRequest
+      Runtime: java11
+      Architectures:
+        - x86_64
+      MemorySize: 512
+      Environment:
+        Variables:
+          JAVA_TOOL_OPTIONS: -XX:+TieredCompilation -XX:TieredStopAtLevel=1
+      Events:
+        TabletopBeholder:
+          Type: Api
+          Properties:
+            Path: /action/{objectId}
+            Method: delete
+
   #-----------------------------------------------------
   # DynamoDB Configuration
   #-----------------------------------------------------
