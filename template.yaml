@@ -557,6 +557,105 @@ Resources:
             Path: /creature/{objectId}
             Method: delete
 
+  GetEncounterLambda:
+    Type: AWS::Serverless::Function
+    Properties:
+      Role: !GetAtt AccessRole.Arn
+      CodeUri: app
+      Handler: dev.tdwalsh.project.tabletopBeholder.lambda.encounter.GetEncounterLambda::handleRequest
+      Runtime: java11
+      Architectures:
+        - x86_64
+      MemorySize: 512
+      Environment:
+        Variables:
+          JAVA_TOOL_OPTIONS: -XX:+TieredCompilation -XX:TieredStopAtLevel=1
+      Events:
+        TabletopBeholder:
+          Type: Api
+          Properties:
+            Path: /encounter/{objectId}
+            Method: get
+
+  GetAllEncountersLambda:
+    Type: AWS::Serverless::Function
+    Properties:
+      Role: !GetAtt AccessRole.Arn
+      CodeUri: app
+      Handler: dev.tdwalsh.project.tabletopBeholder.lambda.encounter.GetAllEncountersLambda::handleRequest
+      Runtime: java11
+      Architectures:
+        - x86_64
+      MemorySize: 512
+      Environment:
+        Variables:
+          JAVA_TOOL_OPTIONS: -XX:+TieredCompilation -XX:TieredStopAtLevel=1
+      Events:
+        TabletopBeholder:
+          Type: Api
+          Properties:
+            Path: /encounter
+            Method: get
+
+  CreateEncounterLambda:
+    Type: AWS::Serverless::Function
+    Properties:
+      Role: !GetAtt AccessRole.Arn
+      CodeUri: app
+      Handler: dev.tdwalsh.project.tabletopBeholder.lambda.encounter.CreateEncounterLambda::handleRequest
+      Runtime: java11
+      Architectures:
+        - x86_64
+      MemorySize: 512
+      Environment:
+        Variables:
+          JAVA_TOOL_OPTIONS: -XX:+TieredCompilation -XX:TieredStopAtLevel=1
+      Events:
+        TabletopBeholder:
+          Type: Api
+          Properties:
+            Path: /encounter
+            Method: post
+
+  UpdateEncounterLambda:
+    Type: AWS::Serverless::Function
+    Properties:
+      Role: !GetAtt AccessRole.Arn
+      CodeUri: app
+      Handler: dev.tdwalsh.project.tabletopBeholder.lambda.encounter.UpdateEncounterLambda::handleRequest
+      Runtime: java11
+      Architectures:
+        - x86_64
+      MemorySize: 512
+      Environment:
+        Variables:
+          JAVA_TOOL_OPTIONS: -XX:+TieredCompilation -XX:TieredStopAtLevel=1
+      Events:
+        TabletopBeholder:
+          Type: Api
+          Properties:
+            Path: /encounter
+            Method: put
+
+  DeleteEncounterLambda:
+    Type: AWS::Serverless::Function
+    Properties:
+      Role: !GetAtt AccessRole.Arn
+      CodeUri: app
+      Handler: dev.tdwalsh.project.tabletopBeholder.lambda.encounter.DeleteEncounterLambda::handleRequest
+      Runtime: java11
+      Architectures:
+        - x86_64
+      MemorySize: 512
+      Environment:
+        Variables:
+          JAVA_TOOL_OPTIONS: -XX:+TieredCompilation -XX:TieredStopAtLevel=1
+      Events:
+        TabletopBeholder:
+          Type: Api
+          Properties:
+            Path: /encounter/{objectId}
+            Method: delete
   #-----------------------------------------------------
   # DynamoDB Configuration
   #-----------------------------------------------------
