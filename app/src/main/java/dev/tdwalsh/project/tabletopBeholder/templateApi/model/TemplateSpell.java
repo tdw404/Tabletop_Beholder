@@ -1,8 +1,8 @@
-package dev.tdwalsh.project.tabletopBeholder.externalApi.model;
+package dev.tdwalsh.project.tabletopBeholder.templateApi.model;
 
 import java.util.Objects;
 
-public class ExternalSpell {
+public class TemplateSpell {
     private String slug;
     private String name;
     private String desc;
@@ -292,7 +292,7 @@ public class ExternalSpell {
             return false;
         }
 
-        ExternalSpell other = (ExternalSpell) o;
+        TemplateSpell other = (TemplateSpell) o;
         return this.slug.equals(other.slug);
     }
 }
