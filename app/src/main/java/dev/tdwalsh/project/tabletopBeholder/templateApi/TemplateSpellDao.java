@@ -1,9 +1,11 @@
 package dev.tdwalsh.project.tabletopBeholder.templateApi;
 
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import dev.tdwalsh.project.tabletopBeholder.exceptions.CommunicationException;
 import dev.tdwalsh.project.tabletopBeholder.templateApi.model.TemplateSpell;
 
+import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
@@ -16,7 +18,8 @@ public class TemplateSpellDao {
     private final static String URL_PATH = "https://api.open5e.com/spells/";
     private final ObjectMapper objectMapper;
 
-    public TemplateSpellDao() {
+    @Inject
+    public TemplateSpellDao(DynamoDBMapper mapper) {
         this.objectMapper = new ObjectMapper();
     }
 
@@ -31,7 +34,7 @@ public class TemplateSpellDao {
         //Then, makes a GET call with that url
         //Then, converts the object to a model object and returns it
         try {
-            String[] call = {"curl", "-X", "GET", String.join(URL_PATH, spellSlug)};
+            String[] call = {"curl", "-X", "GET", URL_PATH + spellSlug};
             ProcessBuilder ps = new ProcessBuilder(call);
             Process pr = ps.start();
             pr.waitFor();

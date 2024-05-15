@@ -36,7 +36,7 @@ public class CreateSpellActivity {
      */
 
     public CreateSpellResult handleRequest(CreateSpellRequest createSpellRequest) {
-        //First, assigned contained object to new variable
+        //First, assigns contained object to new variable
         //Then, pulls userEmail from the authenticated email field in the request
         //Then, checks name for uniqueness
         //Then, uses the create helper to finish building the object

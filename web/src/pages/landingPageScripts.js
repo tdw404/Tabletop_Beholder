@@ -53,7 +53,7 @@ class LandingPageScripts extends BindingClass {
             document.getElementById('new-role-btn').hidden = false;
             document.getElementById('userRoles').addEventListener('change', this.changeButtonTarget)
         } else {
-            document.getElementById('title').innerText = `Welcome to [Project Binford]. Please log-in at the top right to continue.`;
+            document.getElementById('title').innerText = `TESTING LANDING PAGE`;
         }
     }
 
