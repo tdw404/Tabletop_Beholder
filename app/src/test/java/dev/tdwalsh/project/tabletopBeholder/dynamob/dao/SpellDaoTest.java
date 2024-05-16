@@ -5,6 +5,7 @@ import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBQueryExpression;
 import com.amazonaws.services.dynamodbv2.datamodeling.PaginatedQueryList;
 import dev.tdwalsh.project.tabletopBeholder.dynamodb.dao.SpellDao;
 import dev.tdwalsh.project.tabletopBeholder.dynamodb.models.Spell;
+import dev.tdwalsh.project.tabletopBeholder.resource.SpellHelper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
@@ -33,11 +34,9 @@ public class SpellDaoTest {
     @BeforeEach
     public void setup() {
         openMocks(this);
-        userEmail = "testEmail";
-        objectId = "testId";
-        spell = new Spell();
-        spell.setUserEmail(userEmail);
-        spell.setObjectId(objectId);
+        spell = SpellHelper.provideSpell(1);
+        userEmail = spell.getUserEmail();
+        objectId = spell.getObjectId();
     }
 
     @Test
