@@ -3,18 +3,13 @@ package dev.tdwalsh.project.tabletopBeholder.activity.spell;
 import dev.tdwalsh.project.tabletopBeholder.activity.spell.request.GetSpellRequest;
 import dev.tdwalsh.project.tabletopBeholder.activity.spell.result.GetSpellResult;
 import dev.tdwalsh.project.tabletopBeholder.dynamodb.dao.SpellDao;
-import dev.tdwalsh.project.tabletopBeholder.dynamodb.models.Action;
 import dev.tdwalsh.project.tabletopBeholder.dynamodb.models.Spell;
 import dev.tdwalsh.project.tabletopBeholder.exceptions.resourceNotFoundExceptions.SpellNotFoundException;
-import dev.tdwalsh.project.tabletopBeholder.exceptions.serializationExceptions.ActionSerializationException;
+import dev.tdwalsh.project.tabletopBeholder.resource.SpellHelper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-
-import java.util.ArrayList;
-import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -22,7 +17,7 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 import static org.mockito.MockitoAnnotations.openMocks;
 
-public class GetSpellActivityClass {
+public class GetSpellActivityTest {
     @InjectMocks
     private GetSpellActivity getSpellActivity;
     @Mock
@@ -36,26 +31,9 @@ public class GetSpellActivityClass {
     @BeforeEach
     public void setup() {
         openMocks(this);
-
-        userEmail = "testEmail";
-        objectId = "testId";
-
-        spell = new Spell();
-        spell.setUserEmail(userEmail);
-        spell.setObjectId(objectId);
-        spell.setObjectName("testName");
-        spell.setSpellDescription("testDescription");
-        spell.setSpellHigherLevel("testSHL");
-        spell.setSpellRange("testRange");
-        spell.setSpellComponents("testComponents");
-        spell.setSpellMaterial("testMaterial");
-        spell.setRitualCast(true);
-        spell.setCastingTime(1);
-        spell.setSpellLevel(1);
-        spell.setSpellSchool("testSchool");
-        spell.setInnateCasts(1);
-        spell.setAppliesEffects(new ArrayList<>());
-
+        spell = SpellHelper.provideSpell(1);
+        userEmail = spell.getUserEmail();
+        objectId = spell.getObjectId();
         getSpellRequest = GetSpellRequest.builder()
                 .withObjectId(objectId)
                 .withUserEmail(userEmail)
