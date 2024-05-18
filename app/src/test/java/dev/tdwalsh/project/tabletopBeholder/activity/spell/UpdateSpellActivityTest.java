@@ -7,6 +7,7 @@ import dev.tdwalsh.project.tabletopBeholder.activity.spell.result.UpdateSpellRes
 import dev.tdwalsh.project.tabletopBeholder.dynamodb.dao.SpellDao;
 import dev.tdwalsh.project.tabletopBeholder.dynamodb.models.Spell;
 import dev.tdwalsh.project.tabletopBeholder.exceptions.DuplicateResourceException;
+import dev.tdwalsh.project.tabletopBeholder.exceptions.MissingResourceException;
 import dev.tdwalsh.project.tabletopBeholder.resource.SpellHelper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -75,6 +76,16 @@ public class UpdateSpellActivityTest {
         //WHEN
         //THEN
         assertThrows(DuplicateResourceException.class, () -> updateSpellActivity.handleRequest(updateSpellRequest));
+    }
+
+    @Test
+    public void handleRequest_noOldObjectFound_throwsError() {
+        //GIVEN
+        newSpell.setObjectName("different");
+        doReturn(null).when(spellDao).getSingle(newSpell.getUserEmail(), newSpell.getObjectId());
+        //WHEN
+        //THEN
+        assertThrows(MissingResourceException.class, () -> updateSpellActivity.handleRequest(updateSpellRequest));
     }
 
 }

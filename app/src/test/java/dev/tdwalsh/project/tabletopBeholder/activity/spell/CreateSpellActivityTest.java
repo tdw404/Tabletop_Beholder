@@ -26,8 +26,7 @@ public class CreateSpellActivityTest {
     private CreateSpellRequest createSpellRequest;
     private CreateSpellResult createSpellResult;
     private Spell spell;
-    private String userEmail;
-    private String objectId;
+
 
     @BeforeEach
     public void setup() {
