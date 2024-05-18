@@ -2,6 +2,7 @@ package dev.tdwalsh.project.tabletopBeholder.converters;
 
 import dev.tdwalsh.project.tabletopBeholder.dynamodb.models.Action;
 import dev.tdwalsh.project.tabletopBeholder.exceptions.serializationExceptions.ActionSerializationException;
+import dev.tdwalsh.project.tabletopBeholder.resource.SpellHelper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -16,6 +17,7 @@ public class ActionConverterTest {
     private Action object1;
     private Action object2;
     private String serial;
+
 
     @BeforeEach
     public void setup() {
@@ -56,6 +58,7 @@ public class ActionConverterTest {
 
     @Test
     public void unconvert_badList_throwsError() {
+        System.out.println(SpellHelper.provideSpell(1).getObjectName());
         //GIVEN
         //WHEN
         //THEN
