@@ -37,7 +37,7 @@ public class TemplateSpell {
     private String document__license_url;
     private String document__url;
 
-    private transient boolean resourceExists;
+    private transient boolean resourceExists = false;
 
     public String getSlug() {
         return slug;
