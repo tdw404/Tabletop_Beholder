@@ -17,13 +17,10 @@ public class CreateTemplateSpellLambda
         return super.runActivity(
                 () ->
                 {
-                    System.out.println("One");
                     CreateTemplateSpellRequest stageRequest = input.fromPath(path ->
                             CreateTemplateSpellRequest.builder()
                                     .withSlug(path.get("slug"))
                                     .build());
-                    System.out.println("two");
-                    //CreateTemplateSpellRequest stageRequest = input.fromPath(CreateTemplateSpellRequest.class);
 
                     return input.fromUserClaims(claims ->
                             CreateTemplateSpellRequest.builder()

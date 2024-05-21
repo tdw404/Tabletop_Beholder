@@ -1,10 +1,9 @@
-package dev.tdwalsh.project.tabletopBeholder.exceptions;
+package dev.tdwalsh.project.tabletopBeholder.exceptions.serializationExceptions;
 
-public class CommunicationException extends RuntimeException{
+public class TemplateSpellSerializationException extends RuntimeException{
+    private static final long serialVersionUID = -3244924068422670823L;
 
-    private static final long serialVersionUID = 6960459999917103220L;
-
-    public CommunicationException() {
+    public TemplateSpellSerializationException() {
         super();
     }
 
@@ -12,7 +11,7 @@ public class CommunicationException extends RuntimeException{
      * Exception with a message, but no cause.
      * @param message A descriptive message for this exception.
      */
-    public CommunicationException(String message) {
+    public TemplateSpellSerializationException(String message) {
         super(message);
     }
 
@@ -20,7 +19,7 @@ public class CommunicationException extends RuntimeException{
      * Exception with no message, but with a cause.
      * @param cause The original throwable resulting in this exception.
      */
-    public CommunicationException(Throwable cause) {
+    public TemplateSpellSerializationException(Throwable cause) {
         super(cause);
     }
 
@@ -29,7 +28,7 @@ public class CommunicationException extends RuntimeException{
      * @param message A descriptive message for this exception.
      * @param cause The original throwable resulting in this exception.
      */
-    public CommunicationException(String message, Throwable cause) {
+    public TemplateSpellSerializationException(String message, Throwable cause) {
         super(message, cause);
     }
 }

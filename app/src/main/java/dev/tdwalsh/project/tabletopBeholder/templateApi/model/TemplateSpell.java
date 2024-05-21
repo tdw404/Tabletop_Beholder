@@ -1,5 +1,8 @@
 package dev.tdwalsh.project.tabletopBeholder.templateApi.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
+import java.util.List;
 import java.util.Objects;
 
 public class TemplateSpell {
@@ -9,30 +12,32 @@ public class TemplateSpell {
     private String higher_level;
     private String page;
     private String range;
-    private String target_range_sort;
+    private int target_range_sort;
     private String components;
-    private String requires_verbal_components;
-    private String requires_somatic_components;
-    private String requires_material_components;
+    private boolean requires_verbal_components;
+    private boolean requires_somatic_components;
+    private boolean requires_material_components;
     private String material;
-    private String can_be_cast_as_ritual;
+    private boolean can_be_cast_as_ritual;
     private String ritual;
     private String duration;
     private String concentration;
-    private String requires_concentration;
+    private boolean requires_concentration;
     private String casting_time;
     private String level;
-    private String level_int;
-    private String spell_level;
+    private int level_int;
+    private int spell_level;
     private String school;
     private String dnd_class;
-    private String spell_lists;
+    private List<String> spell_lists;
     private String archetype;
     private String circles;
     private String document__slug;
     private String document__title;
     private String document__license_url;
     private String document__url;
+
+    private transient boolean resourceExists;
 
     public String getSlug() {
         return slug;
@@ -82,11 +87,11 @@ public class TemplateSpell {
         this.range = range;
     }
 
-    public String getTarget_range_sort() {
+    public int getTarget_range_sort() {
         return target_range_sort;
     }
 
-    public void setTarget_range_sort(String target_range_sort) {
+    public void setTarget_range_sort(int target_range_sort) {
         this.target_range_sort = target_range_sort;
     }
 
@@ -98,27 +103,27 @@ public class TemplateSpell {
         this.components = components;
     }
 
-    public String getRequires_verbal_components() {
+    public boolean getRequires_verbal_components() {
         return requires_verbal_components;
     }
 
-    public void setRequires_verbal_components(String requires_verbal_components) {
+    public void setRequires_verbal_components(boolean requires_verbal_components) {
         this.requires_verbal_components = requires_verbal_components;
     }
 
-    public String getRequires_somatic_components() {
+    public boolean getRequires_somatic_components() {
         return requires_somatic_components;
     }
 
-    public void setRequires_somatic_components(String requires_somatic_components) {
+    public void setRequires_somatic_components(boolean requires_somatic_components) {
         this.requires_somatic_components = requires_somatic_components;
     }
 
-    public String getRequires_material_components() {
+    public boolean getRequires_material_components() {
         return requires_material_components;
     }
 
-    public void setRequires_material_components(String requires_material_components) {
+    public void setRequires_material_components(boolean requires_material_components) {
         this.requires_material_components = requires_material_components;
     }
 
@@ -130,11 +135,11 @@ public class TemplateSpell {
         this.material = material;
     }
 
-    public String getCan_be_cast_as_ritual() {
+    public boolean getCan_be_cast_as_ritual() {
         return can_be_cast_as_ritual;
     }
 
-    public void setCan_be_cast_as_ritual(String can_be_cast_as_ritual) {
+    public void setCan_be_cast_as_ritual(boolean can_be_cast_as_ritual) {
         this.can_be_cast_as_ritual = can_be_cast_as_ritual;
     }
 
@@ -162,11 +167,11 @@ public class TemplateSpell {
         this.concentration = concentration;
     }
 
-    public String getRequires_concentration() {
+    public boolean getRequires_concentration() {
         return requires_concentration;
     }
 
-    public void setRequires_concentration(String requires_concentration) {
+    public void setRequires_concentration(boolean requires_concentration) {
         this.requires_concentration = requires_concentration;
     }
 
@@ -186,19 +191,19 @@ public class TemplateSpell {
         this.level = level;
     }
 
-    public String getLevel_int() {
+    public int getLevel_int() {
         return level_int;
     }
 
-    public void setLevel_int(String level_int) {
+    public void setLevel_int(int level_int) {
         this.level_int = level_int;
     }
 
-    public String getSpell_level() {
+    public int getSpell_level() {
         return spell_level;
     }
 
-    public void setSpell_level(String spell_level) {
+    public void setSpell_level(int spell_level) {
         this.spell_level = spell_level;
     }
 
@@ -218,11 +223,11 @@ public class TemplateSpell {
         this.dnd_class = dnd_class;
     }
 
-    public String getSpell_lists() {
+    public List<String> getSpell_lists() {
         return spell_lists;
     }
 
-    public void setSpell_lists(String spell_lists) {
+    public void setSpell_lists(List<String> spell_lists) {
         this.spell_lists = spell_lists;
     }
 
@@ -272,6 +277,15 @@ public class TemplateSpell {
 
     public void setDocument__url(String document__url) {
         this.document__url = document__url;
+    }
+
+    @JsonIgnoreProperties(value = { "y" })
+    public boolean getResourceExists() {
+        return this.resourceExists;
+    }
+
+    public void setResourceExists(boolean resourceExists) {
+        this.resourceExists = resourceExists;
     }
 
     @Override
