@@ -1,6 +1,7 @@
 package dev.tdwalsh.project.tabletopBeholder.templateApi;
 
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
+import dagger.Provides;
 import dev.tdwalsh.project.tabletopBeholder.converters.templateConverters.TemplateSpellConverter;
 import dev.tdwalsh.project.tabletopBeholder.exceptions.CurlException;
 import dev.tdwalsh.project.tabletopBeholder.exceptions.MissingResourceException;
@@ -28,7 +29,7 @@ public class TemplateSpellDao {
     private final TemplateSpellConverter templateSpellConverter;
 
     @Inject
-    public TemplateSpellDao(DynamoDBMapper mapper) {
+    public TemplateSpellDao() {
         this.templateSpellConverter = new TemplateSpellConverter();
     }
 

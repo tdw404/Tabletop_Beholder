@@ -18,8 +18,10 @@ public class Spell implements BeholderObject {
     private String spellRange;
     private String spellComponents;
     private String spellMaterial;
+    private String reaction;
     private Boolean ritualCast;
-    private Integer castingTime;
+    private String castingTime;
+    private Integer castingTurns;
     private Integer spellLevel;
     private String spellSchool;
     private Integer innateCasts;
@@ -102,6 +104,15 @@ public class Spell implements BeholderObject {
         this.spellMaterial = spellMaterial;
     }
 
+    @DynamoDBAttribute(attributeName = "reaction")
+    public String getReaction() {
+        return reaction;
+    }
+
+    public void setReaction(String reaction) {
+        this.reaction = reaction;
+    }
+
     @DynamoDBAttribute(attributeName = "ritualCast")
     @DynamoDBTyped(DynamoDBMapperFieldModel.DynamoDBAttributeType.BOOL)
     public Boolean getRitualCast() {
@@ -113,12 +124,21 @@ public class Spell implements BeholderObject {
     }
 
     @DynamoDBAttribute(attributeName = "castingTime")
-    public Integer getCastingTime() {
+    public String getCastingTime() {
         return castingTime;
     }
 
-    public void setCastingTime(Integer castingTime) {
+    public void setCastingTime(String castingTime) {
         this.castingTime = castingTime;
+    }
+
+    @DynamoDBAttribute(attributeName = "castingTurns")
+    public Integer getCastingTurns() {
+        return castingTurns;
+    }
+
+    public void setCastingTurns(Integer castingTurns) {
+        this.castingTurns = castingTurns;
     }
 
     @DynamoDBAttribute(attributeName = "spellLevel")
