@@ -756,6 +756,66 @@ Resources:
           Properties:
             Path: /session/{objectId}
             Method: delete
+
+  CreateTemplateSpellLambda:
+    Type: AWS::Serverless::Function
+    Properties:
+      Role: !GetAtt AccessRole.Arn
+      CodeUri: app
+      Handler: dev.tdwalsh.project.tabletopBeholder.lambda.templateSpell.CreateTemplateSpellLambda::handleRequest
+      Runtime: java11
+      Architectures:
+        - x86_64
+      MemorySize: 512
+      Environment:
+        Variables:
+          JAVA_TOOL_OPTIONS: -XX:+TieredCompilation -XX:TieredStopAtLevel=1
+      Events:
+        TabletopBeholder:
+          Type: Api
+          Properties:
+            Path: /spellTemplate/{slug}
+            Method: post
+
+  GetTemplateSpellLambda:
+    Type: AWS::Serverless::Function
+    Properties:
+      Role: !GetAtt AccessRole.Arn
+      CodeUri: app
+      Handler: dev.tdwalsh.project.tabletopBeholder.lambda.templateSpell.GetTemplateSpellLambda::handleRequest
+      Runtime: java11
+      Architectures:
+        - x86_64
+      MemorySize: 512
+      Environment:
+        Variables:
+          JAVA_TOOL_OPTIONS: -XX:+TieredCompilation -XX:TieredStopAtLevel=1
+      Events:
+        TabletopBeholder:
+          Type: Api
+          Properties:
+            Path: /spellTemplate/{slug}
+            Method: get
+
+  SearchTemplateSpellsLambda:
+    Type: AWS::Serverless::Function
+    Properties:
+      Role: !GetAtt AccessRole.Arn
+      CodeUri: app
+      Handler: dev.tdwalsh.project.tabletopBeholder.lambda.templateSpell.SearchTemplateSpellsLambda::handleRequest
+      Runtime: java11
+      Architectures:
+        - x86_64
+      MemorySize: 512
+      Environment:
+        Variables:
+          JAVA_TOOL_OPTIONS: -XX:+TieredCompilation -XX:TieredStopAtLevel=1
+      Events:
+        TabletopBeholder:
+          Type: Api
+          Properties:
+            Path: /spellTemplate/search/{searchTerms}
+            Method: get
   #-----------------------------------------------------
   # DynamoDB Configuration
   #-----------------------------------------------------

@@ -21,8 +21,10 @@ public class SpellHelper {
         spell.setSpellRange("spellRange" + mod);
         spell.setSpellComponents("spellComponents" + mod);
         spell.setSpellMaterial("spellMaterial" + mod);
+        spell.setReaction("yes");
         spell.setRitualCast(true);
-        spell.setCastingTime(mod);
+        spell.setCastingTime("castingTime" + mod);
+        spell.setCastingTurns(mod);
         spell.setSpellLevel(mod);
         spell.setSpellSchool("spellSchool" + mod);
         spell.setInnateCasts(mod);
