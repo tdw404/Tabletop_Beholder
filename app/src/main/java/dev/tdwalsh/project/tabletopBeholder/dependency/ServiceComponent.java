@@ -5,6 +5,7 @@ import dev.tdwalsh.project.tabletopBeholder.activity.action.*;
 import dev.tdwalsh.project.tabletopBeholder.activity.creature.*;
 import dev.tdwalsh.project.tabletopBeholder.activity.encounter.*;
 import dev.tdwalsh.project.tabletopBeholder.activity.externalSpell.CreateTemplateSpellActivity;
+import dev.tdwalsh.project.tabletopBeholder.activity.externalSpell.SearchTemplateSpellsActivity;
 import dev.tdwalsh.project.tabletopBeholder.activity.externalTemplateSpell.GetTemplateSpellActivity;
 import dev.tdwalsh.project.tabletopBeholder.activity.session.*;
 import dev.tdwalsh.project.tabletopBeholder.activity.spell.*;
@@ -179,4 +180,10 @@ public interface ServiceComponent {
      * @return GetTemplateSpellActivity
      */
     GetTemplateSpellActivity provideGetTemplateSpellActivity();
+
+    /**
+     * Provides the relevant activity.
+     * @return SearchTemplateSpellsActivity
+     */
+    SearchTemplateSpellsActivity provideSearchTemplateSpellsActivity();
 }
