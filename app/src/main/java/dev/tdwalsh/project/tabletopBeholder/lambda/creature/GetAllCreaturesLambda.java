@@ -17,7 +17,7 @@ public class GetAllCreaturesLambda
         return super.runActivity(
                 () -> input.fromUserClaims(claims ->
                         GetAllCreaturesRequest.builder()
-                                .withUserEmail(claims.get("userEmail"))
+                                .withUserEmail(claims.get("email"))
                                 .build()),
                 (request, serviceComponent) ->
                         serviceComponent.provideGetAllCreaturesActivity().handleRequest(request)
