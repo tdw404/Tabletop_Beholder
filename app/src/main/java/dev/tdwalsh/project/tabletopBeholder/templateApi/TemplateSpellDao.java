@@ -1,7 +1,5 @@
 package dev.tdwalsh.project.tabletopBeholder.templateApi;
 
-import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
-import dagger.Provides;
 import dev.tdwalsh.project.tabletopBeholder.converters.templateConverters.TemplateSpellConverter;
 import dev.tdwalsh.project.tabletopBeholder.exceptions.CurlException;
 import dev.tdwalsh.project.tabletopBeholder.exceptions.MissingResourceException;
@@ -41,7 +39,7 @@ public class TemplateSpellDao {
      */
     public TemplateSpell getSingle(String spellSlug)  {
         //First, uses the 'slug'/id of the external object to build a uri
-        //Then, makes a GET call with that url
+        //Then, makes a GET call with that uri
         //Then, converts the result to a model object and returns it
         HttpClient client = HttpClient.newBuilder()
                 .followRedirects(HttpClient.Redirect.NORMAL)
