@@ -17,7 +17,7 @@ public class GetAllSessionsLambda
         return super.runActivity(
                 () -> input.fromUserClaims(claims ->
                         GetAllSessionsRequest.builder()
-                                .withUserEmail(claims.get("userEmail"))
+                                .withUserEmail(claims.get("email"))
                                 .build()),
                 (request, serviceComponent) ->
                         serviceComponent.provideGetAllSessionsActivity().handleRequest(request)

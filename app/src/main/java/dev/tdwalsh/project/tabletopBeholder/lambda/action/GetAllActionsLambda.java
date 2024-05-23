@@ -17,7 +17,7 @@ public class GetAllActionsLambda
         return super.runActivity(
                 () -> input.fromUserClaims(claims ->
                         GetAllActionsRequest.builder()
-                                .withUserEmail(claims.get("userEmail"))
+                                .withUserEmail(claims.get("email"))
                                 .build()),
                 (request, serviceComponent) ->
                         serviceComponent.provideGetAllActionsActivity().handleRequest(request)
