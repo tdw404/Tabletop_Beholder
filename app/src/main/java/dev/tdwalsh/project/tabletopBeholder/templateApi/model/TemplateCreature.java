@@ -42,11 +42,12 @@ public class TemplateCreature {
     private String languages;
     private String challenge_rating;
     private int cr;
-    private String actions;
-    private String bonus_actions;
-    private String reactions;
+    private List<TemplateAction> actions;
+    private List<TemplateAction> bonus_actions;
+
+    private List<TemplateAction> reactions;
     private String legendary_desc;
-    private String legendary_actions;
+    private List<TemplateAction> legendary_actions;
     private String special_abilities;
     private String spell_list;
     private int page_no;
@@ -338,27 +339,27 @@ public class TemplateCreature {
         this.cr = cr;
     }
 
-    public String getActions() {
+    public List<TemplateAction> getActions() {
         return actions;
     }
 
-    public void setActions(String actions) {
+    public void setActions(List<TemplateAction> actions) {
         this.actions = actions;
     }
 
-    public String getBonus_actions() {
+    public List<TemplateAction> getBonus_actions() {
         return bonus_actions;
     }
 
-    public void setBonus_actions(String bonus_actions) {
+    public void setBonus_actions(List<TemplateAction> bonus_actions) {
         this.bonus_actions = bonus_actions;
     }
 
-    public String getReactions() {
+    public List<TemplateAction> getReactions() {
         return reactions;
     }
 
-    public void setReactions(String reactions) {
+    public void setReactions(List<TemplateAction> reactions) {
         this.reactions = reactions;
     }
 
@@ -370,11 +371,11 @@ public class TemplateCreature {
         this.legendary_desc = legendary_desc;
     }
 
-    public String getLegendary_actions() {
+    public List<TemplateAction> getLegendary_actions() {
         return legendary_actions;
     }
 
-    public void setLegendary_actions(String legendary_actions) {
+    public void setLegendary_actions(List<TemplateAction> legendary_actions) {
         this.legendary_actions = legendary_actions;
     }
 
