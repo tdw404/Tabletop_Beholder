@@ -1,7 +1,6 @@
 package dev.tdwalsh.project.tabletopBeholder.templateApi;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import dev.tdwalsh.project.tabletopBeholder.converters.templateConverters.TemplateCreatureConverter;
 import dev.tdwalsh.project.tabletopBeholder.exceptions.CurlException;
 import dev.tdwalsh.project.tabletopBeholder.exceptions.MissingResourceException;
 import dev.tdwalsh.project.tabletopBeholder.templateApi.model.TemplateCreature;
@@ -21,12 +20,10 @@ import java.time.Duration;
 @Singleton
 public class TemplateCreatureDao {
     private final static String URI_PATH = "https://api.open5e.com/monsters/";
-    private final TemplateCreatureConverter templateCreatureConverter;
     private final ObjectMapper objectMapper;
 
     @Inject
     public TemplateCreatureDao() {
-        this.templateCreatureConverter = new TemplateCreatureConverter();
         this.objectMapper = new ObjectMapper();
     }
 

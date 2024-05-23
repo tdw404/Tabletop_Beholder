@@ -1,6 +1,6 @@
 package dev.tdwalsh.project.tabletopBeholder.templateApi;
 
-import dev.tdwalsh.project.tabletopBeholder.converters.templateConverters.TemplateSpellConverter;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import dev.tdwalsh.project.tabletopBeholder.exceptions.CurlException;
 import dev.tdwalsh.project.tabletopBeholder.exceptions.MissingResourceException;
 import dev.tdwalsh.project.tabletopBeholder.templateApi.model.TemplateSpell;
@@ -24,11 +24,11 @@ import java.util.List;
 @Singleton
 public class TemplateSpellDao {
     private final static String URI_PATH = "https://api.open5e.com/spells/";
-    private final TemplateSpellConverter templateSpellConverter;
+    ObjectMapper objectMapper;
 
     @Inject
     public TemplateSpellDao() {
-        this.templateSpellConverter = new TemplateSpellConverter();
+        objectMapper = new ObjectMapper();
     }
 
     /**
@@ -58,7 +58,7 @@ public class TemplateSpellDao {
                 case 404:
                     throw new MissingResourceException("5E API could not return resource: " + spellSlug);
                 case 200:
-                    return templateSpellConverter.unconvert(response.body());
+                    return  objectMapper.readValue(response.body(), TemplateSpell.class);
                 default:
                     throw new CurlException("Error making call to 5E API: " + response.statusCode() + "  " + response.body());
             }
@@ -100,7 +100,7 @@ public class TemplateSpellDao {
                     JSONArray spellArray =  spellJson.getJSONArray("results");
                     List<TemplateSpell> templateSpellList = new ArrayList<>();
                     for(int i = 0; i < spellArray.length(); i++) {
-                        templateSpellList.add(templateSpellConverter.unconvert(spellArray.get(i).toString()));
+                        templateSpellList.add(objectMapper.readValue(spellArray.get(i).toString(), TemplateSpell.class));
                     }
                     return templateSpellList;
                 default:
