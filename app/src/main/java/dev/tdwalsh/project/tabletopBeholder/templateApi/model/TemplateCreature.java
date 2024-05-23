@@ -48,10 +48,10 @@ public class TemplateCreature {
     private List<TemplateAction> reactions;
     private String legendary_desc;
     private List<TemplateAction> legendary_actions;
-    private String special_abilities;
-    private String spell_list;
+    private List<TemplateAction> special_abilities;
+    private List<String> spell_list;
     private int page_no;
-    private String environments;
+    private List<String> environments;
     private String img_main;
     private String document__slug;
     private String document__title;
@@ -379,19 +379,19 @@ public class TemplateCreature {
         this.legendary_actions = legendary_actions;
     }
 
-    public String getSpecial_abilities() {
+    public List<TemplateAction> getSpecial_abilities() {
         return special_abilities;
     }
 
-    public void setSpecial_abilities(String special_abilities) {
+    public void setSpecial_abilities(List<TemplateAction> special_abilities) {
         this.special_abilities = special_abilities;
     }
 
-    public String getSpell_list() {
+    public List<String> getSpell_list() {
         return spell_list;
     }
 
-    public void setSpell_list(String spell_list) {
+    public void setSpell_list(List<String> spell_list) {
         this.spell_list = spell_list;
     }
 
@@ -403,11 +403,11 @@ public class TemplateCreature {
         this.page_no = page_no;
     }
 
-    public String getEnvironments() {
+    public List<String> getEnvironments() {
         return environments;
     }
 
-    public void setEnvironments(String environments) {
+    public void setEnvironments(List<String> environments) {
         this.environments = environments;
     }
 
