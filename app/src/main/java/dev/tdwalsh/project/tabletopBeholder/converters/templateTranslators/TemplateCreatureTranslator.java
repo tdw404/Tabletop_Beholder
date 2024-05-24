@@ -1,19 +1,20 @@
 package dev.tdwalsh.project.tabletopBeholder.converters.templateTranslators;
 
+import dev.tdwalsh.project.tabletopBeholder.dynamodb.dao.SpellDao;
 import dev.tdwalsh.project.tabletopBeholder.dynamodb.models.Action;
 import dev.tdwalsh.project.tabletopBeholder.dynamodb.models.Creature;
 import dev.tdwalsh.project.tabletopBeholder.templateApi.model.TemplateCreature;
 
 import java.time.ZonedDateTime;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class TemplateCreatureTranslator {
 
-    public static Creature translate(TemplateCreature templateCreature) {
+    public static Creature translate(TemplateCreature templateCreature, SpellDao spellDao) {
         Creature creature = new Creature();
+
+        //Easily extracted fields
         creature.setObjectName(templateCreature.getName());
         creature.setIsPC(false);
         creature.setSourceBook(templateCreature.getDocument__title());
@@ -53,30 +54,38 @@ public class TemplateCreatureTranslator {
         creature.setSenses(templateCreature.getSenses());
         creature.setLanguages(templateCreature.getLanguages());
         creature.setChallengeRating(new Double(templateCreature.getChallenge_rating()));
-        Map<String, List<Action>> actionMap = new HashMap<>();
-        actionMap.put("action", templateCreature.getActions()
-                .stream()
-                .map(templateAction -> TemplateActionTranslator.translate(templateAction, "action"))
-                .collect(Collectors.toList()));
-        actionMap.put("bonus", templateCreature.getBonus_actions()
-                .stream()
-                .map(templateAction -> TemplateActionTranslator.translate(templateAction, "bonus"))
-                .collect(Collectors.toList()));
-        actionMap.put("reaction", templateCreature.getReactions()
-                .stream()
-                .map(templateAction -> TemplateActionTranslator.translate(templateAction, "reaction"))
-                .collect(Collectors.toList()));
-        actionMap.put("legendary", templateCreature.getLegendary_actions()
-                .stream()
-                .map(templateAction -> TemplateActionTranslator.translate(templateAction, "legendary"))
-                .collect(Collectors.toList()));
-        actionMap.put("special", templateCreature.getSpecial_abilities()
-                .stream()
-                .map(templateAction -> TemplateActionTranslator.translate(templateAction, "special"))
-                .collect(Collectors.toList()));
         creature.setLegendaryDesc(templateCreature.getLegendary_desc());
         creature.setCreateDateTime(ZonedDateTime.now());
         creature.setEditDateTime(creature.getEditDateTime());
+
+        //Actions
+        Map<String, List<Action>> actionMap = new HashMap<>();
+        actionMap.put("action", Optional.ofNullable(templateCreature.getActions()).orElse(Collections.emptyList())
+                .stream()
+                .map(templateAction -> TemplateActionTranslator.translate(templateAction, "action"))
+                .collect(Collectors.toList()));
+        actionMap.put("bonus", Optional.ofNullable(templateCreature.getBonus_actions()).orElse(Collections.emptyList())
+                .stream()
+                .map(templateAction -> TemplateActionTranslator.translate(templateAction, "bonus"))
+                .collect(Collectors.toList()));
+        actionMap.put("reaction", Optional.ofNullable(templateCreature.getReactions()).orElse(Collections.emptyList())
+                .stream()
+                .map(templateAction -> TemplateActionTranslator.translate(templateAction, "reaction"))
+                .collect(Collectors.toList()));
+        actionMap.put("legendary", Optional.ofNullable(templateCreature.getLegendary_actions()).orElse(Collections.emptyList())
+                .stream()
+                .map(templateAction -> TemplateActionTranslator.translate(templateAction, "legendary"))
+                .collect(Collectors.toList()));
+        actionMap.put("special", Optional.ofNullable(templateCreature.getSpecial_abilities()).orElse(Collections.emptyList())
+                .stream()
+                .map(templateAction -> TemplateActionTranslator.translate(templateAction, "special"))
+                .collect(Collectors.toList()));
+        creature.setActionMap(actionMap);
+
+        //TODO spell slots
+        //TODO spellcasting ability
+        //TODO spell save dc
+        //TODO spell converter
         return creature;
     }
 }

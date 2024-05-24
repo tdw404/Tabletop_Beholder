@@ -7,6 +7,7 @@ import dev.tdwalsh.project.tabletopBeholder.activity.helpers.CreateObjectHelper;
 import dev.tdwalsh.project.tabletopBeholder.activity.helpers.NameHelper;
 import dev.tdwalsh.project.tabletopBeholder.converters.templateTranslators.TemplateCreatureTranslator;
 import dev.tdwalsh.project.tabletopBeholder.dynamodb.dao.CreatureDao;
+import dev.tdwalsh.project.tabletopBeholder.dynamodb.dao.SpellDao;
 import dev.tdwalsh.project.tabletopBeholder.dynamodb.models.Creature;
 import dev.tdwalsh.project.tabletopBeholder.templateApi.TemplateCreatureDao;
 import dev.tdwalsh.project.tabletopBeholder.templateApi.model.TemplateCreature;
@@ -20,11 +21,13 @@ public class CreateTemplateCreatureActivity {
 
     private final TemplateCreatureDao templateCreatureDao;
     private final CreatureDao creatureDao;
+    private final SpellDao spellDao;
 
     @Inject
-    public CreateTemplateCreatureActivity(TemplateCreatureDao templateCreatureDao, CreatureDao creatureDao) {
+    public CreateTemplateCreatureActivity(TemplateCreatureDao templateCreatureDao, CreatureDao creatureDao, SpellDao spellDao) {
         this.templateCreatureDao = templateCreatureDao;
         this.creatureDao = creatureDao;
+        this.spellDao = spellDao;
     }
 
     public CreateTemplateCreatureResult handleRequest(CreateTemplateCreatureRequest createTemplateCreatureRequest) {
@@ -34,13 +37,10 @@ public class CreateTemplateCreatureActivity {
         //Then, iterates over all spells - if spell does not exist, creates spell. Otherwise, adds a link to that spell.
         // Finally, writes the new object to DynamoDB and returns the result
 
-        Creature creature = TemplateCreatureTranslator.translate(templateCreatureDao.getSingle(createTemplateCreatureRequest.getSlug()));
+        Creature creature = TemplateCreatureTranslator.translate(templateCreatureDao.getSingle(createTemplateCreatureRequest.getSlug()), spellDao);
         creature.setUserEmail(createTemplateCreatureRequest.getUserEmail());
         NameHelper.objectNameUniqueness(creatureDao,creature);
-        //TODO spell slots
-        //TODO spellcasting ability
-        //TODO spell save dc
-        //TODO spell converter
+
         return CreateTemplateCreatureResult.builder()
                 .withCreature((Creature) CreateObjectHelper.createObject(creatureDao,creature))
                 .build();
