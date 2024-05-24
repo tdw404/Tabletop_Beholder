@@ -1,10 +1,10 @@
-package dev.tdwalsh.project.tabletopBeholder.exceptions.serializationExceptions;
+package dev.tdwalsh.project.tabletopBeholder.exceptions;
 
-public class StringIntMapSerializationException extends RuntimeException{
+public class SerializationException extends RuntimeException{
 
     private static final long serialVersionUID = 1856361457854183093L;
 
-    public StringIntMapSerializationException() {
+    public SerializationException() {
         super();
     }
 
@@ -12,7 +12,7 @@ public class StringIntMapSerializationException extends RuntimeException{
      * Exception with a message, but no cause.
      * @param message A descriptive message for this exception.
      */
-    public StringIntMapSerializationException(String message) {
+    public SerializationException(String message) {
         super(message);
     }
 
@@ -20,7 +20,7 @@ public class StringIntMapSerializationException extends RuntimeException{
      * Exception with no message, but with a cause.
      * @param cause The original throwable resulting in this exception.
      */
-    public StringIntMapSerializationException(Throwable cause) {
+    public SerializationException(Throwable cause) {
         super(cause);
     }
 
@@ -29,7 +29,7 @@ public class StringIntMapSerializationException extends RuntimeException{
      * @param message A descriptive message for this exception.
      * @param cause The original throwable resulting in this exception.
      */
-    public StringIntMapSerializationException(String message, Throwable cause) {
+    public SerializationException(String message, Throwable cause) {
         super(message, cause);
     }
 }

@@ -3,6 +3,7 @@ package dev.tdwalsh.project.tabletopBeholder.templateApi;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.exc.MismatchedInputException;
 import dev.tdwalsh.project.tabletopBeholder.exceptions.CurlException;
+import dev.tdwalsh.project.tabletopBeholder.exceptions.MalformedInputException;
 import dev.tdwalsh.project.tabletopBeholder.exceptions.MissingResourceException;
 import dev.tdwalsh.project.tabletopBeholder.templateApi.model.TemplateCreature;
 import org.json.JSONArray;
@@ -18,6 +19,9 @@ import java.net.http.HttpResponse;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
+
+
+
 
 /**
  * Class responsible for taking in query parameters and returning results as {@link TemplateCreature}.
@@ -101,11 +105,10 @@ public class TemplateCreatureDao {
                     JSONArray creatureArray =  creatureJson.getJSONArray("results");
                     List<TemplateCreature> templateCreatureList = new ArrayList<>();
                     for(int i = 0; i < creatureArray.length(); i++) {
-
                         try {
                             templateCreatureList.add(objectMapper.readValue(creatureArray.get(i).toString(), TemplateCreature.class));
                         } catch (MismatchedInputException e) {
-                            //TODO add logging here to track creatures that fail to import
+                            //TODO add logging
                         }
                     }
                     return templateCreatureList;

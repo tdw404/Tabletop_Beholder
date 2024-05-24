@@ -1,11 +1,14 @@
 package dev.tdwalsh.project.tabletopBeholder.dynamodb.models;
 
 import com.amazonaws.services.dynamodbv2.datamodeling.*;
+import com.fasterxml.jackson.databind.util.Converter;
 import dev.tdwalsh.project.tabletopBeholder.converters.EffectConverter;
+import dev.tdwalsh.project.tabletopBeholder.converters.IntIntMapConverter;
 import dev.tdwalsh.project.tabletopBeholder.converters.ZonedDateTimeConverter;
 
 import java.time.ZonedDateTime;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 @DynamoDBTable(tableName = "TabletopBeholder_SpellTable")
