@@ -6,7 +6,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import dev.tdwalsh.project.tabletopBeholder.dynamodb.models.Creature;
-import dev.tdwalsh.project.tabletopBeholder.exceptions.serializationExceptions.CreatureSerializationException;
+import dev.tdwalsh.project.tabletopBeholder.exceptions.SerializationException;
 
 import java.util.List;
 
@@ -18,7 +18,7 @@ public class CreatureConverter implements DynamoDBTypeConverter<String, List<Cre
         try {
             return objectMapper.writeValueAsString(creatureList);
         } catch (JsonProcessingException e) {
-            throw new CreatureSerializationException("Error serializing effect list", e);
+            throw new SerializationException("Error serializing effect list", e);
         }
     }
 
@@ -27,7 +27,7 @@ public class CreatureConverter implements DynamoDBTypeConverter<String, List<Cre
         try {
             return objectMapper.readValue(creatureString, new TypeReference<>(){});
         } catch (JsonProcessingException e) {
-            throw new CreatureSerializationException("Error deserializing effect list", e);
+            throw new SerializationException("Error deserializing effect list", e);
         }
     }
 }

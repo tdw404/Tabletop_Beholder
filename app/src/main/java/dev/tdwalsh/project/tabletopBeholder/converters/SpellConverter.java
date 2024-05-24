@@ -6,7 +6,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import dev.tdwalsh.project.tabletopBeholder.dynamodb.models.Spell;
-import dev.tdwalsh.project.tabletopBeholder.exceptions.serializationExceptions.SpellSerializationException;
+import dev.tdwalsh.project.tabletopBeholder.exceptions.SerializationException;
 
 import java.util.List;
 
@@ -18,7 +18,7 @@ public class SpellConverter implements DynamoDBTypeConverter<String, List<Spell>
         try {
             return objectMapper.writeValueAsString(spellList);
         } catch (JsonProcessingException e) {
-            throw new SpellSerializationException("Error spell encounter list", e);
+            throw new SerializationException("Error spell encounter list", e);
         }
     }
 
@@ -27,7 +27,7 @@ public class SpellConverter implements DynamoDBTypeConverter<String, List<Spell>
         try {
             return objectMapper.readValue(spellString, new TypeReference<>(){});
         } catch (JsonProcessingException e) {
-            throw new SpellSerializationException("Error deserializing spell list", e);
+            throw new SerializationException("Error deserializing spell list", e);
         }
     }
 }
