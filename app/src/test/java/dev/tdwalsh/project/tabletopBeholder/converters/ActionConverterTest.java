@@ -1,7 +1,7 @@
 package dev.tdwalsh.project.tabletopBeholder.converters;
 
 import dev.tdwalsh.project.tabletopBeholder.dynamodb.models.Action;
-import dev.tdwalsh.project.tabletopBeholder.exceptions.serializationExceptions.ActionSerializationException;
+import dev.tdwalsh.project.tabletopBeholder.exceptions.SerializationException;
 import dev.tdwalsh.project.tabletopBeholder.resource.SpellHelper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -62,7 +62,7 @@ public class ActionConverterTest {
         //GIVEN
         //WHEN
         //THEN
-        assertThrows(ActionSerializationException.class, () -> converter.unconvert("fail"));
+        assertThrows(SerializationException.class, () -> converter.unconvert("fail"));
     }
 
 }
