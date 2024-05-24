@@ -11,6 +11,7 @@ import java.util.Objects;
 @DynamoDBTable(tableName = "TabletopBeholder_ActionTable")
 public class Action implements BeholderObject {
     //TODO remove useremail after pulling Action out of DB
+    //TODO Action should no longer be a Beholder Object
     private String userEmail;
     private String objectId;
     private String objectName;

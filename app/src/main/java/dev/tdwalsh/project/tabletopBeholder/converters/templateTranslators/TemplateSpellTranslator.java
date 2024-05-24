@@ -11,6 +11,8 @@ public class TemplateSpellTranslator {
 
     public static Spell translate(TemplateSpell templateSpell) {
         Spell spell = new Spell();
+
+        //Easily extracted fields
         spell.setObjectName(templateSpell.getName());
         spell.setSpellDescription(templateSpell.getDesc());
         spell.setSpellHigherLevel(templateSpell.getHigher_level());
@@ -22,6 +24,7 @@ public class TemplateSpellTranslator {
         spell.setCastingTime(templateSpell.getCasting_time());
         spell.setCastingTurns(0);
 
+        //Casting time --> casting turns logic
         List<String> tokens = Arrays.asList(templateSpell.getCasting_time().split(" |, "));
         ListIterator<String> tokenIterator = tokens.listIterator();
         while (tokenIterator.hasNext()) {
