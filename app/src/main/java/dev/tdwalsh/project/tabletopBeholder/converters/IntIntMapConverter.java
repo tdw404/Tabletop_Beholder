@@ -8,19 +8,19 @@ import dev.tdwalsh.project.tabletopBeholder.exceptions.SerializationException;
 
 import java.util.Map;
 
-public class StringIntMapConverter implements DynamoDBTypeConverter<String, Map<String,Integer>>{
+public class IntIntMapConverter implements DynamoDBTypeConverter<String, Map<Integer,Integer>>{
     private ObjectMapper objectMapper =new ObjectMapper();
     @Override
-    public String convert(Map<String,Integer> stringIntegerMap) {
+    public String convert(Map<Integer,Integer> integerIntegerMap) {
         try {
-            return objectMapper.writeValueAsString(stringIntegerMap);
+            return objectMapper.writeValueAsString(integerIntegerMap);
         } catch (JsonProcessingException e) {
             throw new SerializationException("Error serializing map", e);
         }
     }
 
     @Override
-    public Map<String,Integer> unconvert(String serialString) {
+    public Map<Integer,Integer> unconvert(String serialString) {
         try {
             return objectMapper.readValue(serialString, new TypeReference<>(){});
         } catch (JsonProcessingException e) {

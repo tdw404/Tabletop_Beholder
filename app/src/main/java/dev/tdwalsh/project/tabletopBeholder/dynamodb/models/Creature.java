@@ -1,10 +1,7 @@
 package dev.tdwalsh.project.tabletopBeholder.dynamodb.models;
 
 import com.amazonaws.services.dynamodbv2.datamodeling.*;
-import dev.tdwalsh.project.tabletopBeholder.converters.ActionConverter;
-import dev.tdwalsh.project.tabletopBeholder.converters.EffectConverter;
-import dev.tdwalsh.project.tabletopBeholder.converters.SpellConverter;
-import dev.tdwalsh.project.tabletopBeholder.converters.ZonedDateTimeConverter;
+import dev.tdwalsh.project.tabletopBeholder.converters.*;
 
 import java.time.ZonedDateTime;
 import java.util.List;
@@ -29,9 +26,9 @@ public class Creature implements BeholderObject {
     private String type;
     private String subType;
     private String group;
-    private String creatureAlignment;
-    private Integer creatureAC;
-    private String creatureArmor;
+    private String alignment;
+    private Integer armorClass;
+    private String armorType;
     private List<Effect> activeEffects;
     private Boolean knockedOut;
     private Boolean dead;
@@ -40,25 +37,22 @@ public class Creature implements BeholderObject {
     private Integer currentHitPoints;
     private String hitDice;
     private Integer currentHitDice;
-    private Integer walkSpeed;
-    private Integer flySpeed;
-    private Integer swimSpeed;
-    private Integer burrowSpeed;
+    private Map<String, Integer> speedMap;
     private Map<String, Integer> statMap;
     private Map<String, Integer> saveMap;
     private Integer passivePerception;
     private Map<String, Integer> skillsMap;
-    private List<String> vulnerabilities;
-    private List<String> resistances;
-    private List<String> immunities;
-    private List<String> conditionImmunities;
-    private List<String> senses;
-    private List<String> languages;
+    private String vulnerabilities;
+    private String resistances;
+    private String immunities;
+    private String conditionImmunities;
+    private String senses;
+    private String languages;
     private Double challengeRating;
-    private List<Action> actionList;
+    private Map<String, List<Action>> actionMap;
     private String legendaryDesc;
     private List<Spell> spellList;
-    private Map<Integer, String> spellSlots;
+    private Map<Integer, Integer> spellSlots;
     private String spellcastingAbility;
     private Integer spellSaveDC;
     private Integer spellAttackModifier;
@@ -197,30 +191,30 @@ public class Creature implements BeholderObject {
     }
 
     @DynamoDBAttribute(attributeName = "creatureAlignment")
-    public String getCreatureAlignment() {
-        return creatureAlignment;
+    public String getAlignment() {
+        return alignment;
     }
 
-    public void setCreatureAlignment(String creatureAlignment) {
-        this.creatureAlignment = creatureAlignment;
+    public void setAlignment(String alignment) {
+        this.alignment = alignment;
     }
 
     @DynamoDBAttribute(attributeName = "creatureAC")
-    public Integer getCreatureAC() {
-        return creatureAC;
+    public Integer getArmorClass() {
+        return armorClass;
     }
 
-    public void setCreatureAC(Integer creatureAC) {
-        this.creatureAC = creatureAC;
+    public void setArmorClass(Integer armorClass) {
+        this.armorClass = armorClass;
     }
 
     @DynamoDBAttribute(attributeName = "creatureArmor")
-    public String getCreatureArmor() {
-        return creatureArmor;
+    public String getArmorType() {
+        return armorType;
     }
 
-    public void setCreatureArmor(String creatureArmor) {
-        this.creatureArmor = creatureArmor;
+    public void setArmorType(String armorType) {
+        this.armorType = armorType;
     }
 
     @DynamoDBAttribute(attributeName = "activeEffects")
@@ -298,41 +292,18 @@ public class Creature implements BeholderObject {
         this.currentHitDice = currentHitDice;
     }
 
-    @DynamoDBAttribute(attributeName = "walkSpeed")
-    public Integer getWalkSpeed() {
-        return walkSpeed;
+    @DynamoDBAttribute(attributeName = "speedMap")
+    @DynamoDBTypeConverted(converter = StringIntMapConverter.class)
+    public Map<String, Integer> getSpeedMap() {
+        return speedMap;
     }
 
-    public void setWalkSpeed(Integer walkSpeed) {
-        this.walkSpeed = walkSpeed;
-    }
-
-    @DynamoDBAttribute(attributeName = "flySpeed")
-    public Integer getFlySpeed() { return flySpeed; }
-
-    public void setFlySpeed(Integer flySpeed) {
-        this.flySpeed = flySpeed;
-    }
-
-    @DynamoDBAttribute(attributeName = "swimSpeed")
-    public Integer getSwimSpeed() {
-        return swimSpeed;
-    }
-
-    public void setSwimSpeed(Integer swimSpeed) {
-        this.swimSpeed = swimSpeed;
-    }
-
-    @DynamoDBAttribute(attributeName = "burrowSpeed")
-    public Integer getBurrowSpeed() {
-        return burrowSpeed;
-    }
-
-    public void setBurrowSpeed(Integer burrowSpeed) {
-        this.burrowSpeed = burrowSpeed;
+    public void setSpeedMap(Map<String, Integer> speedMap) {
+        this.speedMap = speedMap;
     }
 
     @DynamoDBAttribute(attributeName = "statMap")
+    @DynamoDBTypeConverted(converter = StringIntMapConverter.class)
     public Map<String, Integer> getStatMap() {
         return statMap;
     }
@@ -342,6 +313,7 @@ public class Creature implements BeholderObject {
     }
 
     @DynamoDBAttribute(attributeName = "saveMap")
+    @DynamoDBTypeConverted(converter = StringIntMapConverter.class)
     public Map<String, Integer> getSaveMap() {
         return saveMap;
     }
@@ -360,6 +332,7 @@ public class Creature implements BeholderObject {
     }
 
     @DynamoDBAttribute(attributeName = "skillsMap")
+    @DynamoDBTypeConverted(converter = StringIntMapConverter.class)
     public Map<String, Integer> getSkillsMap() {
         return skillsMap;
     }
@@ -369,62 +342,56 @@ public class Creature implements BeholderObject {
     }
 
     @DynamoDBAttribute(attributeName = "vulnerabilities")
-    @DynamoDBTyped(DynamoDBAttributeType.SS)
-    public List<String> getVulnerabilities() {
+    public String getVulnerabilities() {
         return vulnerabilities;
     }
 
-    public void setVulnerabilities(List<String> vulnerabilities) {
+    public void setVulnerabilities(String vulnerabilities) {
         this.vulnerabilities = vulnerabilities;
     }
 
     @DynamoDBAttribute(attributeName = "resistances")
-    @DynamoDBTyped(DynamoDBAttributeType.SS)
-    public List<String> getResistances() {
+    public String getResistances() {
         return resistances;
     }
 
-    public void setResistances(List<String> resistances) {
+    public void setResistances(String resistances) {
         this.resistances = resistances;
     }
 
     @DynamoDBAttribute(attributeName = "immunities")
-    @DynamoDBTyped(DynamoDBAttributeType.SS)
-    public List<String> getImmunities() {
+    public String getImmunities() {
         return immunities;
     }
 
-    public void setImmunities(List<String> immunities) {
+    public void setImmunities(String immunities) {
         this.immunities = immunities;
     }
 
     @DynamoDBAttribute(attributeName = "conditionImmunities")
-    @DynamoDBTyped(DynamoDBAttributeType.SS)
-    public List<String> getConditionImmunities() {
+    public String getConditionImmunities() {
         return conditionImmunities;
     }
 
-    public void setConditionImmunities(List<String> conditionImmunities) {
+    public void setConditionImmunities(String conditionImmunities) {
         this.conditionImmunities = conditionImmunities;
     }
 
     @DynamoDBAttribute(attributeName = "senses")
-    @DynamoDBTyped(DynamoDBAttributeType.SS)
-    public List<String> getSenses() {
+    public String getSenses() {
         return senses;
     }
 
-    public void setSenses(List<String> senses) {
+    public void setSenses(String senses) {
         this.senses = senses;
     }
 
     @DynamoDBAttribute(attributeName = "languages")
-    @DynamoDBTyped(DynamoDBAttributeType.SS)
-    public List<String> getLanguages() {
+    public String getLanguages() {
         return languages;
     }
 
-    public void setLanguages(List<String> languages) {
+    public void setLanguages(String languages) {
         this.languages = languages;
     }
 
@@ -437,14 +404,14 @@ public class Creature implements BeholderObject {
         this.challengeRating = challengeRating;
     }
 
-    @DynamoDBAttribute(attributeName = "actionList")
-    @DynamoDBTypeConverted(converter = ActionConverter.class)
-    public List<Action> getActionList() {
-        return actionList;
+    @DynamoDBAttribute(attributeName = "actionMap")
+    @DynamoDBTypeConverted(converter = StringActionsMapConverter.class)
+    public Map<String, List<Action>> getActionMap() {
+        return actionMap;
     }
 
-    public void setActionList(List<Action> actionList) {
-        this.actionList = actionList;
+    public void setActionMap(Map<String, List<Action>> actionMap) {
+        this.actionMap = actionMap;
     }
 
     @DynamoDBAttribute(attributeName = "legendaryDesc")
@@ -467,11 +434,12 @@ public class Creature implements BeholderObject {
     }
 
     @DynamoDBAttribute(attributeName = "spellSlots")
-    public Map<Integer, String> getSpellSlots() {
+    @DynamoDBTypeConverted(converter =  IntIntMapConverter.class)
+    public Map<Integer, Integer> getSpellSlots() {
         return spellSlots;
     }
 
-    public void setSpellSlots(Map<Integer, String> spellSlots) {
+    public void setSpellSlots(Map<Integer, Integer> spellSlots) {
         this.spellSlots = spellSlots;
     }
 

@@ -1,6 +1,6 @@
 package dev.tdwalsh.project.tabletopBeholder.converters;
 
-import dev.tdwalsh.project.tabletopBeholder.exceptions.serializationExceptions.StringIntMapSerializationException;
+import dev.tdwalsh.project.tabletopBeholder.exceptions.SerializationException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -51,7 +51,7 @@ public class StringIntMapConverterTest {
         //GIVEN
         //WHEN
         //THEN
-        assertThrows(StringIntMapSerializationException.class, () -> converter.unconvert("fail"));
+        assertThrows(SerializationException.class, () -> converter.unconvert("fail"));
     }
 
 }

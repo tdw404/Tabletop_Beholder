@@ -10,6 +10,7 @@ import java.util.Objects;
 
 @DynamoDBTable(tableName = "TabletopBeholder_ActionTable")
 public class Action implements BeholderObject {
+    //TODO remove useremail after pulling Action out of DB
     private String userEmail;
     private String objectId;
     private String objectName;
@@ -18,6 +19,7 @@ public class Action implements BeholderObject {
     private Integer uses;
     private Integer rechargeOn;
     private List<Effect> appliesEffects;
+    //TODO Can remove ZDTs after pulling action out of DB
     private ZonedDateTime createDateTime;
     private ZonedDateTime editDateTime;
 
@@ -120,7 +122,7 @@ public class Action implements BeholderObject {
 
     @Override
     public int hashCode() {
-        return Objects.hash(this.userEmail + this.objectId);
+        return Objects.hash(this.objectId);
     }
 
     @Override
@@ -135,6 +137,6 @@ public class Action implements BeholderObject {
             return false;
         }
         Action other = (Action) o;
-        return (this.userEmail.equals(other.userEmail)) && (this.objectId.equals(other.objectId));
+        return this.objectId.equals(other.objectId);
     }
 }
