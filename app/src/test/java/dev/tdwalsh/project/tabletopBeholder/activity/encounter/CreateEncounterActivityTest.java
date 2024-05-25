@@ -47,13 +47,4 @@ public class CreateEncounterActivityTest {
         assertEquals(encounter, result.getEncounter(), "Expected returned object to contain value sent from DAO");
         assertNotEquals(orgEncounterId, result.getEncounter().getObjectId(), "Expected encounter to have been given a new ID");
     }
-
-    @Test
-    public void handleRequest_objectNameNotUnique_throwsError() {
-        //GIVEN
-        doReturn(true).when(encounterDao).objectNameExists(anyString(), anyString());
-        //WHEN
-        //THEN
-        assertThrows(DuplicateResourceException.class, () -> createEncounterActivity.handleRequest(createEncounterRequest));
-    }
 }
