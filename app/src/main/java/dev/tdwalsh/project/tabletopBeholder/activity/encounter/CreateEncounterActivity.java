@@ -38,12 +38,10 @@ public class CreateEncounterActivity {
     public CreateEncounterResult handleRequest(CreateEncounterRequest createEncounterRequest) {
         //First, assigned contained object to new variable
         //Then, pulls userEmail from the authenticated email field in the request
-        //Then, checks name for uniqueness
         //Then, uses the create helper to finish building the object
         //Finally, returns the newly created object
         Encounter encounter = createEncounterRequest.getEncounter();
         encounter.setUserEmail(createEncounterRequest.getUserEmail());
-        NameHelper.objectNameUniqueness(encounterDao, encounter);
 
         return CreateEncounterResult.builder()
                 .withEncounter((Encounter)CreateObjectHelper.createObject(encounterDao, encounter))

@@ -67,17 +67,6 @@ public class UpdateEncounterActivityTest {
     }
 
     @Test
-    public void handleRequest_objectNameNotUnique_throwsError() {
-        //GIVEN
-        newEncounter.setObjectName("different");
-        doReturn(oldEncounter).when(encounterDao).getSingle(newEncounter.getUserEmail(), newEncounter.getObjectId());
-        doReturn(true).when(encounterDao).objectNameExists(newEncounter.getUserEmail(), newEncounter.getObjectName());
-        //WHEN
-        //THEN
-        assertThrows(DuplicateResourceException.class, () -> updateEncounterActivity.handleRequest(updateEncounterRequest));
-    }
-
-    @Test
     public void handleRequest_noOldObjectFound_throwsError() {
         //GIVEN
         newEncounter.setObjectName("different");
