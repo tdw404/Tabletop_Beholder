@@ -9,7 +9,7 @@ import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Objects;
 
-@DynamoDBTable(tableName = "ProjectBeholder_SessionTable")
+@DynamoDBTable(tableName = "TabletopBeholder_SessionTable")
 public class Session implements BeholderObject {
     private String userEmail;
     private String objectId;
