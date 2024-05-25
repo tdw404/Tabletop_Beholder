@@ -942,7 +942,9 @@ Resources:
             - AttributeName: "objectName"
               KeyType: "RANGE"
           Projection:
-            ProjectionType: "KEYS_ONLY"
+            ProjectionType: "INCLUDE"
+            NonKeyAttributes:
+              - "objectId"
 
 #-----------------------------------------------------
 # The outputs defined below will be printed
