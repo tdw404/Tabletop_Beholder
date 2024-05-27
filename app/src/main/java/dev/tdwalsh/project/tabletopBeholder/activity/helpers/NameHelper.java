@@ -6,6 +6,7 @@ import dev.tdwalsh.project.tabletopBeholder.dynamodb.dao.SpellDao;
 import dev.tdwalsh.project.tabletopBeholder.dynamodb.models.BeholderObject;
 import dev.tdwalsh.project.tabletopBeholder.dynamodb.models.Spell;
 import dev.tdwalsh.project.tabletopBeholder.exceptions.DuplicateResourceException;
+import org.apache.commons.text.WordUtils;
 
 /**
  * This is a helper class to allow multiple activities to create a {@link dev.tdwalsh.project.tabletopBeholder.dynamodb.models.BeholderObject} using the same method.
@@ -21,7 +22,7 @@ public class NameHelper {
      * @param beholderObject to check
      */
     public static void objectNameUniqueness(BeholderDao dao, BeholderObject beholderObject) {
-        if (dao.objectNameExists(beholderObject.getUserEmail(), beholderObject.getObjectName())) {
+        if (dao.objectNameExists(beholderObject.getUserEmail(), WordUtils.capitalizeFully(beholderObject.getObjectName()))) {
             throw new DuplicateResourceException(String.format("Resource with name [%s] already exists", beholderObject.getObjectName()));
         }
     }
