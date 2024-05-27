@@ -3,6 +3,7 @@ package dev.tdwalsh.project.tabletopBeholder.converters.templateTranslators;
 import dev.tdwalsh.project.tabletopBeholder.dynamodb.dao.SpellDao;
 import dev.tdwalsh.project.tabletopBeholder.dynamodb.models.Action;
 import dev.tdwalsh.project.tabletopBeholder.dynamodb.models.Creature;
+import dev.tdwalsh.project.tabletopBeholder.dynamodb.models.Spell;
 import dev.tdwalsh.project.tabletopBeholder.templateApi.model.TemplateCreature;
 
 import java.time.ZonedDateTime;
@@ -58,7 +59,8 @@ public class TemplateCreatureTranslator {
         creature.setCreateDateTime(ZonedDateTime.now());
         creature.setEditDateTime(creature.getEditDateTime());
 
-        //Actions
+        //Import Actions
+        //Retrieve actions from JSON lists and add to a single action map
         Map<String, List<Action>> actionMap = new HashMap<>();
         actionMap.put("action", Optional.ofNullable(templateCreature.getActions()).orElse(Collections.emptyList())
                 .stream()
@@ -81,6 +83,43 @@ public class TemplateCreatureTranslator {
                 .map(templateAction -> TemplateActionTranslator.translate(templateAction, "special"))
                 .collect(Collectors.toList()));
         creature.setActionMap(actionMap);
+
+        List<Spell> spellList = new ArrayList<>();
+
+        //Import Innate Spellcasting
+        //Finds the 'Innate Spellcasting' special action, splits into lines.
+        //Gets spellcasting ability and DC from first lines
+        //Gets spells and number of innate casts from each subsequent lines
+        List<String> sentenceTokens = Arrays.asList(
+                Optional.ofNullable(actionMap.get("special")).orElse(Collections.emptyList())
+                .stream()
+                .filter(action -> action.getObjectName().equals("Innate Spellcasting"))
+                .collect(Collectors.toList())
+                .get(0)
+                .getActionDescription()
+                .split("\\n\\n"));
+
+        List<String> spellNames = new ArrayList<>();
+        sentenceTokens.forEach(sentenceToken -> {
+            if (sentenceToken.contains("spell save")) {
+                creature.setSpellcastingAbility(Arrays.asList(sentenceToken.split("ability is | \\(")).get(1));
+                creature.setSpellSaveDC(Arrays.asList(sentenceToken.split("spell save DC |\\)")).get(1));
+            }
+
+            if (sentenceToken.contains("at will")) {
+                int innateCasts = -1;
+                Arrays.stream(sentenceToken.split(", "))
+                        .forEach(spellName -> {
+                            //First, check to see if spell already exists in library
+                            //Else, check remote and retrieve the spell if possible
+                            //Else, create a blank spell with this name
+//                            try {
+//                                String spellId = spe
+//                            }
+                        });
+            }
+        });
+
 
         //TODO spell slots
         //TODO spellcasting ability

@@ -75,7 +75,7 @@ public class CreatureHelper {
         testMap2.put(2, mod);
         creature.setSpellSlots(testMap2);
         creature.setSpellcastingAbility("spellcastingAbility" + mod);
-        creature.setSpellSaveDC(mod);
+        creature.setSpellSaveDC("spellSaveDC" + mod);
         creature.setSpellAttackModifier(mod);
         creature.setCreateDateTime(ZonedDateTime.now());
         creature.setEditDateTime(ZonedDateTime.now());
