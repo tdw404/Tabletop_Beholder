@@ -39,7 +39,7 @@ public class Action implements BeholderObject {
     }
 
     public void setObjectId(String objectId) {
-        this.objectId = WordUtils.capitalizeFully(objectId);
+        this.objectId = objectId;
     }
 
     @Override
@@ -49,7 +49,7 @@ public class Action implements BeholderObject {
     }
 
     public void setObjectName(String objectName) {
-        this.objectName = objectName;
+        this.objectName = WordUtils.capitalizeFully(objectName);
     }
 
     @DynamoDBAttribute(attributeName = "actionType")

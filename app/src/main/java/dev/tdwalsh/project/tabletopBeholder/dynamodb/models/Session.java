@@ -46,7 +46,7 @@ public class Session implements BeholderObject {
     }
 
     public void setObjectName(String objectName) {
-        this.objectName = WordUtils.capitalizeFully(objectId);
+        this.objectName = WordUtils.capitalizeFully(objectName);
     }
 
     @DynamoDBAttribute(attributeName = "encounterList")
