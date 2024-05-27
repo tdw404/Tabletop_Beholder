@@ -1,8 +1,11 @@
 package dev.tdwalsh.project.tabletopBeholder.dynamodb.models;
 
 import com.amazonaws.services.dynamodbv2.datamodeling.*;
+import com.google.common.base.CaseFormat;
 import dev.tdwalsh.project.tabletopBeholder.converters.EffectConverter;
 import dev.tdwalsh.project.tabletopBeholder.converters.ZonedDateTimeConverter;
+import org.apache.commons.text.WordUtils;
+
 
 import java.time.ZonedDateTime;
 import java.util.List;
@@ -56,7 +59,7 @@ public class Spell implements BeholderObject {
     }
 
     public void setObjectName(String objectName) {
-        this.objectName = objectName;
+        this.objectName = WordUtils.capitalizeFully(objectName);
     }
 
     @DynamoDBAttribute(attributeName = "spellDescription")
