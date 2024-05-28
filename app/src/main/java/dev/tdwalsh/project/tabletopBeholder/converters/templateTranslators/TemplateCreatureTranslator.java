@@ -1,18 +1,33 @@
 package dev.tdwalsh.project.tabletopBeholder.converters.templateTranslators;
 
+import dev.tdwalsh.project.tabletopBeholder.activity.helpers.CreateObjectHelper;
 import dev.tdwalsh.project.tabletopBeholder.dynamodb.dao.SpellDao;
 import dev.tdwalsh.project.tabletopBeholder.dynamodb.models.Action;
 import dev.tdwalsh.project.tabletopBeholder.dynamodb.models.Creature;
 import dev.tdwalsh.project.tabletopBeholder.dynamodb.models.Spell;
+import dev.tdwalsh.project.tabletopBeholder.templateApi.TemplateSpellDao;
 import dev.tdwalsh.project.tabletopBeholder.templateApi.model.TemplateCreature;
+import dev.tdwalsh.project.tabletopBeholder.templateApi.model.TemplateSpell;
+import org.apache.commons.text.WordUtils;
 
+import javax.inject.Inject;
 import java.time.ZonedDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
 public class TemplateCreatureTranslator {
 
-    public static Creature translate(TemplateCreature templateCreature, SpellDao spellDao) {
+    private SpellDao spellDao;
+    private TemplateSpellDao templateSpellDao;
+
+    @Inject
+    public TemplateCreatureTranslator (SpellDao spellDao, TemplateSpellDao templateSpellDao) {
+        this.spellDao = spellDao;
+        this.templateSpellDao = templateSpellDao;
+    }
+
+
+    public Creature translate(TemplateCreature templateCreature, String userEmail) {
         Creature creature = new Creature();
 
         //Easily extracted fields
@@ -106,16 +121,52 @@ public class TemplateCreatureTranslator {
                 creature.setSpellSaveDC(Arrays.asList(sentenceToken.split("spell save DC |\\)")).get(1));
             }
 
-            if (sentenceToken.contains("at will")) {
-                int innateCasts = -1;
+            if (sentenceToken.contains("at will") || sentenceToken.contains("/day")) {
+                //Extract number of innate casts for this set of spells
+                int casts = 0;
+                if (sentenceToken.contains("at will")) {
+                    casts = -1;
+                }
+                else {
+                    List<String> innateSplit = Arrays.asList(sentenceToken.split("/day"));
+                    try {
+                        casts = Integer.parseInt(innateSplit.get(0));
+                    } catch (Exception e) {
+                        casts = 1;
+                    }
+                }
+                final int innateCasts = casts;
                 Arrays.stream(sentenceToken.split(", "))
+                        .map(WordUtils::capitalizeFully)
                         .forEach(spellName -> {
                             //First, check to see if spell already exists in library
                             //Else, check remote and retrieve the spell if possible
                             //Else, create a blank spell with this name
-//                            try {
-//                                String spellId = spe
-//                            }
+                            Spell spell = spellDao.getSpellByName(userEmail, spellName);
+                            if (spell != null) {
+                                spell.setInnateCasts(innateCasts);
+                                spellList.add(spell);
+                            } else {
+                                //Since the external api does not appear to allow searches by name
+                                //It looks like we're forced to get a list of partial matches
+                                //Then filter through and find the matching name manually
+                                List<TemplateSpell> templateSpellList= templateSpellDao.getMultiple("search=" + spellName.replace(" ", "%20"));
+                                TemplateSpell templateSpell = templateSpellList.stream()
+                                        .filter(template -> template.getName().equals(spellName))
+                                        .findFirst().orElse(null);
+                                if (templateSpell != null) {
+                                    spell = TemplateSpellTranslator.translate(templateSpell);
+                                    spell.setInnateCasts(innateCasts);
+                                    spellList.add(spell);
+                                } else {
+                                    spell = new Spell();
+                                    spell.setUserEmail(userEmail);
+                                    spell.setObjectName(spellName);
+                                    spell.setInnateCasts(innateCasts);
+                                    spell = (Spell) CreateObjectHelper.createObject(spellDao, spell);
+                                    spellList.add(spell);
+                                }
+                            }
                         });
             }
         });
