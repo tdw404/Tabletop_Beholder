@@ -3,6 +3,7 @@ package dev.tdwalsh.project.tabletopBeholder.dynamodb.models;
 import com.amazonaws.services.dynamodbv2.datamodeling.*;
 import dev.tdwalsh.project.tabletopBeholder.converters.EffectConverter;
 import dev.tdwalsh.project.tabletopBeholder.converters.ZonedDateTimeConverter;
+import org.apache.commons.text.WordUtils;
 
 import java.time.ZonedDateTime;
 import java.util.List;
@@ -51,7 +52,7 @@ public class Action implements BeholderObject {
     }
 
     public void setObjectName(String objectName) {
-        this.objectName = objectName;
+        this.objectName = WordUtils.capitalizeFully(objectName);
     }
 
     @DynamoDBAttribute(attributeName = "actionType")

@@ -1002,9 +1002,7 @@ Resources:
             - AttributeName: "objectName"
               KeyType: "RANGE"
           Projection:
-            ProjectionType: "INCLUDE"
-            NonKeyAttributes:
-              - "objectId"
+            ProjectionType: "ALL"
 
 #-----------------------------------------------------
 # The outputs defined below will be printed
