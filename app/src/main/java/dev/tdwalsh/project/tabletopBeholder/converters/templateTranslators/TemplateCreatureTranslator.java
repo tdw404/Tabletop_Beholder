@@ -114,11 +114,18 @@ public class TemplateCreatureTranslator {
                 .getActionDescription()
                 .split("\\n\\n"));
 
-        List<String> spellNames = new ArrayList<>();
         sentenceTokens.forEach(sentenceToken -> {
             if (sentenceToken.contains("spell save")) {
+                //Retrieves spellcasting stats
                 creature.setSpellcastingAbility(Arrays.asList(sentenceToken.split("ability is | \\(")).get(1));
-                creature.setSpellSaveDC(Arrays.asList(sentenceToken.split("spell save DC |\\)")).get(1));
+                String protoSpellSave = Arrays.asList(sentenceToken.split("spell save DC |\\)")).get(1);
+                creature.setSpellSaveDC(Arrays.asList(protoSpellSave.split(",")).get(0));
+                if(sentenceToken.contains("to hit with spell attacks")) {
+                    List<String> splitTokens = Arrays.asList(
+                            Arrays.asList(sentenceToken.split(" to hit with spell attacks"))
+                                    .get(0).split(", | "));
+                    creature.setSpellAttackModifier(splitTokens.get(splitTokens.size() - 1));
+                }
             }
 
             if (sentenceToken.contains("at will") || sentenceToken.contains("/day")) {
@@ -136,7 +143,7 @@ public class TemplateCreatureTranslator {
                     }
                 }
                 final int innateCasts = casts;
-                Arrays.stream(sentenceToken.split(", "))
+                Arrays.stream(Arrays.asList(sentenceToken.split(": ")).get(1).split(", "))
                         .map(WordUtils::capitalizeFully)
                         .forEach(spellName -> {
                             //First, check to see if spell already exists in library
@@ -156,20 +163,23 @@ public class TemplateCreatureTranslator {
                                         .findFirst().orElse(null);
                                 if (templateSpell != null) {
                                     spell = TemplateSpellTranslator.translate(templateSpell);
+                                    spell.setUserEmail(userEmail);
+                                    spell = (Spell) CreateObjectHelper.createObject(spellDao, spell);
                                     spell.setInnateCasts(innateCasts);
                                     spellList.add(spell);
                                 } else {
                                     spell = new Spell();
                                     spell.setUserEmail(userEmail);
                                     spell.setObjectName(spellName);
-                                    spell.setInnateCasts(innateCasts);
                                     spell = (Spell) CreateObjectHelper.createObject(spellDao, spell);
+                                    spell.setInnateCasts(innateCasts);
                                     spellList.add(spell);
                                 }
                             }
                         });
             }
         });
+        creature.setSpellList(spellList);
 
 
         //TODO spell slots

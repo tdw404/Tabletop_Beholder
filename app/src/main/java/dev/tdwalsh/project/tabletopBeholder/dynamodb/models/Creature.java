@@ -55,7 +55,7 @@ public class Creature implements BeholderObject {
     private Map<Integer, Integer> spellSlots;
     private String spellcastingAbility;
     private String spellSaveDC;
-    private Integer spellAttackModifier;
+    private String spellAttackModifier;
     private ZonedDateTime createDateTime;
     private ZonedDateTime editDateTime;
 
@@ -462,11 +462,11 @@ public class Creature implements BeholderObject {
     }
 
     @DynamoDBAttribute(attributeName = "spellAttackModifier")
-    public Integer getSpellAttackModifier() {
+    public String getSpellAttackModifier() {
         return spellAttackModifier;
     }
 
-    public void setSpellAttackModifier(Integer spellAttackModifier) {
+    public void setSpellAttackModifier(String spellAttackModifier) {
         this.spellAttackModifier = spellAttackModifier;
     }
     @DynamoDBAttribute(attributeName= "createDateTime")
