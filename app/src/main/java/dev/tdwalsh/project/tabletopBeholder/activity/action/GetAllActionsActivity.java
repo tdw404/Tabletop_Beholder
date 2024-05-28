@@ -5,8 +5,9 @@ import dev.tdwalsh.project.tabletopBeholder.activity.action.result.GetAllActions
 import dev.tdwalsh.project.tabletopBeholder.dynamodb.dao.ActionDao;
 import dev.tdwalsh.project.tabletopBeholder.dynamodb.models.Action;
 
-import javax.inject.Inject;
 import java.util.List;
+import javax.inject.Inject;
+
 
 /**
  * GetActionActivity handles negotiation with {@link ActionDao} to retrieve a list of {@link Action}.

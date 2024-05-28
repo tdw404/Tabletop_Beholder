@@ -1,7 +1,7 @@
 package dev.tdwalsh.project.tabletopBeholder.converters;
 
 import dev.tdwalsh.project.tabletopBeholder.dynamodb.models.Creature;
-import dev.tdwalsh.project.tabletopBeholder.exceptions.serializationExceptions.CreatureSerializationException;
+import dev.tdwalsh.project.tabletopBeholder.exceptions.SerializationException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -59,7 +59,7 @@ public class CreatureConverterTest {
         //GIVEN
         //WHEN
         //THEN
-        assertThrows(CreatureSerializationException.class, () -> converter.unconvert("fail"));
+        assertThrows(SerializationException.class, () -> converter.unconvert("fail"));
     }
 
 }

@@ -20,7 +20,7 @@ public class GetAllSpellsLambda
         return super.runActivity(
                 () -> input.fromUserClaims(claims ->
                         GetAllSpellsRequest.builder()
-                                .withUserEmail(claims.get("userEmail"))
+                                .withUserEmail(claims.get("email"))
                                 .build()),
                 (request, serviceComponent) ->
                         serviceComponent.provideGetAllSpellsActivity().handleRequest(request)

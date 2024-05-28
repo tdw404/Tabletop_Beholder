@@ -6,7 +6,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import dev.tdwalsh.project.tabletopBeholder.dynamodb.models.Action;
-import dev.tdwalsh.project.tabletopBeholder.exceptions.serializationExceptions.ActionSerializationException;
+import dev.tdwalsh.project.tabletopBeholder.exceptions.SerializationException;
 
 import java.util.List;
 
@@ -18,7 +18,7 @@ public class ActionConverter implements DynamoDBTypeConverter<String, List<Actio
         try {
             return objectMapper.writeValueAsString(actionList);
         } catch (JsonProcessingException e) {
-            throw new ActionSerializationException("Error serializing action list", e);
+            throw new SerializationException("Error serializing action list", e);
         }
     }
 
@@ -27,7 +27,7 @@ public class ActionConverter implements DynamoDBTypeConverter<String, List<Actio
         try {
             return objectMapper.readValue(actionString, new TypeReference<>(){});
         } catch (JsonProcessingException e) {
-            throw new ActionSerializationException("Error deserializing action list", e);
+            throw new SerializationException("Error deserializing action list", e);
         }
     }
 }

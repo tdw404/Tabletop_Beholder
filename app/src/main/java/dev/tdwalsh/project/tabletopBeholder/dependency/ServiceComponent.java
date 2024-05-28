@@ -4,6 +4,9 @@ import dagger.Component;
 import dev.tdwalsh.project.tabletopBeholder.activity.action.*;
 import dev.tdwalsh.project.tabletopBeholder.activity.creature.*;
 import dev.tdwalsh.project.tabletopBeholder.activity.encounter.*;
+import dev.tdwalsh.project.tabletopBeholder.activity.externalCreature.CreateTemplateCreatureActivity;
+import dev.tdwalsh.project.tabletopBeholder.activity.externalCreature.GetTemplateCreatureActivity;
+import dev.tdwalsh.project.tabletopBeholder.activity.externalCreature.SearchTemplateCreaturesActivity;
 import dev.tdwalsh.project.tabletopBeholder.activity.externalSpell.CreateTemplateSpellActivity;
 import dev.tdwalsh.project.tabletopBeholder.activity.externalSpell.SearchTemplateSpellsActivity;
 import dev.tdwalsh.project.tabletopBeholder.activity.externalTemplateSpell.GetTemplateSpellActivity;
@@ -186,4 +189,22 @@ public interface ServiceComponent {
      * @return SearchTemplateSpellsActivity
      */
     SearchTemplateSpellsActivity provideSearchTemplateSpellsActivity();
+
+    /**
+     * Provides the relevant activity.
+     * @return GetTemplateCreatureActivity
+     */
+    GetTemplateCreatureActivity provideGetTemplateCreatureActivity();
+
+    /**
+     * Provides the relevant activity.
+     * @return SearchTemplateCreaturesActivity
+     */
+    SearchTemplateCreaturesActivity provideSearchTemplateCreaturesActivity();
+
+    /**
+     * Provides the relevant activity.
+     * @return CreateTemplateCreatureActivity
+     */
+    CreateTemplateCreatureActivity provideCreateTemplateCreatureActivity();
 }

@@ -6,7 +6,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import dev.tdwalsh.project.tabletopBeholder.dynamodb.models.Encounter;
-import dev.tdwalsh.project.tabletopBeholder.exceptions.serializationExceptions.EncounterSerializationException;
+import dev.tdwalsh.project.tabletopBeholder.exceptions.SerializationException;
 
 import java.util.List;
 
@@ -18,7 +18,7 @@ public class EncounterConverter implements DynamoDBTypeConverter<String, List<En
         try {
             return objectMapper.writeValueAsString(encounterList);
         } catch (JsonProcessingException e) {
-            throw new EncounterSerializationException("Error serializing effect list", e);
+            throw new SerializationException("Error serializing effect list", e);
         }
     }
 
@@ -27,7 +27,7 @@ public class EncounterConverter implements DynamoDBTypeConverter<String, List<En
         try {
             return objectMapper.readValue(encounterString, new TypeReference<>(){});
         } catch (JsonProcessingException e) {
-            throw new EncounterSerializationException("Error deserializing effect list", e);
+            throw new SerializationException("Error deserializing effect list", e);
         }
     }
 }

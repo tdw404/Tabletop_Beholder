@@ -6,7 +6,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import dev.tdwalsh.project.tabletopBeholder.dynamodb.models.Effect;
-import dev.tdwalsh.project.tabletopBeholder.exceptions.serializationExceptions.EffectSerializationException;
+import dev.tdwalsh.project.tabletopBeholder.exceptions.SerializationException;
 
 
 import java.util.List;
@@ -19,7 +19,7 @@ public class EffectConverter implements DynamoDBTypeConverter<String, List<Effec
         try {
             return objectMapper.writeValueAsString(effectList);
         } catch (JsonProcessingException e) {
-            throw new EffectSerializationException("Error serializing effect list", e);
+            throw new SerializationException("Error serializing effect list", e);
         }
     }
 
@@ -28,7 +28,7 @@ public class EffectConverter implements DynamoDBTypeConverter<String, List<Effec
         try {
             return objectMapper.readValue(effectString, new TypeReference<>(){});
         } catch (JsonProcessingException e) {
-            throw new EffectSerializationException("Error deserializing effect list", e);
+            throw new SerializationException("Error deserializing effect list", e);
         }
     }
 }

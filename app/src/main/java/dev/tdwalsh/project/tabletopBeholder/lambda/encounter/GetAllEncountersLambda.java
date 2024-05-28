@@ -17,7 +17,7 @@ public class GetAllEncountersLambda
         return super.runActivity(
                 () -> input.fromUserClaims(claims ->
                         GetAllEncountersRequest.builder()
-                                .withUserEmail(claims.get("userEmail"))
+                                .withUserEmail(claims.get("email"))
                                 .build()),
                 (request, serviceComponent) ->
                         serviceComponent.provideGetAllEncountersActivity().handleRequest(request)

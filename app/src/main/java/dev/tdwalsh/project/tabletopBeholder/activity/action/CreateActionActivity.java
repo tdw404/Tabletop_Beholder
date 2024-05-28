@@ -4,12 +4,8 @@ import dev.tdwalsh.project.tabletopBeholder.activity.action.request.CreateAction
 import dev.tdwalsh.project.tabletopBeholder.activity.action.result.CreateActionResult;
 import dev.tdwalsh.project.tabletopBeholder.activity.helpers.CreateObjectHelper;
 import dev.tdwalsh.project.tabletopBeholder.activity.helpers.NameHelper;
-import dev.tdwalsh.project.tabletopBeholder.activity.spell.request.CreateSpellRequest;
-import dev.tdwalsh.project.tabletopBeholder.activity.spell.result.CreateSpellResult;
 import dev.tdwalsh.project.tabletopBeholder.dynamodb.dao.ActionDao;
-import dev.tdwalsh.project.tabletopBeholder.dynamodb.dao.SpellDao;
 import dev.tdwalsh.project.tabletopBeholder.dynamodb.models.Action;
-import dev.tdwalsh.project.tabletopBeholder.dynamodb.models.Spell;
 
 import javax.inject.Inject;
 
@@ -22,7 +18,7 @@ public class CreateActionActivity {
     /**
      * Instantiates a new activity object.
      *
-     * @param actionDAO object necessary for this activity object to carry out its function.
+     * @param actionDao object necessary for this activity object to carry out its function.
      */
 
     @Inject
