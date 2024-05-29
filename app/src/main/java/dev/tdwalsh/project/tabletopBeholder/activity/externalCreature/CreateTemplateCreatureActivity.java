@@ -21,13 +21,13 @@ public class CreateTemplateCreatureActivity {
 
     private final TemplateCreatureDao templateCreatureDao;
     private final CreatureDao creatureDao;
-    private final SpellDao spellDao;
+    private final TemplateCreatureTranslator templateCreatureTranslator;
 
     @Inject
-    public CreateTemplateCreatureActivity(TemplateCreatureDao templateCreatureDao, CreatureDao creatureDao, SpellDao spellDao) {
+    public CreateTemplateCreatureActivity(TemplateCreatureDao templateCreatureDao, CreatureDao creatureDao, TemplateCreatureTranslator templateCreatureTranslator) {
         this.templateCreatureDao = templateCreatureDao;
         this.creatureDao = creatureDao;
-        this.spellDao = spellDao;
+        this.templateCreatureTranslator = templateCreatureTranslator;
     }
 
     public CreateTemplateCreatureResult handleRequest(CreateTemplateCreatureRequest createTemplateCreatureRequest) {
@@ -37,7 +37,7 @@ public class CreateTemplateCreatureActivity {
         //Then, iterates over all spells - if spell does not exist, creates spell. Otherwise, adds a link to that spell.
         // Finally, writes the new object to DynamoDB and returns the result
 
-        Creature creature = TemplateCreatureTranslator.translate(templateCreatureDao.getSingle(createTemplateCreatureRequest.getSlug()), spellDao);
+        Creature creature = templateCreatureTranslator.translate(templateCreatureDao.getSingle(createTemplateCreatureRequest.getSlug()), createTemplateCreatureRequest.getUserEmail());
         creature.setUserEmail(createTemplateCreatureRequest.getUserEmail());
         NameHelper.objectNameUniqueness(creatureDao,creature);
 

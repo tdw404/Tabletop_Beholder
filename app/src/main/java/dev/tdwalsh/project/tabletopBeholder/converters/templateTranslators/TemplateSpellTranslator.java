@@ -4,9 +4,11 @@ import dev.tdwalsh.project.tabletopBeholder.dynamodb.models.Effect;
 import dev.tdwalsh.project.tabletopBeholder.dynamodb.models.Spell;
 import dev.tdwalsh.project.tabletopBeholder.templateApi.model.TemplateSpell;
 
+import javax.inject.Singleton;
 import java.time.ZonedDateTime;
 import java.util.*;
 
+@Singleton
 public class TemplateSpellTranslator {
 
     public static Spell translate(TemplateSpell templateSpell) {

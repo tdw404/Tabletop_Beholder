@@ -2,6 +2,7 @@ package dev.tdwalsh.project.tabletopBeholder.dynamodb.dao;
 
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBQueryExpression;
+import com.amazonaws.services.dynamodbv2.datamodeling.PaginatedQueryList;
 import com.amazonaws.services.dynamodbv2.model.AttributeValue;
 import dev.tdwalsh.project.tabletopBeholder.dynamodb.models.BeholderObject;
 import dev.tdwalsh.project.tabletopBeholder.dynamodb.models.Spell;
@@ -11,6 +12,7 @@ import javax.inject.Singleton;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.MissingResourceException;
 
 /**
  * Stores, reads, updates, or deletes Spell models in DynamoDB using {@link Spell}.
@@ -101,5 +103,28 @@ public class SpellDao implements BeholderDao {
                 .withKeyConditionExpression("userEmail = :userEmail and objectName = :objectName")
                 .withExpressionAttributeValues(valueMap);
         return !mapper.query(Spell.class, queryExpression).isEmpty();
+    }
+
+    /**
+     * Retrieves a spell by name, if it exists.
+     *
+     * @param userEmail The userEmail to search
+     * @param objectName The objectName to search
+     */
+    public Spell getSpellByName(String userEmail, String objectName) {
+        Map<String, AttributeValue> valueMap = new HashMap<>();
+        valueMap.put(":userEmail", new AttributeValue(userEmail));
+        valueMap.put((":objectName"), new AttributeValue(objectName));
+        DynamoDBQueryExpression<Spell> queryExpression = new DynamoDBQueryExpression<Spell>()
+                .withIndexName("SpellsSortByNameIndex")
+                .withConsistentRead(false)
+                .withKeyConditionExpression("userEmail = :userEmail and objectName = :objectName")
+                .withExpressionAttributeValues(valueMap);
+        PaginatedQueryList<Spell> spellPaginatedQueryList = mapper.query(Spell.class, queryExpression);
+        if (spellPaginatedQueryList.isEmpty()) {
+            return null;
+        } else {
+            return spellPaginatedQueryList.get(0);
+        }
     }
 }
