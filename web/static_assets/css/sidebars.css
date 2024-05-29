@@ -17,6 +17,14 @@ main {
   overflow-y: hidden;
 }
 
+.pad-up {
+    padding-top: 3em;
+}
+
+.margin-up {
+    margin-top: 3em;
+}
+
 .vert-divider {
   flex-shrink: 0;
   width: 1.5rem;

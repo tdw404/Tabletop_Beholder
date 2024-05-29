@@ -76,7 +76,9 @@ import BindingClass from "../util/bindingClass";
                                     </ul>
                                 </div>`;
                                 document.getElementById('navbar').insertAdjacentHTML('afterbegin', navbar);
-                                const button = this.createLoginButton();
+                                const button = currentUser
+                                   ? this.createLogoutButton(currentUser)
+                                   : this.createLoginButton();
                                 var ul = document.getElementById("list");
                                 var li = document.createElement("li");
                                 li.appendChild(button);

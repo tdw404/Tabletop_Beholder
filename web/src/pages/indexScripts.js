@@ -1,3 +1,4 @@
+import AuthClient from "../api/authClient";
 import NavbarProvider from"../components/navbarProvider.js";
 import BindingClass from "../util/bindingClass";
 import DataStore from "../util/DataStore";
@@ -14,16 +15,23 @@ const EMPTY_DATASTORE_STATE = {
  class IndexScripts extends BindingClass {
     constructor() {
         super();
+        this.client = new AuthClient();
         this.bindClassMethods(['mount'], this);
         this.dataStore = new DataStore(EMPTY_DATASTORE_STATE);
         this.navbarProvider = new NavbarProvider();
     };
 
+     mount() {
+        this.navbarProvider.addNavbarToPage();
+        this.startupActivities();
+     };
 
- mount() {
-    document.getElementById('welcomeText').hidden = false;
-    this.navbarProvider.addNavbarToPage();
- };
+    async startupActivities() {
+        if (await this.client.verifyLogin()) {
+            document.getElementById('welcomeText').hidden = false;
+        }
+    }
+
 };
 
  /**

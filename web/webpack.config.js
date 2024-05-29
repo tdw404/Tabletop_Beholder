@@ -23,7 +23,6 @@ module.exports = {
     usedExports: true
   },
   entry: {
-    landingPageScripts: path.resolve(__dirname, 'src', 'pages', 'landingPageScripts.js'),
     indexScripts: path.resolve(__dirname, 'src', 'pages', 'indexScripts.js'),
   },
   output: {
