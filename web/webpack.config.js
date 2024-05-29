@@ -24,6 +24,7 @@ module.exports = {
   },
   entry: {
     landingPageScripts: path.resolve(__dirname, 'src', 'pages', 'landingPageScripts.js'),
+    indexScripts: path.resolve(__dirname, 'src', 'pages', 'indexScripts.js'),
   },
   output: {
     path: path.resolve(__dirname, 'build', 'assets'),
