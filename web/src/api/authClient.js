@@ -2,12 +2,12 @@ import axios from "axios";
 import BindingClass from "../util/bindingClass";
 import Authenticator from "./authenticator";
 
-export default class OrganizationClient extends BindingClass {
+export default class AuthClient extends BindingClass {
 
     constructor(props = {}) {
         super();
 
-        const methodsToBind = ['clientLoaded', 'getIdentity', 'login', 'logout', 'getAllOrgs', 'getOrganization'];
+        const methodsToBind = ['clientLoaded', 'getIdentity', 'login', 'logout'];
         this.bindClassMethods(methodsToBind, this);
 
         this.authenticator = new Authenticator();;
@@ -48,8 +48,7 @@ export default class OrganizationClient extends BindingClass {
 
     async verifyLogin(errorCallback) {
         try {
-            const isLoggedIn = await this.authenticator.isUserLoggedIn();
-             return isLoggedIn;
+             return await this.authenticator.isUserLoggedIn();
 
         } catch (error) {
             this.handleError(error, errorCallback)
@@ -63,7 +62,6 @@ export default class OrganizationClient extends BindingClass {
     async logout() {
         await this.authenticator.logout();
         window.location.href = "index.html";
-        ;
     }
 
     async getTokenOrThrow(unauthenticatedErrorMessage) {
@@ -74,43 +72,6 @@ export default class OrganizationClient extends BindingClass {
 
         return await this.authenticator.getUserToken();
     }
-
-    /**
-     * Gets all orgs in the database.
-     * @param errorCallback (Optional) A function to execute if the call fails.
-     * @returns A list of orgs.
-     */
-    async getAllOrgs(errorCallback) {
-        try {
-            const token = await this.getTokenOrThrow("Encountered token error trying to call Organization endpoint.");
-            const response = await this.axiosClient.get(`organizations`, {
-                headers: {
-                    Authorization: `Bearer ${token}`
-                }});
-            return response.data.organizationList;
-        } catch (error) {
-            this.handleError(error, errorCallback)
-        }
-    }
-
-    /**
-     * Gets details about a single org.
-     * @param orgId The orgId to look for
-     * @param errorCallback (Optional) A function to execute if the call fails.
-     * @returns A list of orgs.
-     */
-        async getOrganization(orgId, errorCallback) {
-            try {
-                const token = await this.getTokenOrThrow("Encountered token error trying to call Organization endpoint.");
-                const response = await this.axiosClient.get(`organizations/${orgId}`, {
-                    headers: {
-                        Authorization: `Bearer ${token}`
-                    }});
-                return response.data.organization;
-            } catch (error) {
-                this.handleError(error, errorCallback)
-            }
-        }
 
     /**
      * Helper method to log the error and run any error functions.

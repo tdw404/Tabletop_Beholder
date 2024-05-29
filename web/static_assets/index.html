@@ -1,31 +1,34 @@
-<!DOCTYPE html>
-<html>
-
+<!doctype html>
+<html lang="en">
 <head>
-    <script type="text/javascript" src="assets/landingPageScripts.js"></script>
-    <link rel="stylesheet" type="text/css" href="css/style.css">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <link rel="stylesheet" type="text/css" href="css/sidebars.css">
+    <title>Beholder</title>
+    <link rel="icon" type="image/x-icon" href="/images/favicon.ico">
+    <script type="text/javascript" src="assets/indexScripts.js"></script>
 </head>
+<body>
 
-<body class="background">
-    <header class="header" id="header"></header>
-    <center>
-    <div class="card">
-        <h2 id="title">Loading, please wait...</h2>
-        <form class="card-content" id="landing-form">
-            <p>
-                <select id="userRoles" hidden = true>
-                    <option selected disabled>Where are you working today?</option>
-                </select>
-            </p>
-        </form>
-        <p>
-            <a href="#" class="button" id="navigate-btn" hidden = true>Get Started >></a>
-        </p>
-        <p>
-            <a href="newRole.html" class="button" id="new-role-btn" hidden = true>New Role</a>
-        </p>
+
+<main>
+    <div id = "navbar">
+
     </div>
-</center>
-</body>
+    <div class="vert-divider"></div>
+    <div class="container align-items-center pad-up">
+        <h1 class="text-center align-self-center">Beholder</h1>
+        <h3 class="text-center align-self-center">An Encounter Management Tool for DMs</h3>
+        <div class="container align-items-center pad-up">
+            <text id="welcomeText" hidden>This is a placeholder message that will show after a user logs in.
+                <br>In the future, this will contain quick-start instructions.
+            </text>
+        </div>
 
+    </div>
+</main>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+
+</body>
 </html>
