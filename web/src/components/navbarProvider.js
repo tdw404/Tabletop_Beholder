@@ -23,7 +23,7 @@ import BindingClass from "../util/bindingClass";
                                     </a>
                                     <ul class="list-unstyled ps-0" id = "list">
                                         <li class="mb-1">
-                                            <button class="btn btn-toggle align-items-center rounded collapsed" data-bs-toggle="collapse" data-bs-target="#session-collapse" aria-expanded="false">
+                                            <button class="btn btn-toggle align-items-center rounded collapsed preload" data-bs-toggle="collapse" data-bs-target="#session-collapse" aria-expanded="false" disabled>
                                                 Sessions
                                             </button>
                                             <div class="collapse" id="session-collapse">
@@ -34,7 +34,7 @@ import BindingClass from "../util/bindingClass";
                                             </div>
                                         </li>
                                         <li class="mb-1">
-                                            <button class="btn btn-toggle align-items-center rounded collapsed" data-bs-toggle="collapse" data-bs-target="#encounter-collapse" aria-expanded="false">
+                                            <button class="btn btn-toggle align-items-center rounded collapsed preload" data-bs-toggle="collapse" data-bs-target="#encounter-collapse" aria-expanded="false" disabled>
                                                 Encounters
                                             </button>
                                             <div class="collapse" id="encounter-collapse">
@@ -45,7 +45,7 @@ import BindingClass from "../util/bindingClass";
                                             </div>
                                         </li>
                                         <li class="mb-1">
-                                            <button class="btn btn-toggle align-items-center rounded collapsed" data-bs-toggle="collapse" data-bs-target="#creature-collapse" aria-expanded="false">
+                                            <button class="btn btn-toggle align-items-center rounded collapsed preload" data-bs-toggle="collapse" data-bs-target="#creature-collapse" aria-expanded="false" disabled>
                                                 Creatures
                                             </button>
                                             <div class="collapse" id="creature-collapse">
@@ -56,7 +56,7 @@ import BindingClass from "../util/bindingClass";
                                             </div>
                                         </li>
                                         <li class="mb-1">
-                                            <button class="btn btn-toggle align-items-center rounded collapsed" data-bs-toggle="collapse" data-bs-target="#spell-collapse" aria-expanded="false">
+                                            <button class="btn btn-toggle align-items-center rounded collapsed preload" data-bs-toggle="collapse" data-bs-target="#spell-collapse" aria-expanded="false" disabled>
                                                 Spells
                                             </button>
                                             <div class="collapse" id="spell-collapse">
@@ -69,7 +69,7 @@ import BindingClass from "../util/bindingClass";
 
                                         <li class="border-top my-3"></li>
                                         <li class="mb-1">
-                                            <button class="btn btn-flat align-items-center rounded">
+                                            <button class="btn btn-flat align-items-center rounded preload" disabled>
                                                 Run Encounter
                                             </button>
                                         <li class="border-top my-3"></li>
@@ -84,6 +84,9 @@ import BindingClass from "../util/bindingClass";
                                 li.appendChild(button);
                                 li.classList.add('mb-1');
                                 ul.appendChild(li);
+                                if (currentUser) {
+                                    this.enabler();
+                                }
     };
 
 
@@ -108,4 +111,11 @@ import BindingClass from "../util/bindingClass";
     createLogoutButton(currentUser) {
         return this.createButton(`Logout: ${currentUser.name}`, this.client.logout);
     };
+
+    enabler() {
+        var inputs = document.getElementsByClassName('preload');
+        for(var i = 0; i < inputs.length; i++) {
+            inputs[i].disabled = false;
+        }
+    }
   };
