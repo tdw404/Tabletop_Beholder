@@ -105,6 +105,14 @@ main {
   background-color: #d2f4ea;
 }
 
-
 .fw-semibold { font-weight: 600; }
 .lh-tight { line-height: 1.25; }
+
+.table-responsive {
+    max-height:80%;
+    border: 2;
+}
+
+.selectedRow {
+    background-color: rgb(156, 251, 204);
+}

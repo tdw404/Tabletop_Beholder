@@ -1,5 +1,5 @@
 import AuthClient from "../api/authClient";
-import NavbarProvider from"../components/navbarProvider.js";
+import NavbarProvider from"../components/navbarProvider";
 import BindingClass from "../util/bindingClass";
 import DataStore from "../util/DataStore";
 
