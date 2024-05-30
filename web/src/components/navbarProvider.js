@@ -23,55 +23,31 @@ import BindingClass from "../util/bindingClass";
                                     </a>
                                     <ul class="list-unstyled ps-0" id = "list">
                                         <li class="mb-1">
-                                            <button class="btn btn-toggle align-items-center rounded collapsed preload" data-bs-toggle="collapse" data-bs-target="#session-collapse" aria-expanded="false" disabled>
-                                                Sessions
-                                            </button>
-                                            <div class="collapse" id="session-collapse">
-                                                <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
-                                                    <li><a href="#" class="link-dark rounded">Session Library</a></li>
-                                                    <li><a href="#" class="link-dark rounded">New Session</a></li>
-                                                </ul>
-                                            </div>
+                                            <a href="sessionLibrary.html" class="btn btn-flat align-items-center rounded preload disabled">
+                                                Session Library
+                                            </a>
                                         </li>
                                         <li class="mb-1">
-                                            <button class="btn btn-toggle align-items-center rounded collapsed preload" data-bs-toggle="collapse" data-bs-target="#encounter-collapse" aria-expanded="false" disabled>
-                                                Encounters
-                                            </button>
-                                            <div class="collapse" id="encounter-collapse">
-                                                <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
-                                                    <li><a href="#" class="link-dark rounded">Encounter Library</a></li>
-                                                    <li><a href="#" class="link-dark rounded">New Encounter</a></li>
-                                                </ul>
-                                            </div>
+                                            <a href="encounterLibrary.html" class="btn btn-flat align-items-center rounded preload disabled">
+                                                Encounter Library
+                                            </a>
                                         </li>
                                         <li class="mb-1">
-                                            <button class="btn btn-toggle align-items-center rounded collapsed preload" data-bs-toggle="collapse" data-bs-target="#creature-collapse" aria-expanded="false" disabled>
-                                                Creatures
-                                            </button>
-                                            <div class="collapse" id="creature-collapse">
-                                                <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
-                                                    <li><a href="#" class="link-dark rounded">Creature Library</a></li>
-                                                    <li><a href="#" class="link-dark rounded">New Creature</a></li>
-                                                </ul>
-                                            </div>
+                                            <a href="creatureLibrary.html" class="btn btn-flat align-items-center rounded preload disabled">
+                                                Creature Library
+                                            </a>
                                         </li>
                                         <li class="mb-1">
-                                            <button class="btn btn-toggle align-items-center rounded collapsed preload" data-bs-toggle="collapse" data-bs-target="#spell-collapse" aria-expanded="false" disabled>
-                                                Spells
-                                            </button>
-                                            <div class="collapse" id="spell-collapse">
-                                                <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
-                                                    <li><a href="spellLibrary.html" class="link-dark rounded">Spell Library</a></li>
-                                                    <li><a href="#" class="link-dark rounded">New Spell</a></li>
-                                                </ul>
-                                            </div>
+                                            <a href="spellLibrary.html" class="btn btn-flat align-items-center rounded preload disabled">
+                                                Spell Library
+                                            </a>
                                         </li>
 
                                         <li class="border-top my-3"></li>
                                         <li class="mb-1">
-                                            <button class="btn btn-flat align-items-center rounded preload" disabled>
+                                            <a class="btn btn-flat align-items-center rounded preload disabled">
                                                 Run Encounter
-                                            </button>
+                                            </a>
                                         <li class="border-top my-3"></li>
                                     </ul>
                                 </div>`;
@@ -115,7 +91,7 @@ import BindingClass from "../util/bindingClass";
     enabler() {
         var inputs = document.getElementsByClassName('preload');
         for(var i = 0; i < inputs.length; i++) {
-            inputs[i].disabled = false;
+            inputs[i].classList.remove("disabled");
         }
     }
   };
