@@ -116,6 +116,7 @@ export default class SpellClient extends BindingClass {
         if (errorFromApi) {
             console.error(errorFromApi)
             error.message = errorFromApi;
+            alert()
         }
 
         if (errorCallback) {
