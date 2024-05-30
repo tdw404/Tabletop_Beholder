@@ -143,9 +143,6 @@
     flex: 80%;
 }
 
-.selectedRow {
-    background-color: rgb(99, 172, 221);
-}
 /*
 Flexbox on a lists removes the numbers. We use a counter here to add them back.
 https://stackoverflow.com/a/34316093

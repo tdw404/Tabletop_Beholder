@@ -61,7 +61,7 @@ import BindingClass from "../util/bindingClass";
                                             </button>
                                             <div class="collapse" id="spell-collapse">
                                                 <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
-                                                    <li><a href="#" class="link-dark rounded">Spell Library</a></li>
+                                                    <li><a href="spellLibrary.html" class="link-dark rounded">Spell Library</a></li>
                                                     <li><a href="#" class="link-dark rounded">New Spell</a></li>
                                                 </ul>
                                             </div>
