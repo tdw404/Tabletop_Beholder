@@ -22,7 +22,7 @@ const EMPTY_DATASTORE_STATE = {
         super();
         this.client = new AuthClient();
         this.spellClient = new SpellClient();
-        this.bindClassMethods(['mount', 'startupActivities', 'populateTable', 'deleteButton', 'filterResetButton'], this);
+        this.bindClassMethods(['mount', 'startupActivities', 'populateTable', 'deleteButton', 'filterResetButton', 'updateButton'], this);
         this.dataStore = new DataStore(EMPTY_DATASTORE_STATE);
         this.navbarProvider = new NavbarProvider();
     };
@@ -45,6 +45,7 @@ const EMPTY_DATASTORE_STATE = {
             document.getElementById('delete-btn').addEventListener('click', await this.deleteButton);
             document.getElementById('filter-btn').addEventListener('click', await this.populateTable);
             document.getElementById('clear-btn').addEventListener('click', await this.filterResetButton);
+            document.getElementById('update-btn').addEventListener('click', await this.updateButton);
         }
     }
 
@@ -119,6 +120,37 @@ const EMPTY_DATASTORE_STATE = {
             await this.spellClient.deleteSpell(objectId);
             location.reload();
         }
+    }
+
+    async updateButton() {
+        document.getElementById('spinner').hidden = false;
+        document.getElementById('spell-table').hidden = true;
+        document.getElementById('search-fields').hidden = true;
+        document.getElementById('filter-btn').hidden = true;
+        document.getElementById('clear-btn').hidden = true;
+        const spell = await this.spellClient.getSingleSpell(this.dataStore.get(SELECTED_SPELL_KEY));
+        spell.objectName = document.getElementById('objectName').value;
+        spell.spellDescription = document.getElementById('spellDescription').value;
+        spell.spellHigherLevel = document.getElementById('spellHigherLevel').value;
+        spell.spellRange = document.getElementById('spellRange').value;
+        spell.spellComponents = document.getElementById('spellComponents').value;
+        spell.spellMaterial = document.getElementById('spellMaterial').value;
+        spell.reaction = document.getElementById('reaction').value;
+        if (document.getElementById('ritualCast').value.equals == "yes") {
+            spell.ritualCast = true;
+        } else if (document.getElementById('ritualCast').value.equals == "no") {
+            spell.ritualCast = false;
+        } else {
+            spell.ritualCast = '';
+        }
+        spell.castingTime = document.getElementById('castingTime').value;
+        spell.castingTurns = document.getElementById('castingTurns').value;
+        spell.spellLevel = document.getElementById('spellLevel').value;
+        spell.spellSchool = document.getElementById('spellSchool').value;
+        spell.innateCasts = document.getElementById('innateCasts').value;
+
+        await this.spellClient.updateSpell(spell);
+        location.reload();
     }
 
     filterResetButton() {
