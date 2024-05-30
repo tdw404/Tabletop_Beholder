@@ -149,8 +149,18 @@ const EMPTY_DATASTORE_STATE = {
         spell.spellSchool = document.getElementById('spellSchool').value;
         spell.innateCasts = document.getElementById('innateCasts').value;
 
-        await this.spellClient.updateSpell(spell);
-        location.reload();
+        try {
+            await this.spellClient.updateSpell(spell);
+            location.reload();
+        } catch (error) {
+            document.getElementById('spinner').hidden = true;
+            document.getElementById('spell-table').hidden = false;
+            document.getElementById('search-fields').hidden = false;
+            document.getElementById('filter-btn').hidden = false;
+            document.getElementById('clear-btn').hidden = false;
+            alert("You already have a spell with the name " + document.getElementById('objectName').value + " in your library.");
+        }
+
     }
 
     filterResetButton() {
