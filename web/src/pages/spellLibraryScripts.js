@@ -22,7 +22,11 @@ const EMPTY_DATASTORE_STATE = {
         super();
         this.client = new AuthClient();
         this.spellClient = new SpellClient();
-        this.bindClassMethods(['mount', 'startupActivities', 'populateTable', 'deleteButton', 'filterResetButton', 'updateButton'], this);
+        this.bindClassMethods(['mount', 'startupActivities',
+                                'populateTable', 'deleteButton',
+                                'filterResetButton', 'updateButton',
+                                'hideElements', 'showElements',
+                                'createButton', 'createFinishButton'], this);
         this.dataStore = new DataStore(EMPTY_DATASTORE_STATE);
         this.navbarProvider = new NavbarProvider();
     };
@@ -34,18 +38,18 @@ const EMPTY_DATASTORE_STATE = {
 
     async startupActivities() {
         if (await this.client.verifyLogin()) {
-            const spells = await this.spellClient.getMultipleSpells();
+            const{email, name} = await this.client.getIdentity().then(result => result);
+            this.dataStore.set([COGNITO_EMAIL_KEY], email);
+            this.dataStore.set([COGNITO_NAME_KEY], name);
             this.dataStore.set([SPELLLIST_KEY], await this.spellClient.getMultipleSpells());
             await this.populateTable();
-            document.getElementById('spinner').hidden = true;
-            document.getElementById('spell-table').hidden = false;
-            document.getElementById('search-fields').hidden = false;
-            document.getElementById('filter-btn').hidden = false;
-            document.getElementById('clear-btn').hidden = false;
+            this.showElements();
             document.getElementById('delete-btn').addEventListener('click', await this.deleteButton);
             document.getElementById('filter-btn').addEventListener('click', await this.populateTable);
             document.getElementById('clear-btn').addEventListener('click', await this.filterResetButton);
             document.getElementById('update-btn').addEventListener('click', await this.updateButton);
+            document.getElementById('create-btn').addEventListener('click', await this.createButton);
+            document.getElementById('create-finish-btn').addEventListener('click', await this.createFinishButton);
         }
     }
 
@@ -112,23 +116,17 @@ const EMPTY_DATASTORE_STATE = {
     async deleteButton() {
         const objectId = this.dataStore.get(SELECTED_SPELL_KEY);
         if(objectId != '') {
-            document.getElementById('spinner').hidden = false;
-            document.getElementById('spell-table').hidden = true;
-            document.getElementById('search-fields').hidden = true;
-            document.getElementById('filter-btn').hidden = true;
-                        document.getElementById('clear-btn').hidden = true;
+            this.hideElements();
             await this.spellClient.deleteSpell(objectId);
             location.reload();
         }
     }
 
     async updateButton() {
-        document.getElementById('spinner').hidden = false;
-        document.getElementById('spell-table').hidden = true;
-        document.getElementById('search-fields').hidden = true;
-        document.getElementById('filter-btn').hidden = true;
-        document.getElementById('clear-btn').hidden = true;
-        const spell = await this.spellClient.getSingleSpell(this.dataStore.get(SELECTED_SPELL_KEY));
+        this.hideElements();
+        const spell = {};
+        spell.userEmail = this.dataStore.get(COGNITO_EMAIL_KEY);
+        spell.objectId = this.dataStore.get(SELECTED_SPELL_KEY);
         spell.objectName = document.getElementById('objectName').value;
         spell.spellDescription = document.getElementById('spellDescription').value;
         spell.spellHigherLevel = document.getElementById('spellHigherLevel').value;
@@ -153,12 +151,11 @@ const EMPTY_DATASTORE_STATE = {
             await this.spellClient.updateSpell(spell);
             location.reload();
         } catch (error) {
-            document.getElementById('spinner').hidden = true;
-            document.getElementById('spell-table').hidden = false;
-            document.getElementById('search-fields').hidden = false;
-            document.getElementById('filter-btn').hidden = false;
-            document.getElementById('clear-btn').hidden = false;
-            alert("You already have a spell with the name " + document.getElementById('objectName').value + " in your library.");
+            this.showElements();
+            document.getElementById('offcanvas-warn-body').innerText = "You already have a spell with the name " + document.getElementById('objectName').value + " in your library."
+            var myOffcanvas = document.getElementById('offcanvasWarn');
+            var bsOffcanvas = new bootstrap.Offcanvas(myOffcanvas);
+            bsOffcanvas.show();
         }
 
     }
@@ -168,6 +165,67 @@ const EMPTY_DATASTORE_STATE = {
         document.getElementById('levelSearch').value = '';
         document.getElementById('schoolSearch').value = '';
         this.populateTable();
+    }
+
+    createButton() {
+        var myOffcanvas = document.getElementById('offcanvasCreate');
+        var bsOffcanvas = new bootstrap.Offcanvas(myOffcanvas);
+        bsOffcanvas.show();
+    }
+
+    async createFinishButton() {
+        if(document.getElementById('newName').value != '') {
+            //this.spellClient = this.dataStore.get(SPELL_CLIENT_KEY);
+            const spell = {};
+            spell.userEmail = this.dataStore.get(COGNITO_EMAIL_KEY);
+            spell.objectName = document.getElementById('newName').value;
+            spell.spellDescription = document.getElementById('newDesc').value;
+            spell.spellLevel = document.getElementById('newLevel').value;
+            spell.spellSchool = document.getElementById('newSchool').value;
+
+            try {
+                this.hideElements();
+                document.getElementById('close-btn').click()
+                const newSpell = await this.spellClient.createSpell(spell);
+                document.getElementById('newName').value = '';
+                document.getElementById('newDesc').value = '';
+                document.getElementById('newLevel').value = '';
+                document.getElementById('newSchool').value = '';
+                this.dataStore.set([SPELLLIST_KEY], await this.spellClient.getMultipleSpells());
+                await this.populateTable();
+                this.showElements();
+                document.getElementById(newSpell.objectId).click();
+
+            } catch (error) {
+                this.showElements();
+                document.getElementById('offcanvas-warn-body').innerText = "You already have a spell with the name " + document.getElementById('objectName').value + " in your library."
+                var myOffcanvas = document.getElementById('offcanvasWarn');
+                var bsOffcanvas = new bootstrap.Offcanvas(myOffcanvas);
+                bsOffcanvas.show();
+            }
+        }
+    }
+
+    showElements() {
+        var show = document.getElementsByClassName('hide-while-loading');
+                for(var i = 0; i < show.length; i++) {
+                    show[i].hidden = false;
+                }
+        var hide = document.getElementsByClassName('show-while-loading');
+                        for(var i = 0; i < hide.length; i++) {
+                            hide[i].hidden = true;
+                        }
+    }
+
+    hideElements() {
+        var show = document.getElementsByClassName('show-while-loading');
+                    for(var i = 0; i < show.length; i++) {
+                        show[i].hidden = false;
+                    }
+            var hide = document.getElementsByClassName('hide-while-loading');
+                            for(var i = 0; i < hide.length; i++) {
+                                hide[i].hidden = true;
+                            }
     }
 
 };

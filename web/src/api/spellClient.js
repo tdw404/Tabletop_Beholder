@@ -116,7 +116,7 @@ export default class SpellClient extends BindingClass {
         if (errorFromApi) {
             console.error(errorFromApi);
             if (errorFromApi.includes('ERR_DUP')) {
-                throw new Error(errorFromApi);
+                throw new error(errorFromApi);
             };
             error.message = errorFromApi;
         }

@@ -174,3 +174,8 @@ a {
     color: var(--tertiary-color);
     text-decoration: none;
 }
+
+a.disabled {
+  pointer-events: none;
+  cursor: default;
+}
