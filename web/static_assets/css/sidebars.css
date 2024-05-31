@@ -21,6 +21,10 @@ main {
     padding-top: 3em;
 }
 
+.pad-up-mini {
+    padding-top: 1em;
+}
+
 .margin-up {
     margin-top: 3em;
 }
@@ -110,6 +114,11 @@ main {
 
 .table-responsive {
     max-height:80%;
+    border: 2;
+}
+
+.table-responsive {
+    max-height:60%;
     border: 2;
 }
 

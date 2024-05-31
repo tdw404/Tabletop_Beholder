@@ -8,11 +8,13 @@ const COGNITO_NAME_KEY = 'cognito-name';
 const COGNITO_EMAIL_KEY = 'cognito-name-results';
 const SPELLLIST_KEY = 'spell-list';
 const SELECTED_SPELL_KEY = 'selected-spell-key';
+const SELECTED_TEMPLATE_KEY = 'selected-template-key';
 const EMPTY_DATASTORE_STATE = {
     [COGNITO_NAME_KEY]: '',
     [COGNITO_EMAIL_KEY]: '',
     [SPELLLIST_KEY]: [],
     [SELECTED_SPELL_KEY]: '',
+    [SELECTED_TEMPLATE_KEY]: '',
 };
 /**
  * Adds functionality to the landing page.
@@ -26,7 +28,9 @@ const EMPTY_DATASTORE_STATE = {
                                 'populateTable', 'deleteButton',
                                 'filterResetButton', 'updateButton',
                                 'hideElements', 'showElements',
-                                'createButton', 'createFinishButton'], this);
+                                'createButton', 'createFinishButton',
+                                'importButton', 'importFinishButton',
+                                'searchButton'], this);
         this.dataStore = new DataStore(EMPTY_DATASTORE_STATE);
         this.navbarProvider = new NavbarProvider();
     };
@@ -50,6 +54,9 @@ const EMPTY_DATASTORE_STATE = {
             document.getElementById('update-btn').addEventListener('click', await this.updateButton);
             document.getElementById('create-btn').addEventListener('click', await this.createButton);
             document.getElementById('create-finish-btn').addEventListener('click', await this.createFinishButton);
+            document.getElementById('import-btn').addEventListener('click', await this.importButton);
+            document.getElementById('search-btn').addEventListener('click', await this.searchButton);
+            document.getElementById('import-finish-btn').addEventListener('click', await this.importFinishButton);
         }
     }
 
@@ -195,7 +202,6 @@ const EMPTY_DATASTORE_STATE = {
                 await this.populateTable();
                 this.showElements();
                 document.getElementById(newSpell.objectId).click();
-
             } catch (error) {
                 this.showElements();
                 document.getElementById('offcanvas-warn-body').innerText = "You already have a spell with the name " + document.getElementById('objectName').value + " in your library."
@@ -204,6 +210,74 @@ const EMPTY_DATASTORE_STATE = {
                 bsOffcanvas.show();
             }
         }
+    }
+
+    importButton() {
+        var myOffcanvas = document.getElementById('offcanvasImport');
+        var bsOffcanvas = new bootstrap.Offcanvas(myOffcanvas);
+        bsOffcanvas.show();
+    }
+
+    async importFinishButton() {
+        const slug = this.dataStore.get(SELECTED_TEMPLATE_KEY);
+        if(!slug=='') {
+            try {
+                this.hideElements();
+                document.getElementById('close-import-btn').click()
+                const newSpell = await this.spellClient.createTemplate(slug);
+                this.dataStore.set([SPELLLIST_KEY], await this.spellClient.getMultipleSpells());
+                await this.populateTable();
+                this.showElements();
+                document.getElementById(newSpell.objectId).click();
+            } catch (error) {
+                this.showElements();
+                document.getElementById('offcanvas-warn-body').innerText = "You already have a spell with the name " + document.getElementById('objectName').value + " in your library."
+                var myOffcanvas = document.getElementById('offcanvasWarn');
+                var bsOffcanvas = new bootstrap.Offcanvas(myOffcanvas);
+                bsOffcanvas.show();
+            }
+        }
+    }
+
+    async searchButton() {
+        this.dataStore.set([SELECTED_TEMPLATE_KEY], '');
+        document.getElementById('template-table').hidden = true;
+        document.getElementById('spinner-side').hidden = false;
+        const templates = await this.spellClient.searchTemplate(document.getElementById('templateSearch').value, document.getElementById('limit').value)
+        document.getElementById('template-table').hidden = false;
+        document.getElementById('spinner-side').hidden = true;
+        var table = document.getElementById("template-table");
+                    var oldTableBody = table.getElementsByTagName('tbody')[0];
+                    var newTableBody = document.createElement('tbody');
+                    var spellList = templates;
+                    spellList.sort((a, b) => a.name.localeCompare(b.name));
+                    for(const templateSpell of spellList) {
+                        if (
+                            !templateSpell.resourceExists
+                        ) {
+
+                            var row = newTableBody.insertRow(-1);
+                            row.setAttribute('id', templateSpell.slug);
+                            var cell1 = row.insertCell(0);
+                            var cell2 = row.insertCell(1);
+                            var cell3 = row.insertCell(2);
+                            cell1.innerHTML = templateSpell.name;
+                            cell2.innerHTML = templateSpell.level;
+                            cell3.innerHTML = templateSpell.document__title
+                            var createClickHandler = function(row, dataStore) {
+                                return function() {
+                                    for (var i = 0; i < table.rows.length; i++){
+                                        table.rows[i].removeAttribute('class');
+                                    }
+                                    row.setAttribute('class','selectedRow')
+                                    dataStore.set([SELECTED_TEMPLATE_KEY], templateSpell.slug);
+
+                                };
+                            };
+                            row.onclick = createClickHandler(row, this.dataStore);
+                        }
+                    }
+                    oldTableBody.parentNode.replaceChild(newTableBody, oldTableBody);
     }
 
     showElements() {
