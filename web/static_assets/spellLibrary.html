@@ -25,7 +25,7 @@
             </div>
         </div>
         <form>
-            <div class="row" id="search-fields hide-while-loading" hidden>
+            <div class="row hide-while-loading" id="search-fields" hidden>
                 <div class="mb-3 col">
                     <label for="nameSearch" class="form-label">Name</label>
                     <input class="form-control" id="nameSearch">
@@ -236,6 +236,48 @@
                     </div>
                 </div>
                 <button type="button" class="btn btn-outline-dark" id="create-finish-btn">Create</button>
+            </div>
+        </div>
+    </div>
+    <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasImport" aria-labelledby="offcanvasImportLabel">
+        <div class="offcanvas-header">
+            <h5 id="offcanvasImportLabel">Import Spell From Template</h5>
+            <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close" id="close-import-btn"></button>
+        </div>
+        <hr/>
+        <div class="offcanvas-body" id="offcanvas-import-body">
+            <div>Search for templates by a word, part of a word, or the name of the spell you're seeking:</div>
+            <input class="form-control" id="templateSearch">
+            <label for="limit" class="form-label pad-up-mini">Results</label>
+            <select class="form-select" id="limit">
+                <option value="20">20</option>
+                <option selected value="50">50</option>
+                <option value="100">100</option>
+                <option value="150">150</option>
+                <option value="200">200</option>
+            </select>
+            <div class = "pad-up-mini">
+                <button type="button" class="btn btn-outline-dark" id="search-btn">Search</button>
+                <button type="button" class="btn btn-outline-dark" id="import-finish-btn">Import Selected</button>
+            </div>
+            <div class="table-responsive table-short pad-up-mini">
+                <table id = "template-table"  class="table table-striped">
+                    <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Level</th>
+                        <th>Source</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+            </div>
+            <div class="d-flex justify-content-center pad-up">
+                <div class="spinner-border" role="status" id = "spinner-side" hidden>
+                    <span class="visually-hidden">Loading...</span>
+                </div>
+            </div>
             </div>
         </div>
     </div>

@@ -7,7 +7,7 @@ export default class SpellClient extends BindingClass {
     constructor(props = {}) {
         super();
 
-        const methodsToBind = ['clientLoaded', 'getTokenOrThrow', 'getSingleSpell', 'getMultipleSpells', 'deleteSpell', 'updateSpell', 'createSpell'];
+        const methodsToBind = ['clientLoaded', 'getTokenOrThrow', 'getSingleSpell', 'getMultipleSpells', 'deleteSpell', 'updateSpell', 'createSpell', 'searchTemplate', 'createTemplate'];
         this.bindClassMethods(methodsToBind, this);
 
         this.authenticator = new Authenticator();;
@@ -103,6 +103,33 @@ export default class SpellClient extends BindingClass {
             this.handleError(error, errorCallback)
         }
     }
+
+    async searchTemplate(searchTerms, limit, errorCallback) {
+            try {
+                const cleanedTerms = searchTerms.replace(' ','%20')
+                const token = await this.getTokenOrThrow("Encountered token error trying to call Spell Template endpoint.");
+                const response = await this.axiosClient.get(`spellTemplate/search/search=${cleanedTerms}&limit=${limit}`,
+                    {headers: {
+                        Authorization: `Bearer ${token}`
+                    }});
+                return response.data.templateSpellList;
+            } catch (error) {
+                this.handleError(error, errorCallback)
+            }
+        }
+
+    async createTemplate(slug, errorCallback) {
+            try {
+                const token = await this.getTokenOrThrow("Encountered token error trying to call Spell Template endpoint.");
+                const response = await this.axiosClient.post(`spellTemplate/${slug}`, {},
+                    {headers: {
+                        Authorization: `Bearer ${token}`
+                    }});
+                return response.data.spell;
+            } catch (error) {
+                this.handleError(error, errorCallback)
+            }
+        }
 
     /**
      * Helper method to log the error and run any error functions.
