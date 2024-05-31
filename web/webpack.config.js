@@ -25,6 +25,7 @@ module.exports = {
   entry: {
     indexScripts: path.resolve(__dirname, 'src', 'pages', 'indexScripts.js'),
     spellLibraryScripts: path.resolve(__dirname, 'src', 'pages', 'spellLibraryScripts.js'),
+    creatureLibraryScripts: path.resolve(__dirname, 'src', 'pages', 'creatureLibraryScripts.js'),
   },
   output: {
     path: path.resolve(__dirname, 'build', 'assets'),
