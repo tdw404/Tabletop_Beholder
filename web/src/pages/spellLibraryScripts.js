@@ -7,12 +7,14 @@ import DataStore from "../util/DataStore";
 const COGNITO_NAME_KEY = 'cognito-name';
 const COGNITO_EMAIL_KEY = 'cognito-name-results';
 const SPELLLIST_KEY = 'spell-list';
+const SPELLMAP_KEY = 'spell-map';
 const SELECTED_SPELL_KEY = 'selected-spell-key';
 const SELECTED_TEMPLATE_KEY = 'selected-template-key';
 const EMPTY_DATASTORE_STATE = {
     [COGNITO_NAME_KEY]: '',
     [COGNITO_EMAIL_KEY]: '',
     [SPELLLIST_KEY]: [],
+    [SPELLMAP_KEY]: '',
     [SELECTED_SPELL_KEY]: '',
     [SELECTED_TEMPLATE_KEY]: '',
 };
@@ -46,6 +48,8 @@ const EMPTY_DATASTORE_STATE = {
             this.dataStore.set([COGNITO_EMAIL_KEY], email);
             this.dataStore.set([COGNITO_NAME_KEY], name);
             this.dataStore.set([SPELLLIST_KEY], await this.spellClient.getMultipleSpells());
+            const spellMap = new Map(this.dataStore.get([SPELLLIST_KEY]).map((obj) => [obj.objectId, obj]));
+            this.dataStore.set([SPELLMAP_KEY], spellMap);
             await this.populateTable();
             this.showElements();
             document.getElementById('delete-btn').addEventListener('click', await this.deleteButton);
@@ -133,7 +137,7 @@ const EMPTY_DATASTORE_STATE = {
 
     async updateButton() {
         this.hideElements();
-        const spell = {};
+        const spell = (this.dataStore.get(SPELLMAP_KEY)).get(this.dataStore.get(SELECTED_SPELL_KEY));
         spell.userEmail = this.dataStore.get(COGNITO_EMAIL_KEY);
         spell.objectId = this.dataStore.get(SELECTED_SPELL_KEY);
         spell.objectName = document.getElementById('objectName').value;
@@ -184,7 +188,6 @@ const EMPTY_DATASTORE_STATE = {
 
     async createFinishButton() {
         if(document.getElementById('newName').value != '') {
-            //this.spellClient = this.dataStore.get(SPELL_CLIENT_KEY);
             const spell = {};
             spell.userEmail = this.dataStore.get(COGNITO_EMAIL_KEY);
             spell.objectName = document.getElementById('newName').value;

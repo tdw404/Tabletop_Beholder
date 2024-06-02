@@ -3,16 +3,19 @@ import CreatureClient from "../api/creatureClient"
 import NavbarProvider from"../components/navbarProvider";
 import BindingClass from "../util/bindingClass";
 import DataStore from "../util/DataStore";
+import { v4 as uuidv4 } from 'uuid';
 
 const COGNITO_NAME_KEY = 'cognito-name';
 const COGNITO_EMAIL_KEY = 'cognito-name-results';
 const CREATURELIST_KEY = 'creature-list';
+const CREATUREMAP_KEY = 'creature-map';
 const SELECTED_CREATURE_KEY = 'selected-creature-key';
 const SELECTED_TEMPLATE_KEY = 'selected-template-key';
 const EMPTY_DATASTORE_STATE = {
     [COGNITO_NAME_KEY]: '',
     [COGNITO_EMAIL_KEY]: '',
     [CREATURELIST_KEY]: [],
+    [CREATUREMAP_KEY]: '',
     [SELECTED_CREATURE_KEY]: '',
     [SELECTED_TEMPLATE_KEY]: '',
 };
@@ -42,10 +45,13 @@ const EMPTY_DATASTORE_STATE = {
 
     async startupActivities() {
         if (await this.client.verifyLogin()) {
+        alert(uuidv4());
             const{email, name} = await this.client.getIdentity().then(result => result);
             this.dataStore.set([COGNITO_EMAIL_KEY], email);
             this.dataStore.set([COGNITO_NAME_KEY], name);
             this.dataStore.set([CREATURELIST_KEY], await this.creatureClient.getMultipleCreatures());
+            const creatureMap = new Map(this.dataStore.get([CREATURELIST_KEY]).map((obj) => [obj.objectId, obj]));
+            this.dataStore.set([CREATUREMAP_KEY], creatureMap);
             await this.populateTable();
             this.showElements();
             document.getElementById('delete-btn').addEventListener('click', await this.deleteButton);
@@ -187,7 +193,7 @@ const EMPTY_DATASTORE_STATE = {
 
     async updateButton() {
         this.hideElements();
-//        const creature = {};
+//        const creature = (this.dataStore.get(CREATUREMAP_KEY)).get(this.dataStore.get(SELECTED_CREATURE_KEY));;
 //        creature.userEmail = this.dataStore.get(COGNITO_EMAIL_KEY);
 //        creature.objectId = this.dataStore.get(SELECTED_CREATURE_KEY);
 //        creature.objectName = document.getElementById('objectName').value;
