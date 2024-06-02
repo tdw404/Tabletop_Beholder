@@ -1,29 +1,29 @@
 import AuthClient from "../api/authClient";
-import SpellClient from "../api/spellClient"
+import CreatureClient from "../api/creatureClient"
 import NavbarProvider from"../components/navbarProvider";
 import BindingClass from "../util/bindingClass";
 import DataStore from "../util/DataStore";
 
 const COGNITO_NAME_KEY = 'cognito-name';
 const COGNITO_EMAIL_KEY = 'cognito-name-results';
-const SPELLLIST_KEY = 'spell-list';
-const SELECTED_SPELL_KEY = 'selected-spell-key';
+const CREATURELIST_KEY = 'creature-list';
+const SELECTED_CREATURE_KEY = 'selected-creature-key';
 const SELECTED_TEMPLATE_KEY = 'selected-template-key';
 const EMPTY_DATASTORE_STATE = {
     [COGNITO_NAME_KEY]: '',
     [COGNITO_EMAIL_KEY]: '',
-    [SPELLLIST_KEY]: [],
-    [SELECTED_SPELL_KEY]: '',
+    [CREATURELIST_KEY]: [],
+    [SELECTED_CREATURE_KEY]: '',
     [SELECTED_TEMPLATE_KEY]: '',
 };
 /**
  * Adds functionality to the landing page.
  */
- class SpellLibraryScripts extends BindingClass {
+ class CreatureLibraryScripts extends BindingClass {
     constructor() {
         super();
         this.client = new AuthClient();
-        this.spellClient = new SpellClient();
+        this.creatureClient = new CreatureClient();
         this.bindClassMethods(['mount', 'startupActivities',
                                 'populateTable', 'deleteButton',
                                 'filterResetButton', 'updateButton',
@@ -45,7 +45,7 @@ const EMPTY_DATASTORE_STATE = {
             const{email, name} = await this.client.getIdentity().then(result => result);
             this.dataStore.set([COGNITO_EMAIL_KEY], email);
             this.dataStore.set([COGNITO_NAME_KEY], name);
-            this.dataStore.set([SPELLLIST_KEY], await this.spellClient.getMultipleSpells());
+            this.dataStore.set([CREATURELIST_KEY], await this.creatureClient.getMultipleCreatures());
             await this.populateTable();
             this.showElements();
             document.getElementById('delete-btn').addEventListener('click', await this.deleteButton);
@@ -57,60 +57,116 @@ const EMPTY_DATASTORE_STATE = {
             document.getElementById('import-btn').addEventListener('click', await this.importButton);
             document.getElementById('search-btn').addEventListener('click', await this.searchButton);
             document.getElementById('import-finish-btn').addEventListener('click', await this.importFinishButton);
+        } else {
+            window.location.href = "index.html";
         }
     }
 
     async populateTable() {
-            var table = document.getElementById("spell-table");
+            var table = document.getElementById("creature-table");
             var oldTableBody = table.getElementsByTagName('tbody')[0];
             var newTableBody = document.createElement('tbody');
-            var spellList = this.dataStore.get(SPELLLIST_KEY);
-            spellList.sort((a, b) => a.objectName.localeCompare(b.objectName));
-            const nameSearch = document.getElementById('nameSearch').value;
-            const levelSearch = document.getElementById('levelSearch').value;
-            const schoolSearch = document.getElementById('schoolSearch').value;
-            for(const spell of spellList) {
+            var creatureList = this.dataStore.get(CREATURELIST_KEY);
+            creatureList.sort((a, b) => a.objectName.localeCompare(b.objectName));
+//            const nameSearch = document.getElementById('nameSearch').value;
+//            const levelSearch = document.getElementById('levelSearch').value;
+//            const schoolSearch = document.getElementById('schoolSearch').value;
+            for(const creature of creatureList) {
                 if (
-                    (nameSearch == '' || spell.objectName.toLowerCase().includes(nameSearch.toLowerCase())) &&
-                    (levelSearch == '' || spell.spellLevel == levelSearch) &&
-                    (schoolSearch == '' || spell.spellSchool == schoolSearch)
+                    1 == 1
                 ) {
 
                     var row = newTableBody.insertRow(-1);
-                    row.setAttribute('id', spell.objectId);
+                    row.setAttribute('id', creature.objectId);
                     var cell1 = row.insertCell(0);
                     var cell2 = row.insertCell(1);
                     var cell3 = row.insertCell(2);
                     var cell4 = row.insertCell(3);
-                    cell1.innerHTML = spell.objectName;
-                    cell2.innerHTML = spell.spellLevel;
-                    cell3.innerHTML = spell.ritualCast
-                                        ? "Yes"
-                                        : "No";
-                    cell4.innerHTML = spell.spellSchool;
+                    var cell5 = row.insertCell(4);
+                    var cell6 = row.insertCell(5);
+                    cell1.innerHTML = creature.objectName;
+                    cell2.innerHTML = creature.isPC
+                                        ?"Yes"
+                                        :"";
+                    cell3.innerHTML = creature.challengeRating;
+                    cell4.innerHTML = creature.size;
+                    cell5.innerHTML = creature.type;
+                    cell6.innerHTML = creature.alignment;
                     var createClickHandler = function(row, dataStore) {
                         return function() {
                             for (var i = 0; i < table.rows.length; i++){
                                 table.rows[i].removeAttribute('class');
                             }
                             row.setAttribute('class','selectedRow')
-                            document.getElementById('spellNameBig').innerText = spell.objectName;
-                            document.getElementById('objectName').setAttribute('value', spell.objectName);
-                            document.getElementById('spellDescription').value = spell.spellDescription;
-                            document.getElementById('spellHigherLevel').value = spell.spellHigherLevel;
-                            document.getElementById('spellRange').value = spell.spellRange;
-                            document.getElementById('spellComponents').value = spell.spellComponents;
-                            document.getElementById('spellMaterial').value = spell.spellMaterial;
-                            document.getElementById('reaction').value = spell.reaction;
-                            document.getElementById('ritualCast').value = spell.ritualCast
-                                                                            ? "yes"
-                                                                            : "no";
-                            document.getElementById('castingTime').value = spell.castingTime;
-                            document.getElementById('castingTurns').value = spell.castingTurns;
-                            document.getElementById('spellLevel').value = spell.spellLevel;
-                            document.getElementById('spellSchool').value = spell.spellSchool;
-                            document.getElementById('innateCasts').value = spell.innateCasts;
-                            dataStore.set([SELECTED_SPELL_KEY], spell.objectId);
+                            if (creature.isPC) {
+                                var show = document.getElementsByClassName('pc-tab');
+                                                for(var i = 0; i < show.length; i++) {
+                                                    show[i].hidden = false;
+                                                }
+                                var hide = document.getElementsByClassName('npc-tab');
+                                                for(var i = 0; i < hide.length; i++) {
+                                                    hide[i].hidden = true;
+                                                }
+                            } else {
+                                var show = document.getElementsByClassName('npc-tab');
+                                                for(var i = 0; i < show.length; i++) {
+                                                    show[i].hidden = false;
+                                                }
+                                var hide = document.getElementsByClassName('pc-tab');
+                                                for(var i = 0; i < hide.length; i++) {
+                                                    hide[i].hidden = true;
+                                                }
+                            }
+                            document.getElementById('creatureNameBig').innerText = creature.objectName;
+                            document.getElementById('objectName').value = creature.objectName;
+                            document.getElementById('sourceBook').value = creature.sourceBook;
+                            document.getElementById('creatureDescription').value = creature.creatureDescription;
+                            document.getElementById('size').value = creature.size;
+                            document.getElementById('type').value = creature.type;
+                            document.getElementById('subType').value = creature.subType;
+                            document.getElementById('group').value = creature.group;
+                            document.getElementById('alignment').value = creature.alignment;
+                            document.getElementById('armorClass').value = creature.armorClass;
+                            document.getElementById('armorType').value = creature.armorType;
+                            document.getElementById('hitPoints').value = creature.hitPoints;
+                            document.getElementById('hitDice').value = creature.hitDice;
+                            document.getElementById('walkSpeed').value = creature.speedMap.walk;
+                            document.getElementById('flySpeed').value = creature.speedMap.fly;
+                            document.getElementById('swimSpeed').value = creature.speedMap.swim;
+                            document.getElementById('burrowSpeed').value = creature.speedMap.burrow;
+                            document.getElementById('climbSpeed').value = creature.speedMap.climb;
+                            document.getElementById('hoverSpeed').value = creature.speedMap.hover;
+                            document.getElementById('strStat').value = creature.statMap.strength;
+                            document.getElementById('dexStat').value = creature.statMap.dexterity;
+                            document.getElementById('conStat').value = creature.statMap.constitution;
+                            document.getElementById('intStat').value = creature.statMap.intelligence;
+                            document.getElementById('wisStat').value = creature.statMap.wisdom;
+                            document.getElementById('chaStat').value = creature.statMap.charisma;
+                            document.getElementById('strSave').value = creature.saveMap.strength;
+                            document.getElementById('dexSave').value = creature.saveMap.dexterity;
+                            document.getElementById('conSave').value = creature.saveMap.constitution;
+                            document.getElementById('intSave').value = creature.saveMap.intelligence;
+                            document.getElementById('wisSave').value = creature.saveMap.wisdom;
+                            document.getElementById('chaSave').value = creature.saveMap.charisma;
+                            document.getElementById('acrobatics').value = creature.skillsMap.acrobatics;
+                            document.getElementById('animalHandling').value = creature.skillsMap.animalHandling;
+                            document.getElementById('arcana').value = creature.skillsMap.arcana;
+                            document.getElementById('athletics').value = creature.skillsMap.athletics;
+                            document.getElementById('deception').value = creature.skillsMap.deception;
+                            document.getElementById('history').value = creature.skillsMap.history;
+                            document.getElementById('insight').value = creature.skillsMap.insight;
+                            document.getElementById('intimidation').value = creature.skillsMap.intimidation;
+                            document.getElementById('investigation').value = creature.skillsMap.investigation;
+                            document.getElementById('medicine').value = creature.skillsMap.medicine;
+                            document.getElementById('nature').value = creature.skillsMap.nature;
+                            document.getElementById('perception').value = creature.skillsMap.perception;
+                            document.getElementById('performance').value = creature.skillsMap.performance;
+                            document.getElementById('persuasion').value = creature.skillsMap.persuasion;
+                            document.getElementById('religion').value = creature.skillsMap.religion;
+                            document.getElementById('sleight').value = creature.skillsMap.sleight;
+                            document.getElementById('stealth').value = creature.skillsMap.stealth;
+                            document.getElementById('survival').value = creature.skillsMap.survival;
+                            dataStore.set([SELECTED_CREATURE_KEY], creature.objectId);
 
                         };
                     };
@@ -121,163 +177,165 @@ const EMPTY_DATASTORE_STATE = {
     }
 
     async deleteButton() {
-        const objectId = this.dataStore.get(SELECTED_SPELL_KEY);
+        const objectId = this.dataStore.get(SELECTED_CREATURE_KEY);
         if(objectId != '') {
             this.hideElements();
-            await this.spellClient.deleteSpell(objectId);
+            await this.creatureClient.deleteCreature(objectId);
             location.reload();
         }
     }
 
     async updateButton() {
         this.hideElements();
-        const spell = {};
-        spell.userEmail = this.dataStore.get(COGNITO_EMAIL_KEY);
-        spell.objectId = this.dataStore.get(SELECTED_SPELL_KEY);
-        spell.objectName = document.getElementById('objectName').value;
-        spell.spellDescription = document.getElementById('spellDescription').value;
-        spell.spellHigherLevel = document.getElementById('spellHigherLevel').value;
-        spell.spellRange = document.getElementById('spellRange').value;
-        spell.spellComponents = document.getElementById('spellComponents').value;
-        spell.spellMaterial = document.getElementById('spellMaterial').value;
-        spell.reaction = document.getElementById('reaction').value;
-        if (document.getElementById('ritualCast').value.equals == "yes") {
-            spell.ritualCast = true;
-        } else if (document.getElementById('ritualCast').value.equals == "no") {
-            spell.ritualCast = false;
-        } else {
-            spell.ritualCast = '';
-        }
-        spell.castingTime = document.getElementById('castingTime').value;
-        spell.castingTurns = document.getElementById('castingTurns').value;
-        spell.spellLevel = document.getElementById('spellLevel').value;
-        spell.spellSchool = document.getElementById('spellSchool').value;
-        spell.innateCasts = document.getElementById('innateCasts').value;
-
-        try {
-            await this.spellClient.updateSpell(spell);
-            location.reload();
-        } catch (error) {
-            this.showElements();
-            document.getElementById('offcanvas-warn-body').innerText = "You already have a spell with the name " + document.getElementById('objectName').value + " in your library."
-            var myOffcanvas = document.getElementById('offcanvasWarn');
-            var bsOffcanvas = new bootstrap.Offcanvas(myOffcanvas);
-            bsOffcanvas.show();
-        }
+//        const creature = {};
+//        creature.userEmail = this.dataStore.get(COGNITO_EMAIL_KEY);
+//        creature.objectId = this.dataStore.get(SELECTED_CREATURE_KEY);
+//        creature.objectName = document.getElementById('objectName').value;
+//        creature.creatureDescription = document.getElementById('creatureDescription').value;
+//        creature.creatureHigherLevel = document.getElementById('creatureHigherLevel').value;
+//        creature.creatureRange = document.getElementById('creatureRange').value;
+//        creature.creatureComponents = document.getElementById('creatureComponents').value;
+//        creature.creatureMaterial = document.getElementById('creatureMaterial').value;
+//        creature.reaction = document.getElementById('reaction').value;
+//        if (document.getElementById('ritualCast').value.equals == "yes") {
+//            creature.ritualCast = true;
+//        } else if (document.getElementById('ritualCast').value.equals == "no") {
+//            creature.ritualCast = false;
+//        } else {
+//            creature.ritualCast = '';
+//        }
+//        creature.castingTime = document.getElementById('castingTime').value;
+//        creature.castingTurns = document.getElementById('castingTurns').value;
+//        creature.creatureLevel = document.getElementById('creatureLevel').value;
+//        creature.creatureSchool = document.getElementById('creatureSchool').value;
+//        creature.innateCasts = document.getElementById('innateCasts').value;
+//
+//        try {
+//            await this.creatureClient.updateCreature(creature);
+//            location.reload();
+//        } catch (error) {
+//            this.showElements();
+//            document.getElementById('offcanvas-warn-body').innerText = "You already have a creature with the name " + document.getElementById('objectName').value + " in your library."
+//            var myOffcanvas = document.getElementById('offcanvasWarn');
+//            var bsOffcanvas = new bootstrap.Offcanvas(myOffcanvas);
+//            bsOffcanvas.show();
+//        }
 
     }
 
     filterResetButton() {
         document.getElementById('nameSearch').value = '';
-        document.getElementById('levelSearch').value = '';
-        document.getElementById('schoolSearch').value = '';
+        document.getElementById('pcSearch').value = 'Both';
+        document.getElementById('crAboveSearch').value = '';
+        document.getElementById('crBelowSearch').value = '';
+        document.getElementById('sizeSearch').value = '';
         this.populateTable();
     }
 
     createButton() {
-        var myOffcanvas = document.getElementById('offcanvasCreate');
-        var bsOffcanvas = new bootstrap.Offcanvas(myOffcanvas);
-        bsOffcanvas.show();
+//        var myOffcanvas = document.getElementById('offcanvasCreate');
+//        var bsOffcanvas = new bootstrap.Offcanvas(myOffcanvas);
+//        bsOffcanvas.show();
     }
 
     async createFinishButton() {
-        if(document.getElementById('newName').value != '') {
-            //this.spellClient = this.dataStore.get(SPELL_CLIENT_KEY);
-            const spell = {};
-            spell.userEmail = this.dataStore.get(COGNITO_EMAIL_KEY);
-            spell.objectName = document.getElementById('newName').value;
-            spell.spellDescription = document.getElementById('newDesc').value;
-            spell.spellLevel = document.getElementById('newLevel').value;
-            spell.spellSchool = document.getElementById('newSchool').value;
-
-            try {
-                this.hideElements();
-                document.getElementById('close-btn').click()
-                const newSpell = await this.spellClient.createSpell(spell);
-                document.getElementById('newName').value = '';
-                document.getElementById('newDesc').value = '';
-                document.getElementById('newLevel').value = '';
-                document.getElementById('newSchool').value = '';
-                this.dataStore.set([SPELLLIST_KEY], await this.spellClient.getMultipleSpells());
-                await this.populateTable();
-                this.showElements();
-                document.getElementById(newSpell.objectId).click();
-            } catch (error) {
-                this.showElements();
-                document.getElementById('offcanvas-warn-body').innerText = "You already have a spell with the name " + document.getElementById('objectName').value + " in your library."
-                var myOffcanvas = document.getElementById('offcanvasWarn');
-                var bsOffcanvas = new bootstrap.Offcanvas(myOffcanvas);
-                bsOffcanvas.show();
-            }
-        }
+//        if(document.getElementById('newName').value != '') {
+//            //this.creatureClient = this.dataStore.get(CREATURE_CLIENT_KEY);
+//            const creature = {};
+//            creature.userEmail = this.dataStore.get(COGNITO_EMAIL_KEY);
+//            creature.objectName = document.getElementById('newName').value;
+//            creature.creatureDescription = document.getElementById('newDesc').value;
+//            creature.creatureLevel = document.getElementById('newLevel').value;
+//            creature.creatureSchool = document.getElementById('newSchool').value;
+//
+//            try {
+//                this.hideElements();
+//                document.getElementById('close-btn').click()
+//                const newCreature = await this.creatureClient.createCreature(creature);
+//                document.getElementById('newName').value = '';
+//                document.getElementById('newDesc').value = '';
+//                document.getElementById('newLevel').value = '';
+//                document.getElementById('newSchool').value = '';
+//                this.dataStore.set([CREATURELIST_KEY], await this.creatureClient.getMultipleCreatures());
+//                await this.populateTable();
+//                this.showElements();
+//                document.getElementById(newCreature.objectId).click();
+//            } catch (error) {
+//                this.showElements();
+//                document.getElementById('offcanvas-warn-body').innerText = "You already have a creature with the name " + document.getElementById('objectName').value + " in your library."
+//                var myOffcanvas = document.getElementById('offcanvasWarn');
+//                var bsOffcanvas = new bootstrap.Offcanvas(myOffcanvas);
+//                bsOffcanvas.show();
+//            }
+//        }
     }
 
     importButton() {
-        var myOffcanvas = document.getElementById('offcanvasImport');
-        var bsOffcanvas = new bootstrap.Offcanvas(myOffcanvas);
-        bsOffcanvas.show();
+//        var myOffcanvas = document.getElementById('offcanvasImport');
+//        var bsOffcanvas = new bootstrap.Offcanvas(myOffcanvas);
+//        bsOffcanvas.show();
     }
 
     async importFinishButton() {
-        const slug = this.dataStore.get(SELECTED_TEMPLATE_KEY);
-        if(!slug=='') {
-            try {
-                this.hideElements();
-                document.getElementById('close-import-btn').click()
-                const newSpell = await this.spellClient.createTemplate(slug);
-                this.dataStore.set([SPELLLIST_KEY], await this.spellClient.getMultipleSpells());
-                await this.populateTable();
-                this.showElements();
-                document.getElementById(newSpell.objectId).click();
-            } catch (error) {
-                this.showElements();
-                document.getElementById('offcanvas-warn-body').innerText = "You already have a spell with the name " + document.getElementById('objectName').value + " in your library."
-                var myOffcanvas = document.getElementById('offcanvasWarn');
-                var bsOffcanvas = new bootstrap.Offcanvas(myOffcanvas);
-                bsOffcanvas.show();
-            }
-        }
+//        const slug = this.dataStore.get(SELECTED_TEMPLATE_KEY);
+//        if(!slug=='') {
+//            try {
+//                this.hideElements();
+//                document.getElementById('close-import-btn').click()
+//                const newCreature = await this.creatureClient.createTemplate(slug);
+//                this.dataStore.set([CREATURELIST_KEY], await this.creatureClient.getMultipleCreatures());
+//                await this.populateTable();
+//                this.showElements();
+//                document.getElementById(newCreature.objectId).click();
+//            } catch (error) {
+//                this.showElements();
+//                document.getElementById('offcanvas-warn-body').innerText = "You already have a creature with the name " + document.getElementById('objectName').value + " in your library."
+//                var myOffcanvas = document.getElementById('offcanvasWarn');
+//                var bsOffcanvas = new bootstrap.Offcanvas(myOffcanvas);
+//                bsOffcanvas.show();
+//            }
+//        }
     }
 
     async searchButton() {
-        this.dataStore.set([SELECTED_TEMPLATE_KEY], '');
-        document.getElementById('template-table').hidden = true;
-        document.getElementById('spinner-side').hidden = false;
-        const templates = await this.spellClient.searchTemplate(document.getElementById('templateSearch').value, document.getElementById('limit').value)
-        document.getElementById('template-table').hidden = false;
-        document.getElementById('spinner-side').hidden = true;
-        var table = document.getElementById("template-table");
-                    var oldTableBody = table.getElementsByTagName('tbody')[0];
-                    var newTableBody = document.createElement('tbody');
-                    var spellList = templates;
-                    spellList.sort((a, b) => a.name.localeCompare(b.name));
-                    for(const templateSpell of spellList) {
-                        if (
-                            !templateSpell.resourceExists
-                        ) {
-
-                            var row = newTableBody.insertRow(-1);
-                            row.setAttribute('id', templateSpell.slug);
-                            var cell1 = row.insertCell(0);
-                            var cell2 = row.insertCell(1);
-                            var cell3 = row.insertCell(2);
-                            cell1.innerHTML = templateSpell.name;
-                            cell2.innerHTML = templateSpell.level;
-                            cell3.innerHTML = templateSpell.document__title
-                            var createClickHandler = function(row, dataStore) {
-                                return function() {
-                                    for (var i = 0; i < table.rows.length; i++){
-                                        table.rows[i].removeAttribute('class');
-                                    }
-                                    row.setAttribute('class','selectedRow')
-                                    dataStore.set([SELECTED_TEMPLATE_KEY], templateSpell.slug);
-
-                                };
-                            };
-                            row.onclick = createClickHandler(row, this.dataStore);
-                        }
-                    }
-                    oldTableBody.parentNode.replaceChild(newTableBody, oldTableBody);
+//        this.dataStore.set([SELECTED_TEMPLATE_KEY], '');
+//        document.getElementById('template-table').hidden = true;
+//        document.getElementById('spinner-side').hidden = false;
+//        const templates = await this.creatureClient.searchTemplate(document.getElementById('templateSearch').value, document.getElementById('limit').value)
+//        document.getElementById('template-table').hidden = false;
+//        document.getElementById('spinner-side').hidden = true;
+//        var table = document.getElementById("template-table");
+//                    var oldTableBody = table.getElementsByTagName('tbody')[0];
+//                    var newTableBody = document.createElement('tbody');
+//                    var creatureList = templates;
+//                    creatureList.sort((a, b) => a.name.localeCompare(b.name));
+//                    for(const templateCreature of creatureList) {
+//                        if (
+//                            !templateCreature.resourceExists
+//                        ) {
+//
+//                            var row = newTableBody.insertRow(-1);
+//                            row.setAttribute('id', templateCreature.slug);
+//                            var cell1 = row.insertCell(0);
+//                            var cell2 = row.insertCell(1);
+//                            var cell3 = row.insertCell(2);
+//                            cell1.innerHTML = templateCreature.name;
+//                            cell2.innerHTML = templateCreature.level;
+//                            cell3.innerHTML = templateCreature.document__title
+//                            var createClickHandler = function(row, dataStore) {
+//                                return function() {
+//                                    for (var i = 0; i < table.rows.length; i++){
+//                                        table.rows[i].removeAttribute('class');
+//                                    }
+//                                    row.setAttribute('class','selectedRow')
+//                                    dataStore.set([SELECTED_TEMPLATE_KEY], templateCreature.slug);
+//
+//                                };
+//                            };
+//                            row.onclick = createClickHandler(row, this.dataStore);
+//                        }
+//                    }
+//                    oldTableBody.parentNode.replaceChild(newTableBody, oldTableBody);
     }
 
     showElements() {
@@ -308,8 +366,8 @@ const EMPTY_DATASTORE_STATE = {
   * Main method to run when the page contents have loaded.
   */
  const main = async () => {
-     const spellLibraryScripts = new SpellLibraryScripts();
-     spellLibraryScripts.mount();
+     const creatureLibraryScripts = new CreatureLibraryScripts();
+     creatureLibraryScripts.mount();
  };
 
  window.addEventListener('DOMContentLoaded', main);

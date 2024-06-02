@@ -57,6 +57,8 @@ const EMPTY_DATASTORE_STATE = {
             document.getElementById('import-btn').addEventListener('click', await this.importButton);
             document.getElementById('search-btn').addEventListener('click', await this.searchButton);
             document.getElementById('import-finish-btn').addEventListener('click', await this.importFinishButton);
+        } else {
+            window.location.href = "index.html";
         }
     }
 
@@ -95,7 +97,7 @@ const EMPTY_DATASTORE_STATE = {
                             }
                             row.setAttribute('class','selectedRow')
                             document.getElementById('spellNameBig').innerText = spell.objectName;
-                            document.getElementById('objectName').setAttribute('value', spell.objectName);
+                            document.getElementById('objectName').value = spell.objectName;
                             document.getElementById('spellDescription').value = spell.spellDescription;
                             document.getElementById('spellHigherLevel').value = spell.spellHigherLevel;
                             document.getElementById('spellRange').value = spell.spellRange;

@@ -13,6 +13,7 @@ import java.util.Objects;
 public class Action implements BeholderObject {
     //TODO remove useremail after pulling Action out of DB
     //TODO Action should no longer be a Beholder Object
+    //TODO But, actions still need an object ID to work on the frontend
     private String userEmail;
     private String objectId;
     private String objectName;
