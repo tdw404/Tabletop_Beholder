@@ -3,7 +3,9 @@ package dev.tdwalsh.project.tabletopBeholder.resource;
 import dev.tdwalsh.project.tabletopBeholder.dynamodb.models.Effect;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class EffectHelper {
     public static Effect provideEffect(Integer mod) {
@@ -15,11 +17,11 @@ public class EffectHelper {
         effect.setBlameConcentration(true);
         effect.setSaveType("saveType" + mod);
         effect.setSaveDC(mod);
-        List<String> newList = new ArrayList<>();
-        newList.add("listItem1");
-        newList.add("listItem2");
-        effect.setSaveOn(newList);
-        effect.setEndOn(newList);
+        Set<String> newSet = new HashSet<>();
+        newSet.add("setItem1");
+        newSet.add("setItem2");
+        effect.setSaveOn(newSet);
+        effect.setEndOn(newSet);
         return effect;
     }
 }

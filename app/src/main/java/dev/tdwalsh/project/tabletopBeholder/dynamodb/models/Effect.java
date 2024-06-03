@@ -2,8 +2,10 @@ package dev.tdwalsh.project.tabletopBeholder.dynamodb.models;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 
 public class Effect {
+    private String objectId;
     private String effectName;
     private Integer turnDuration;
     private String blameSource;
@@ -11,8 +13,19 @@ public class Effect {
     private boolean blameConcentration;
     private String saveType;
     private Integer saveDC;
-    private List<String> saveOn;
-    private List<String> endOn;
+    private Set<String> saveOn;
+    private Set<String> endOn;
+    private Integer damageAmount;
+    private String damageType;
+    private Set<String> endDamageOn;
+
+    public Integer getDamageAmount() {
+        return damageAmount;
+    }
+
+    public String getObjectId() { return objectId; }
+
+    public void setObjectId(String objectId) { this.objectId = objectId; }
 
     public String getEffectName() {
         return effectName;
@@ -70,25 +83,45 @@ public class Effect {
         this.saveDC = saveDC;
     }
 
-    public List<String> getSaveOn() {
+    public Set<String> getSaveOn() {
         return saveOn;
     }
 
-    public void setSaveOn(List<String> saveOn) {
+    public void setSaveOn(Set<String> saveOn) {
         this.saveOn = saveOn;
     }
 
-    public List<String> getEndOn() {
+    public Set<String> getEndOn() {
         return endOn;
     }
 
-    public void setEndOn(List<String> endOn) {
+    public void setEndOn(Set<String> endOn) {
         this.endOn = endOn;
+    }
+
+    public void setDamageAmount(Integer damageAmount) {
+        this.damageAmount = damageAmount;
+    }
+
+    public String getDamageType() {
+        return damageType;
+    }
+
+    public void setDamageType(String damageType) {
+        this.damageType = damageType;
+    }
+
+    public Set<String> getEndDamageOn() {
+        return endDamageOn;
+    }
+
+    public void setEndDamageOn(Set<String> endDamageOn) {
+        this.endDamageOn = endDamageOn;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(this.effectName + blameSource + blameCreatureId);
+        return Objects.hash(this.objectId);
     }
 
     @Override
@@ -103,6 +136,6 @@ public class Effect {
             return false;
         }
         Effect other = (Effect) o;
-        return (this.effectName.equals(other.effectName)) && (this.blameSource.equals(other.blameSource)) && (this.blameCreatureId.equals(blameCreatureId));
+        return this.objectId.equals(other.objectId);
     }
 }
