@@ -76,37 +76,59 @@ public class TemplateCreatureTranslator {
 
         //Import Actions
         //Retrieve actions from JSON lists and add to a single action map
-        Map<String, List<Action>> actionMap = new HashMap<>();
-        actionMap.put("action", Optional.ofNullable(templateCreature.getActions()).orElse(Collections.emptyList())
+        Map<String, Action> actionMap = new HashMap<>();
+        Optional.ofNullable(templateCreature.getActions()).orElse(Collections.emptyList())
                 .stream()
                 .map(templateAction -> TemplateActionTranslator.translate(templateAction, "action"))
-                .collect(Collectors.toList()));
-        actionMap.put("bonus", Optional.ofNullable(templateCreature.getBonus_actions()).orElse(Collections.emptyList())
+                .forEach(action -> actionMap.put(action.getObjectId(), action));
+        Optional.ofNullable(templateCreature.getBonus_actions()).orElse(Collections.emptyList())
                 .stream()
                 .map(templateAction -> TemplateActionTranslator.translate(templateAction, "bonus"))
-                .collect(Collectors.toList()));
-        actionMap.put("reaction", Optional.ofNullable(templateCreature.getReactions()).orElse(Collections.emptyList())
+                .forEach(action -> actionMap.put(action.getObjectId(), action));
+        Optional.ofNullable(templateCreature.getReactions()).orElse(Collections.emptyList())
                 .stream()
                 .map(templateAction -> TemplateActionTranslator.translate(templateAction, "reaction"))
-                .collect(Collectors.toList()));
-        actionMap.put("legendary", Optional.ofNullable(templateCreature.getLegendary_actions()).orElse(Collections.emptyList())
+                .forEach(action -> actionMap.put(action.getObjectId(), action));
+        Optional.ofNullable(templateCreature.getLegendary_actions()).orElse(Collections.emptyList())
                 .stream()
                 .map(templateAction -> TemplateActionTranslator.translate(templateAction, "legendary"))
-                .collect(Collectors.toList()));
-        actionMap.put("special", Optional.ofNullable(templateCreature.getSpecial_abilities()).orElse(Collections.emptyList())
+                .forEach(action -> actionMap.put(action.getObjectId(), action));
+        Optional.ofNullable(templateCreature.getSpecial_abilities()).orElse(Collections.emptyList())
                 .stream()
                 .map(templateAction -> TemplateActionTranslator.translate(templateAction, "special"))
-                .collect(Collectors.toList()));
+                .forEach(action -> actionMap.put(action.getObjectId(), action));
+
+
+//        actionMap.put("action", Optional.ofNullable(templateCreature.getActions()).orElse(Collections.emptyList())
+//                .stream()
+//                .map(templateAction -> TemplateActionTranslator.translate(templateAction, "action"))
+//                .collect(Collectors.toList()));
+//        actionMap.put("bonus", Optional.ofNullable(templateCreature.getBonus_actions()).orElse(Collections.emptyList())
+//                .stream()
+//                .map(templateAction -> TemplateActionTranslator.translate(templateAction, "bonus"))
+//                .collect(Collectors.toList()));
+//        actionMap.put("reaction", Optional.ofNullable(templateCreature.getReactions()).orElse(Collections.emptyList())
+//                .stream()
+//                .map(templateAction -> TemplateActionTranslator.translate(templateAction, "reaction"))
+//                .collect(Collectors.toList()));
+//        actionMap.put("legendary", Optional.ofNullable(templateCreature.getLegendary_actions()).orElse(Collections.emptyList())
+//                .stream()
+//                .map(templateAction -> TemplateActionTranslator.translate(templateAction, "legendary"))
+//                .collect(Collectors.toList()));
+//        actionMap.put("special", Optional.ofNullable(templateCreature.getSpecial_abilities()).orElse(Collections.emptyList())
+//                .stream()
+//                .map(templateAction -> TemplateActionTranslator.translate(templateAction, "special"))
+//                .collect(Collectors.toList()));
         creature.setActionMap(actionMap);
 
-        List<Spell> spellList = new ArrayList<>();
+        Map<String, Spell> spellMap = new HashMap<>();
 
         //Import Innate Spellcasting
         //Finds the 'Innate Spellcasting' special action, splits into lines.
         //Gets spellcasting ability and DC from first lines
         //Gets spells and number of innate casts from each subsequent lines
         List<String> sentenceTokens = new ArrayList<>();
-        Action castAction = Optional.ofNullable(actionMap.get("special"))
+        Action castAction = Optional.ofNullable(actionMap.values())
                 .orElse(Collections.emptyList())
                 .stream()
                 .filter(action -> action.getObjectName().equals("Innate Spellcasting"))
@@ -155,7 +177,7 @@ public class TemplateCreatureTranslator {
                             Spell spell = spellDao.getSpellByName(userEmail, spellName);
                             if (spell != null) {
                                 spell.setInnateCasts(innateCasts);
-                                spellList.add(spell);
+                                spellMap.put(spell.getObjectId(), spell);
                             } else {
                                 //Since the external api does not appear to allow searches by name
                                 //It looks like we're forced to get a list of partial matches
@@ -169,14 +191,14 @@ public class TemplateCreatureTranslator {
                                     spell.setUserEmail(userEmail);
                                     spell = (Spell) CreateObjectHelper.createObject(spellDao, spell);
                                     spell.setInnateCasts(innateCasts);
-                                    spellList.add(spell);
+                                    spellMap.put(spell.getObjectId(), spell);
                                 } else {
                                     spell = new Spell();
                                     spell.setUserEmail(userEmail);
                                     spell.setObjectName(spellName);
                                     spell = (Spell) CreateObjectHelper.createObject(spellDao, spell);
                                     spell.setInnateCasts(innateCasts);
-                                    spellList.add(spell);
+                                    spellMap.put(spell.getObjectId(), spell);
                                 }
                             }
                         });
@@ -191,7 +213,7 @@ public class TemplateCreatureTranslator {
 
         sentenceTokens = new ArrayList<>();
         Map<Integer,Integer> spellSlots = new HashMap<>();
-        castAction = Optional.ofNullable(actionMap.get("special"))
+        castAction = Optional.ofNullable(actionMap.values())
                 .orElse(Collections.emptyList())
                 .stream()
                 .filter(action -> action.getObjectName().equals("Spellcasting"))
@@ -247,7 +269,7 @@ public class TemplateCreatureTranslator {
                             //Else, create a blank spell with this name
                             Spell spell = spellDao.getSpellByName(userEmail, spellName);
                             if (spell != null) {
-                                spellList.add(spell);
+                                spellMap.put(spell.getObjectId(), spell);
                             } else {
                                 //Since the external api does not appear to allow searches by name
                                 //It looks like we're forced to get a list of partial matches
@@ -260,19 +282,19 @@ public class TemplateCreatureTranslator {
                                     spell = TemplateSpellTranslator.translate(templateSpell);
                                     spell.setUserEmail(userEmail);
                                     spell = (Spell) CreateObjectHelper.createObject(spellDao, spell);
-                                    spellList.add(spell);
+                                    spellMap.put(spell.getObjectId(), spell);
                                 } else {
                                     spell = new Spell();
                                     spell.setUserEmail(userEmail);
                                     spell.setObjectName(spellName);
                                     spell = (Spell) CreateObjectHelper.createObject(spellDao, spell);
-                                    spellList.add(spell);
+                                    spellMap.put(spell.getObjectId(), spell);
                                 }
                             }
                         });
             }
         });
-        creature.setSpellList(spellList);
+        creature.setSpellMap(spellMap);
         creature.setSpellSlots(spellSlots);
         return creature;
     }

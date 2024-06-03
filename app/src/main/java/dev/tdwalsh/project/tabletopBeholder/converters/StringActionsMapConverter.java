@@ -7,22 +7,21 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import dev.tdwalsh.project.tabletopBeholder.dynamodb.models.Action;
 import dev.tdwalsh.project.tabletopBeholder.exceptions.SerializationException;
 
-import java.util.List;
 import java.util.Map;
 
-public class StringActionsMapConverter implements DynamoDBTypeConverter<String, Map<String, List<Action>>>{
+public class StringActionsMapConverter implements DynamoDBTypeConverter<String, Map<String, Map<String, Action>>>{
     private ObjectMapper objectMapper =new ObjectMapper();
     @Override
-    public String convert(Map<String, List<Action>> integerActionsMap) {
+    public String convert(Map<String, Map<String, Action>> stringActionsMap) {
         try {
-            return objectMapper.writeValueAsString(integerActionsMap);
+            return objectMapper.writeValueAsString(stringActionsMap);
         } catch (JsonProcessingException e) {
             throw new SerializationException("Error serializing map", e);
         }
     }
 
     @Override
-    public Map<String, List<Action>> unconvert(String serialString) {
+    public Map<String, Map<String, Action>> unconvert(String serialString) {
         try {
             return objectMapper.readValue(serialString, new TypeReference<>(){});
         } catch (JsonProcessingException e) {
