@@ -45,7 +45,7 @@ const EMPTY_DATASTORE_STATE = {
 
     async startupActivities() {
         if (await this.client.verifyLogin()) {
-        alert(uuidv4());
+        //alert(uuidv4());
             const{email, name} = await this.client.getIdentity().then(result => result);
             this.dataStore.set([COGNITO_EMAIL_KEY], email);
             this.dataStore.set([COGNITO_NAME_KEY], name);
@@ -148,12 +148,12 @@ const EMPTY_DATASTORE_STATE = {
                             document.getElementById('intStat').value = creature.statMap.intelligence;
                             document.getElementById('wisStat').value = creature.statMap.wisdom;
                             document.getElementById('chaStat').value = creature.statMap.charisma;
-                            document.getElementById('strSave').value = creature.saveMap.strength;
-                            document.getElementById('dexSave').value = creature.saveMap.dexterity;
-                            document.getElementById('conSave').value = creature.saveMap.constitution;
-                            document.getElementById('intSave').value = creature.saveMap.intelligence;
-                            document.getElementById('wisSave').value = creature.saveMap.wisdom;
-                            document.getElementById('chaSave').value = creature.saveMap.charisma;
+                            document.getElementById('strSave').value = creature.saveMap.strength_save;
+                            document.getElementById('dexSave').value = creature.saveMap.dexterity_save;
+                            document.getElementById('conSave').value = creature.saveMap.constitution_save;
+                            document.getElementById('intSave').value = creature.saveMap.intelligence_save;
+                            document.getElementById('wisSave').value = creature.saveMap.wisdom_save;
+                            document.getElementById('chaSave').value = creature.saveMap.charisma_save;
                             document.getElementById('acrobatics').value = creature.skillsMap.acrobatics;
                             document.getElementById('animalHandling').value = creature.skillsMap.animalHandling;
                             document.getElementById('arcana').value = creature.skillsMap.arcana;

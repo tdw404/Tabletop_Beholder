@@ -346,6 +346,42 @@
             </div>
 
             <div class="tab-pane fade" id="actions" role="tabpanel" aria-labelledby="actions-tab">
+                <div class="mb-3">
+                    <label for="actionName" class="form-label">Action Name</label>
+                    <input class="form-control" id="actionName">
+                </div>
+                <div class="mb-3">
+                    <label for="actionDescription" class="form-label">Description</label>
+                    <textarea class="form-control" id="actionDescription" rows="3"></textarea>
+                </div>
+                <div class="row">
+                    <div class="mb-3 col">
+                        <label for="actionType" class="form-label">Action Type</label>
+                        <select class="form-select" id="actionType">
+                            <option value="action">Standard</option>
+                            <option value="bonus">Bonus</option>
+                            <option value="reaction">Reaction</option>
+                            <option value="legendary">Legendary</option>
+                            <option value="special">Special</option>
+                        </select>
+                    </div>
+                    <div class="mb-3 col">
+                        <label for="actionUses" class="form-label">Uses</label>
+                        <input class="form-control" id="actionUses" type="number" min="0" data-bind="value:replyNumber">
+                    </div>
+                    <div class="mb-3 col">
+                        <label for="actionRecharge" class="form-label">Recharge on >=</label>
+                        <select class="form-select" id="actionRecharge">
+                            <option value=''></option>
+                            <option value=1>1</option>
+                            <option value=2>2</option>
+                            <option value=3>3</option>
+                            <option value=4>4</option>
+                            <option value=5>5</option>
+                            <option value=6>6</option>
+                        </select>
+                    </div>
+                </div>
 
             </div>
 
