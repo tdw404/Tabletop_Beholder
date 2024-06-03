@@ -7,7 +7,9 @@ import dev.tdwalsh.project.tabletopBeholder.exceptions.MissingResourceException;
 import java.lang.reflect.Field;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class SpellHelper {
 
@@ -28,10 +30,12 @@ public class SpellHelper {
         spell.setSpellLevel(mod);
         spell.setSpellSchool("spellSchool" + mod);
         spell.setInnateCasts(mod);
-        List<Effect> effectList = new ArrayList<>();
-        effectList.add(EffectHelper.provideEffect(1));
-        effectList.add(EffectHelper.provideEffect(2));
-        spell.setAppliesEffects(effectList);
+        Map<String, Effect> effectMap = new HashMap<>();
+        Effect effect1 = EffectHelper.provideEffect(1);
+        Effect effect2 = EffectHelper.provideEffect(2);
+        effectMap.put(effect1.getObjectId(), effect1);
+        effectMap.put(effect2.getObjectId(), effect2);
+        spell.setAppliesEffects(effectMap);
         spell.setCreateDateTime(ZonedDateTime.now());
         spell.setEditDateTime(ZonedDateTime.now());
         return spell;

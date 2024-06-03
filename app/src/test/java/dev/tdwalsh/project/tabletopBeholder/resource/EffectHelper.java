@@ -10,6 +10,7 @@ import java.util.Set;
 public class EffectHelper {
     public static Effect provideEffect(Integer mod) {
         Effect effect = new Effect();
+        effect.setObjectId("id" + mod);
         effect.setEffectName("effectName" + mod);
         effect.setTurnDuration(mod);
         effect.setBlameSource("blameSource" + mod);
