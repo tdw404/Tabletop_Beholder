@@ -6,13 +6,15 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 public class EffectConverterTest {
     private EffectConverter converter;
-    private List<Effect> objectList;
+    private Map<String, Effect> objectMap;
     private Effect object1;
     private Effect object2;
     private String serial;
@@ -21,22 +23,25 @@ public class EffectConverterTest {
     public void setup() {
         converter = new EffectConverter();
         object1 = new Effect();
+        object1.setObjectId("id1");
         object1.setEffectName("name1");
         object1.setBlameSource("source1");
         object2 = new Effect();
+        object2.setObjectId("id2");
         object2.setEffectName("name2");
         object2.setBlameSource("source2");
-        objectList = new ArrayList<>();
-        objectList.add(object1);
-        objectList.add(object2);
-        serial = "[{\"effectName\":\"name1\",\"blameSource\":\"source1\"},{\"effectName\":\"name2\",\"blameSource\":\"source2\"}]";
+        objectMap = new HashMap<>();
+        objectMap.put(object1.getObjectId(), object1);
+        objectMap.put(object2.getObjectId(), object2);
+        serial = "{\"id2\":{\"objectId\":\"id2\",\"effectName\":\"name2\",\"turnDuration\":null,\"blameSource\":\"source2\",\"blameCreatureId\":null,\"blameConcentration\":false,\"saveType\":null,\"saveDC\":null,\"saveOn\":null,\"endOn\":null,\"damageAmount\":null,\"damageType\":null,\"endDamageOn\":null},\"id1\":{\"objectId\":\"id1\",\"effectName\":\"name1\",\"turnDuration\":null,\"blameSource\":\"source1\",\"blameCreatureId\":null,\"blameConcentration\":false,\"saveType\":null,\"saveDC\":null,\"saveOn\":null,\"endOn\":null,\"damageAmount\":null,\"damageType\":null,\"endDamageOn\":null}}";
     }
 
     @Test
     public void convert_listOfObjects_resultIsAString() {
         //GIVEN
         //WHEN
-        String result = converter.convert(objectList);
+        String result = converter.convert(objectMap);
+        System.out.println(result);
 
         //THEN
         assertEquals(String.class, result.getClass(), "Expected result to be a string");
@@ -47,11 +52,11 @@ public class EffectConverterTest {
     public void unconvert_serilalizedList_resultIsObjectType() {
         //GIVEN
         //WHEN
-        List<Effect> result = converter.unconvert(serial);
+        Map<String, Effect> result = converter.unconvert(serial);
 
         //THEN
-        assertEquals(Effect.class, result.get(0).getClass(), "Expected result class to match original object");
-        assertTrue(result.get(0).getEffectName().equals("name1") || result.get(0).getEffectName().equals("name2"), "Expected result to contain elements of serialized string");
+        assertEquals(Effect.class, new ArrayList<>(result.values()).get(0).getClass(), "Expected result class to match original object");
+        assertTrue(new ArrayList<>(result.values()).get(0).getEffectName().equals("name1") || new ArrayList<>(result.values()).get(0).getEffectName().equals("name2"), "Expected result to contain elements of serialized string");
     }
 
     @Test

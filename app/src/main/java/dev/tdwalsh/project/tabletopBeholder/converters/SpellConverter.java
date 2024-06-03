@@ -9,12 +9,13 @@ import dev.tdwalsh.project.tabletopBeholder.dynamodb.models.Spell;
 import dev.tdwalsh.project.tabletopBeholder.exceptions.SerializationException;
 
 import java.util.List;
+import java.util.Map;
 
-public class SpellConverter implements DynamoDBTypeConverter<String, List<Spell>>{
+public class SpellConverter implements DynamoDBTypeConverter<String, Map<String, Spell>>{
     private JavaTimeModule javaTimeModule = new JavaTimeModule();
     private ObjectMapper objectMapper =new ObjectMapper().registerModule(javaTimeModule);
     @Override
-    public String convert(List<Spell> spellList) {
+    public String convert(Map<String, Spell> spellList) {
         try {
             return objectMapper.writeValueAsString(spellList);
         } catch (JsonProcessingException e) {
@@ -23,7 +24,7 @@ public class SpellConverter implements DynamoDBTypeConverter<String, List<Spell>
     }
 
     @Override
-    public List<Spell> unconvert(String spellString) {
+    public Map<String, Spell> unconvert(String spellString) {
         try {
             return objectMapper.readValue(spellString, new TypeReference<>(){});
         } catch (JsonProcessingException e) {

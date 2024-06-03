@@ -7,12 +7,14 @@ import org.apache.commons.text.WordUtils;
 
 import java.time.ZonedDateTime;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 @DynamoDBTable(tableName = "TabletopBeholder_ActionTable")
 public class Action implements BeholderObject {
     //TODO remove useremail after pulling Action out of DB
     //TODO Action should no longer be a Beholder Object
+    //TODO But, actions still need an object ID to work on the frontend
     private String userEmail;
     private String objectId;
     private String objectName;
@@ -20,7 +22,7 @@ public class Action implements BeholderObject {
     private String actionDescription;
     private Integer uses;
     private Integer rechargeOn;
-    private List<Effect> appliesEffects;
+    private Map<String, Effect> appliesEffects;
     //TODO Can remove ZDTs after pulling action out of DB
     private ZonedDateTime createDateTime;
     private ZonedDateTime editDateTime;
@@ -93,11 +95,11 @@ public class Action implements BeholderObject {
 
     @DynamoDBAttribute(attributeName = "appliesEffects")
     @DynamoDBTypeConverted(converter = EffectConverter.class)
-    public List<Effect> getAppliesEffects() {
+    public Map<String, Effect> getAppliesEffects() {
         return appliesEffects;
     }
 
-    public void setAppliesEffects(List<Effect> appliesEffects) {
+    public void setAppliesEffects(Map<String, Effect> appliesEffects) {
         this.appliesEffects = appliesEffects;
     }
     @DynamoDBAttribute(attributeName= "createDateTime")

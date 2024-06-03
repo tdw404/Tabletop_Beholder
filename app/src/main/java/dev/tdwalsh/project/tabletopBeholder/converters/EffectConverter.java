@@ -10,12 +10,13 @@ import dev.tdwalsh.project.tabletopBeholder.exceptions.SerializationException;
 
 
 import java.util.List;
+import java.util.Map;
 
-public class EffectConverter implements DynamoDBTypeConverter<String, List<Effect>>{
+public class EffectConverter implements DynamoDBTypeConverter<String, Map<String, Effect>>{
     private JavaTimeModule javaTimeModule = new JavaTimeModule();
     private ObjectMapper objectMapper =new ObjectMapper().registerModule(javaTimeModule);
     @Override
-    public String convert(List<Effect> effectList) {
+    public String convert(Map<String, Effect> effectList) {
         try {
             return objectMapper.writeValueAsString(effectList);
         } catch (JsonProcessingException e) {
@@ -24,7 +25,7 @@ public class EffectConverter implements DynamoDBTypeConverter<String, List<Effec
     }
 
     @Override
-    public List<Effect> unconvert(String effectString) {
+    public Map<String, Effect> unconvert(String effectString) {
         try {
             return objectMapper.readValue(effectString, new TypeReference<>(){});
         } catch (JsonProcessingException e) {

@@ -5,7 +5,6 @@ import dev.tdwalsh.project.tabletopBeholder.converters.*;
 import org.apache.commons.text.WordUtils;
 
 import java.time.ZonedDateTime;
-import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
@@ -30,7 +29,7 @@ public class Creature implements BeholderObject {
     private String alignment;
     private Integer armorClass;
     private String armorType;
-    private List<Effect> activeEffects;
+    private Map<String, Effect> activeEffects;
     private Boolean knockedOut;
     private Boolean dead;
     private Integer deathSaves;
@@ -50,9 +49,9 @@ public class Creature implements BeholderObject {
     private String senses;
     private String languages;
     private Double challengeRating;
-    private Map<String, List<Action>> actionMap;
+    private Map<String, Action> actionMap;
     private String legendaryDesc;
-    private List<Spell> spellList;
+    private Map<String, Spell> spellMap;
     private Map<Integer, Integer> spellSlots;
     private String spellcastingAbility;
     private String spellSaveDC;
@@ -220,11 +219,11 @@ public class Creature implements BeholderObject {
 
     @DynamoDBAttribute(attributeName = "activeEffects")
     @DynamoDBTypeConverted(converter = EffectConverter.class)
-    public List<Effect> getActiveEffects() {
+    public Map<String, Effect> getActiveEffects() {
         return activeEffects;
     }
 
-    public void setActiveEffects(List<Effect> activeEffects) {
+    public void setActiveEffects(Map<String, Effect> activeEffects) {
         this.activeEffects = activeEffects;
     }
 
@@ -406,12 +405,12 @@ public class Creature implements BeholderObject {
     }
 
     @DynamoDBAttribute(attributeName = "actionMap")
-    @DynamoDBTypeConverted(converter = StringActionsMapConverter.class)
-    public Map<String, List<Action>> getActionMap() {
+    @DynamoDBTypeConverted(converter = ActionConverter.class)
+    public Map<String, Action> getActionMap() {
         return actionMap;
     }
 
-    public void setActionMap(Map<String, List<Action>> actionMap) {
+    public void setActionMap(Map<String, Action> actionMap) {
         this.actionMap = actionMap;
     }
 
@@ -424,14 +423,14 @@ public class Creature implements BeholderObject {
         this.legendaryDesc = legendaryDesc;
     }
 
-    @DynamoDBAttribute(attributeName = "spellList")
+    @DynamoDBAttribute(attributeName = "spellMap")
     @DynamoDBTypeConverted(converter = SpellConverter.class)
-    public List<Spell> getSpellList() {
-        return spellList;
+    public Map<String, Spell> getSpellMap() {
+        return spellMap;
     }
 
-    public void setSpellList(List<Spell> spellList) {
-        this.spellList = spellList;
+    public void setSpellMap(Map<String, Spell> spellMap) {
+        this.spellMap = spellMap;
     }
 
     @DynamoDBAttribute(attributeName = "spellSlots")

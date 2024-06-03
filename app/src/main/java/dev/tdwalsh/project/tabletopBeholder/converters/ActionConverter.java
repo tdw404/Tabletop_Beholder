@@ -9,12 +9,13 @@ import dev.tdwalsh.project.tabletopBeholder.dynamodb.models.Action;
 import dev.tdwalsh.project.tabletopBeholder.exceptions.SerializationException;
 
 import java.util.List;
+import java.util.Map;
 
-public class ActionConverter implements DynamoDBTypeConverter<String, List<Action>>{
+public class ActionConverter implements DynamoDBTypeConverter<String, Map<String, Action>>{
     private JavaTimeModule javaTimeModule = new JavaTimeModule();
     private ObjectMapper objectMapper =new ObjectMapper().registerModule(javaTimeModule);
     @Override
-    public String convert(List<Action> actionList) {
+    public String convert(Map<String, Action> actionList) {
         try {
             return objectMapper.writeValueAsString(actionList);
         } catch (JsonProcessingException e) {
@@ -23,7 +24,7 @@ public class ActionConverter implements DynamoDBTypeConverter<String, List<Actio
     }
 
     @Override
-    public List<Action> unconvert(String actionString) {
+    public Map<String, Action> unconvert(String actionString) {
         try {
             return objectMapper.readValue(actionString, new TypeReference<>(){});
         } catch (JsonProcessingException e) {

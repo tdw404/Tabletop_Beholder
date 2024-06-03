@@ -5,7 +5,9 @@ import dev.tdwalsh.project.tabletopBeholder.dynamodb.models.Effect;
 
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class ActionHelper {
 
@@ -18,10 +20,12 @@ public class ActionHelper {
         action.setActionDescription("actionDesction" + mod);
         action.setUses(mod);
         action.setRechargeOn(mod);
-        List<Effect> effectList = new ArrayList<>();
-        effectList.add(EffectHelper.provideEffect(1));
-        effectList.add(EffectHelper.provideEffect(2));
-        action.setAppliesEffects(effectList);
+        Effect effect1 = EffectHelper.provideEffect(1);
+        Effect effect2 = EffectHelper.provideEffect(2);
+        Map<String, Effect> effectMap = new HashMap<>();
+        effectMap.put(effect1.getObjectId(), effect1);
+        effectMap.put(effect2.getObjectId(), effect2);
+        action.setAppliesEffects(effectMap);
         action.setCreateDateTime(ZonedDateTime.now());
         action.setEditDateTime(ZonedDateTime.now());
         return action;
