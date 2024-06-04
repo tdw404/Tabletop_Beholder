@@ -346,43 +346,93 @@
             </div>
 
             <div class="tab-pane fade" id="actions" role="tabpanel" aria-labelledby="actions-tab">
-                <div class="mb-3">
-                    <label for="actionName" class="form-label">Action Name</label>
-                    <input class="form-control" id="actionName">
-                </div>
-                <div class="mb-3">
-                    <label for="actionDescription" class="form-label">Description</label>
-                    <textarea class="form-control" id="actionDescription" rows="3"></textarea>
-                </div>
-                <div class="row">
-                    <div class="mb-3 col">
-                        <label for="actionType" class="form-label">Action Type</label>
-                        <select class="form-select" id="actionType">
-                            <option value="action">Standard</option>
-                            <option value="bonus">Bonus</option>
-                            <option value="reaction">Reaction</option>
-                            <option value="legendary">Legendary</option>
-                            <option value="special">Special</option>
-                        </select>
+                <ul class="nav nav-tabs"  role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link active link-dark" id="standard-tab" data-bs-toggle="tab" data-bs-target="#standard" type="button" role="tab" aria-controls="standard" aria-selected="true">Standard</button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link link-dark" id="bonus-tab" data-bs-toggle="tab" data-bs-target="#bonus" type="button" role="tab" aria-controls="bonus" aria-selected="false">Bonus</button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link link-dark" id="reaction-tab" data-bs-toggle="tab" data-bs-target="#reaction" type="button" role="tab" aria-controls="reaction" aria-selected="false">Reaction</button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link link-dark" id="legendary-tab" data-bs-toggle="tab" data-bs-target="#legendary" type="button" role="tab" aria-controls="legendary" aria-selected="false">Legendary</button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link link-dark" id="special-tab" data-bs-toggle="tab" data-bs-target="#special" type="button" role="tab" aria-controls="special" aria-selected="false">Special</button>
+                    </li>
+                </ul>
+                <div class="tab-content">
+                    <div class="tab-pane fade show active actions-tab" id="standard" role="tabpanel" aria-labelledby="standard-tab">
+                        <div class="table-responsive">
+                            <table id = "standard-table"  class="table table-striped actions-table">
+                                <thead>
+                                <tr>
+                                    <th>Action Name</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
-                    <div class="mb-3 col">
-                        <label for="actionUses" class="form-label">Uses</label>
-                        <input class="form-control" id="actionUses" type="number" min="0" data-bind="value:replyNumber">
-                    </div>
-                    <div class="mb-3 col">
-                        <label for="actionRecharge" class="form-label">Recharge on >=</label>
-                        <select class="form-select" id="actionRecharge">
-                            <option value=''></option>
-                            <option value=1>1</option>
-                            <option value=2>2</option>
-                            <option value=3>3</option>
-                            <option value=4>4</option>
-                            <option value=5>5</option>
-                            <option value=6>6</option>
-                        </select>
-                    </div>
-                </div>
 
+                    <div class="tab-pane fade show actions-tab" id="bonus" role="tabpanel" aria-labelledby="bonus-tab">
+                        <div id="1" class="table-responsive">
+                            <table id = "bonus-table"  class="table table-striped actions-table">
+                                <thead>
+                                <tr>
+                                    <th>Action Name</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div class="tab-pane fade show actions-tab" id="reaction" role="tabpanel" aria-labelledby="reaction-tab">
+                        <div id="2" class="table-responsive">
+                            <table id = "reaction-table"  class="table table-striped actions-table">
+                                <thead>
+                                <tr>
+                                    <th>Action Name</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div class="tab-pane fade show actions-tab" id="legendary" role="tabpanel" aria-labelledby="legendary-tab">
+                        <div class="table-responsive">
+                            <table id = "legendary-table"  class="table table-striped actions-table">
+                                <thead>
+                                <tr>
+                                    <th>Action Name</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div class="tab-pane fade show actions-tab" id="special" role="tabpanel" aria-labelledby="special-tab">
+                            <table id = "special-table"  class="table table-striped actions-table">
+                                <thead>
+                                <tr>
+                                    <th>Action Name</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                </tbody>
+                            </table>
+                    </div>
+
+                </div>
             </div>
 
 

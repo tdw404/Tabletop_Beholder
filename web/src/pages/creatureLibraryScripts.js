@@ -11,6 +11,7 @@ const CREATURELIST_KEY = 'creature-list';
 const CREATUREMAP_KEY = 'creature-map';
 const SELECTED_CREATURE_KEY = 'selected-creature-key';
 const SELECTED_TEMPLATE_KEY = 'selected-template-key';
+const SELECTED_ACTION_KEY = 'selected-action-key';
 const EMPTY_DATASTORE_STATE = {
     [COGNITO_NAME_KEY]: '',
     [COGNITO_EMAIL_KEY]: '',
@@ -18,6 +19,7 @@ const EMPTY_DATASTORE_STATE = {
     [CREATUREMAP_KEY]: '',
     [SELECTED_CREATURE_KEY]: '',
     [SELECTED_TEMPLATE_KEY]: '',
+    [SELECTED_ACTION_KEY]: '',
 };
 /**
  * Adds functionality to the landing page.
@@ -81,7 +83,6 @@ const EMPTY_DATASTORE_STATE = {
                 if (
                     1 == 1
                 ) {
-
                     var row = newTableBody.insertRow(-1);
                     row.setAttribute('id', creature.objectId);
                     var cell1 = row.insertCell(0);
@@ -172,6 +173,33 @@ const EMPTY_DATASTORE_STATE = {
                             document.getElementById('sleight').value = creature.skillsMap.sleight;
                             document.getElementById('stealth').value = creature.skillsMap.stealth;
                             document.getElementById('survival').value = creature.skillsMap.survival;
+
+                            var actionMap = creature.actionMap;
+                            var tabs = document.getElementsByClassName('actions-table');
+                                    for(var i = 0; i < tabs.length; i++) {
+                                       tabs[i].getElementsByTagName('tbody')[0].innerHTML = '';
+                                    }
+                            for (const [key, value] of Object.entries(actionMap)) {
+                                var actionType = value.actionType;
+                                var actionId = value.objectId;
+                                var actionTable = document.getElementById((actionType + "-table"));
+                                var actionBody = actionTable.getElementsByTagName('tbody')[0];
+                                var actionRow = actionBody.insertRow(-1);
+                                actionRow.setAttribute('id', actionId);
+                                var actionCell = actionRow.insertCell(0);
+                                actionCell.innerHTML = value.objectName;
+                                var actionClickHandler = function(actionRow, dataStore) {
+                                    return function() {
+                                    for (var i = 0; i < actionTable.rows.length; i++){
+                                        actionTable.rows[i].removeAttribute('class');
+                                    }
+                                    actionRow.setAttribute('class','selectedRow')
+                                    dataStore.set([SELECTED_ACTION_KEY], actionId);
+                                }}
+                                actionRow.onclick = actionClickHandler(actionRow, dataStore);
+                            }
+
+
                             dataStore.set([SELECTED_CREATURE_KEY], creature.objectId);
 
                         };

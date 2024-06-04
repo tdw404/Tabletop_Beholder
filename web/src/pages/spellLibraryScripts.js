@@ -32,7 +32,8 @@ const EMPTY_DATASTORE_STATE = {
                                 'hideElements', 'showElements',
                                 'createButton', 'createFinishButton',
                                 'importButton', 'importFinishButton',
-                                'searchButton'], this);
+                                'searchButton', 'spellRowClick',
+                                'templateRowClick'], this);
         this.dataStore = new DataStore(EMPTY_DATASTORE_STATE);
         this.navbarProvider = new NavbarProvider();
     };
@@ -44,11 +45,11 @@ const EMPTY_DATASTORE_STATE = {
 
     async startupActivities() {
         if (await this.client.verifyLogin()) {
-            const{email, name} = await this.client.getIdentity().then(result => result);
+            var{email, name} = await this.client.getIdentity().then(result => result);
             this.dataStore.set([COGNITO_EMAIL_KEY], email);
             this.dataStore.set([COGNITO_NAME_KEY], name);
             this.dataStore.set([SPELLLIST_KEY], await this.spellClient.getMultipleSpells());
-            const spellMap = new Map(this.dataStore.get([SPELLLIST_KEY]).map((obj) => [obj.objectId, obj]));
+            var spellMap = new Map(this.dataStore.get([SPELLLIST_KEY]).map((obj) => [obj.objectId, obj]));
             this.dataStore.set([SPELLMAP_KEY], spellMap);
             await this.populateTable();
             this.showElements();
@@ -61,6 +62,8 @@ const EMPTY_DATASTORE_STATE = {
             document.getElementById('import-btn').addEventListener('click', await this.importButton);
             document.getElementById('search-btn').addEventListener('click', await this.searchButton);
             document.getElementById('import-finish-btn').addEventListener('click', await this.importFinishButton);
+            document.getElementById('spell-table').addEventListener('click', (event) => this.spellRowClick(event.target.parentNode.dataset.id));
+            document.getElementById('template-table').addEventListener('click', (event) => this.templateRowClick(event.target.parentNode.dataset.id));
         } else {
             window.location.href = "index.html";
         }
@@ -72,10 +75,10 @@ const EMPTY_DATASTORE_STATE = {
             var newTableBody = document.createElement('tbody');
             var spellList = this.dataStore.get(SPELLLIST_KEY);
             spellList.sort((a, b) => a.objectName.localeCompare(b.objectName));
-            const nameSearch = document.getElementById('nameSearch').value;
-            const levelSearch = document.getElementById('levelSearch').value;
-            const schoolSearch = document.getElementById('schoolSearch').value;
-            for(const spell of spellList) {
+            var nameSearch = document.getElementById('nameSearch').value;
+            var levelSearch = document.getElementById('levelSearch').value;
+            var schoolSearch = document.getElementById('schoolSearch').value;
+            for(var spell of spellList) {
                 if (
                     (nameSearch == '' || spell.objectName.toLowerCase().includes(nameSearch.toLowerCase())) &&
                     (levelSearch == '' || spell.spellLevel == levelSearch) &&
@@ -84,6 +87,7 @@ const EMPTY_DATASTORE_STATE = {
 
                     var row = newTableBody.insertRow(-1);
                     row.setAttribute('id', spell.objectId);
+                    row.setAttribute('data-id', spell.objectId);
                     var cell1 = row.insertCell(0);
                     var cell2 = row.insertCell(1);
                     var cell3 = row.insertCell(2);
@@ -94,40 +98,50 @@ const EMPTY_DATASTORE_STATE = {
                                         ? "Yes"
                                         : "No";
                     cell4.innerHTML = spell.spellSchool;
-                    var createClickHandler = function(row, dataStore) {
-                        return function() {
-                            for (var i = 0; i < table.rows.length; i++){
-                                table.rows[i].removeAttribute('class');
-                            }
-                            row.setAttribute('class','selectedRow')
-                            document.getElementById('spellNameBig').innerText = spell.objectName;
-                            document.getElementById('objectName').value = spell.objectName;
-                            document.getElementById('spellDescription').value = spell.spellDescription;
-                            document.getElementById('spellHigherLevel').value = spell.spellHigherLevel;
-                            document.getElementById('spellRange').value = spell.spellRange;
-                            document.getElementById('spellComponents').value = spell.spellComponents;
-                            document.getElementById('spellMaterial').value = spell.spellMaterial;
-                            document.getElementById('reaction').value = spell.reaction;
-                            document.getElementById('ritualCast').value = spell.ritualCast
-                                                                            ? "yes"
-                                                                            : "no";
-                            document.getElementById('castingTime').value = spell.castingTime;
-                            document.getElementById('castingTurns').value = spell.castingTurns;
-                            document.getElementById('spellLevel').value = spell.spellLevel;
-                            document.getElementById('spellSchool').value = spell.spellSchool;
-                            document.getElementById('innateCasts').value = spell.innateCasts;
-                            dataStore.set([SELECTED_SPELL_KEY], spell.objectId);
-
-                        };
-                    };
-                    row.onclick = createClickHandler(row, this.dataStore);
                 }
             }
             oldTableBody.parentNode.replaceChild(newTableBody, oldTableBody);
     }
 
+    async templateRowClick(templateId) {
+        this.dataStore.set([SELECTED_TEMPLATE_KEY], templateId);
+        var table = document.getElementById('template-table');
+        for (var i = 0; i < table.rows.length; i++){
+            table.rows[i].removeAttribute('class');
+        }
+        document.getElementById(templateId).setAttribute('class','selectedRow');
+        this.dataStore.set([SELECTED_TEMPLATE_KEY], templateId);
+    }
+
+    async spellRowClick(spellId) {
+        var spell = this.dataStore.get(SPELLMAP_KEY).get(spellId);
+        this.dataStore.set([SELECTED_SPELL_KEY], spell);
+        var table = document.getElementById('spell-table');
+        for (var i = 0; i < table.rows.length; i++){
+            table.rows[i].removeAttribute('class');
+        }
+        document.getElementById(spellId).setAttribute('class','selectedRow');
+        document.getElementById('spellNameBig').innerText = spell.objectName;
+        document.getElementById('objectName').value = spell.objectName;
+        document.getElementById('spellDescription').value = spell.spellDescription;
+        document.getElementById('spellHigherLevel').value = spell.spellHigherLevel;
+        document.getElementById('spellRange').value = spell.spellRange;
+        document.getElementById('spellComponents').value = spell.spellComponents;
+        document.getElementById('spellMaterial').value = spell.spellMaterial;
+        document.getElementById('reaction').value = spell.reaction;
+        document.getElementById('ritualCast').value = spell.ritualCast
+                                                      ? "yes"
+                                                      : "no";
+        document.getElementById('castingTime').value = spell.castingTime;
+        document.getElementById('castingTurns').value = spell.castingTurns;
+        document.getElementById('spellLevel').value = spell.spellLevel;
+        document.getElementById('spellSchool').value = spell.spellSchool;
+        document.getElementById('innateCasts').value = spell.innateCasts;
+
+    }
+
     async deleteButton() {
-        const objectId = this.dataStore.get(SELECTED_SPELL_KEY);
+        var objectId = this.dataStore.get(SELECTED_SPELL_KEY).objectId;
         if(objectId != '') {
             this.hideElements();
             await this.spellClient.deleteSpell(objectId);
@@ -137,9 +151,7 @@ const EMPTY_DATASTORE_STATE = {
 
     async updateButton() {
         this.hideElements();
-        const spell = (this.dataStore.get(SPELLMAP_KEY)).get(this.dataStore.get(SELECTED_SPELL_KEY));
-        spell.userEmail = this.dataStore.get(COGNITO_EMAIL_KEY);
-        spell.objectId = this.dataStore.get(SELECTED_SPELL_KEY);
+        var spell = this.dataStore.get(SELECTED_SPELL_KEY);
         spell.objectName = document.getElementById('objectName').value;
         spell.spellDescription = document.getElementById('spellDescription').value;
         spell.spellHigherLevel = document.getElementById('spellHigherLevel').value;
@@ -188,7 +200,7 @@ const EMPTY_DATASTORE_STATE = {
 
     async createFinishButton() {
         if(document.getElementById('newName').value != '') {
-            const spell = {};
+            var spell = {};
             spell.userEmail = this.dataStore.get(COGNITO_EMAIL_KEY);
             spell.objectName = document.getElementById('newName').value;
             spell.spellDescription = document.getElementById('newDesc').value;
@@ -198,15 +210,17 @@ const EMPTY_DATASTORE_STATE = {
             try {
                 this.hideElements();
                 document.getElementById('close-btn').click()
-                const newSpell = await this.spellClient.createSpell(spell);
+                var newSpell = await this.spellClient.createSpell(spell);
                 document.getElementById('newName').value = '';
                 document.getElementById('newDesc').value = '';
                 document.getElementById('newLevel').value = '';
                 document.getElementById('newSchool').value = '';
                 this.dataStore.set([SPELLLIST_KEY], await this.spellClient.getMultipleSpells());
+                var spellMap = new Map(this.dataStore.get([SPELLLIST_KEY]).map((obj) => [obj.objectId, obj]));
+                this.dataStore.set([SPELLMAP_KEY], spellMap);
                 await this.populateTable();
                 this.showElements();
-                document.getElementById(newSpell.objectId).click();
+                this.spellRowClick(newSpell.objectId);
             } catch (error) {
                 this.showElements();
                 document.getElementById('offcanvas-warn-body').innerText = "You already have a spell with the name " + document.getElementById('objectName').value + " in your library."
@@ -224,16 +238,18 @@ const EMPTY_DATASTORE_STATE = {
     }
 
     async importFinishButton() {
-        const slug = this.dataStore.get(SELECTED_TEMPLATE_KEY);
+        var slug = this.dataStore.get(SELECTED_TEMPLATE_KEY);
         if(!slug=='') {
             try {
                 this.hideElements();
                 document.getElementById('close-import-btn').click()
-                const newSpell = await this.spellClient.createTemplate(slug);
+                var newSpell = await this.spellClient.createTemplate(slug);
                 this.dataStore.set([SPELLLIST_KEY], await this.spellClient.getMultipleSpells());
-                await this.populateTable();
+                var spellMap = new Map(this.dataStore.get([SPELLLIST_KEY]).map((obj) => [obj.objectId, obj]));
+                this.dataStore.set([SPELLMAP_KEY], spellMap);
+                this.populateTable();
                 this.showElements();
-                document.getElementById(newSpell.objectId).click();
+                this.spellRowClick(newSpell.objectId);
             } catch (error) {
                 this.showElements();
                 document.getElementById('offcanvas-warn-body').innerText = "You already have a spell with the name " + document.getElementById('objectName').value + " in your library."
@@ -248,41 +264,30 @@ const EMPTY_DATASTORE_STATE = {
         this.dataStore.set([SELECTED_TEMPLATE_KEY], '');
         document.getElementById('template-table').hidden = true;
         document.getElementById('spinner-side').hidden = false;
-        const templates = await this.spellClient.searchTemplate(document.getElementById('templateSearch').value, document.getElementById('limit').value)
+        var templates = await this.spellClient.searchTemplate(document.getElementById('templateSearch').value, document.getElementById('limit').value)
         document.getElementById('template-table').hidden = false;
         document.getElementById('spinner-side').hidden = true;
         var table = document.getElementById("template-table");
-                    var oldTableBody = table.getElementsByTagName('tbody')[0];
-                    var newTableBody = document.createElement('tbody');
-                    var spellList = templates;
-                    spellList.sort((a, b) => a.name.localeCompare(b.name));
-                    for(const templateSpell of spellList) {
-                        if (
-                            !templateSpell.resourceExists
-                        ) {
-
-                            var row = newTableBody.insertRow(-1);
-                            row.setAttribute('id', templateSpell.slug);
-                            var cell1 = row.insertCell(0);
-                            var cell2 = row.insertCell(1);
-                            var cell3 = row.insertCell(2);
-                            cell1.innerHTML = templateSpell.name;
-                            cell2.innerHTML = templateSpell.level;
-                            cell3.innerHTML = templateSpell.document__title
-                            var createClickHandler = function(row, dataStore) {
-                                return function() {
-                                    for (var i = 0; i < table.rows.length; i++){
-                                        table.rows[i].removeAttribute('class');
-                                    }
-                                    row.setAttribute('class','selectedRow')
-                                    dataStore.set([SELECTED_TEMPLATE_KEY], templateSpell.slug);
-
-                                };
-                            };
-                            row.onclick = createClickHandler(row, this.dataStore);
-                        }
-                    }
-                    oldTableBody.parentNode.replaceChild(newTableBody, oldTableBody);
+        var oldTableBody = table.getElementsByTagName('tbody')[0];
+        var newTableBody = document.createElement('tbody');
+        var spellList = templates;
+        spellList.sort((a, b) => a.name.localeCompare(b.name));
+        for(var templateSpell of spellList) {
+            if (
+                !templateSpell.resourceExists
+            ) {
+                var row = newTableBody.insertRow(-1);
+                row.setAttribute('id', templateSpell.slug);
+                row.setAttribute('data-id', templateSpell.slug);
+                var cell1 = row.insertCell(0);
+                var cell2 = row.insertCell(1);
+                var cell3 = row.insertCell(2);
+                cell1.innerHTML = templateSpell.name;
+                cell2.innerHTML = templateSpell.level;
+                cell3.innerHTML = templateSpell.document__title
+            }
+        }
+        oldTableBody.parentNode.replaceChild(newTableBody, oldTableBody);
     }
 
     showElements() {

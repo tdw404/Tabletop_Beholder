@@ -79,7 +79,7 @@ public class TemplateCreatureTranslator {
         Map<String, Action> actionMap = new HashMap<>();
         Optional.ofNullable(templateCreature.getActions()).orElse(Collections.emptyList())
                 .stream()
-                .map(templateAction -> TemplateActionTranslator.translate(templateAction, "action"))
+                .map(templateAction -> TemplateActionTranslator.translate(templateAction, "standard"))
                 .forEach(action -> actionMap.put(action.getObjectId(), action));
         Optional.ofNullable(templateCreature.getBonus_actions()).orElse(Collections.emptyList())
                 .stream()
@@ -97,28 +97,6 @@ public class TemplateCreatureTranslator {
                 .stream()
                 .map(templateAction -> TemplateActionTranslator.translate(templateAction, "special"))
                 .forEach(action -> actionMap.put(action.getObjectId(), action));
-
-
-//        actionMap.put("action", Optional.ofNullable(templateCreature.getActions()).orElse(Collections.emptyList())
-//                .stream()
-//                .map(templateAction -> TemplateActionTranslator.translate(templateAction, "action"))
-//                .collect(Collectors.toList()));
-//        actionMap.put("bonus", Optional.ofNullable(templateCreature.getBonus_actions()).orElse(Collections.emptyList())
-//                .stream()
-//                .map(templateAction -> TemplateActionTranslator.translate(templateAction, "bonus"))
-//                .collect(Collectors.toList()));
-//        actionMap.put("reaction", Optional.ofNullable(templateCreature.getReactions()).orElse(Collections.emptyList())
-//                .stream()
-//                .map(templateAction -> TemplateActionTranslator.translate(templateAction, "reaction"))
-//                .collect(Collectors.toList()));
-//        actionMap.put("legendary", Optional.ofNullable(templateCreature.getLegendary_actions()).orElse(Collections.emptyList())
-//                .stream()
-//                .map(templateAction -> TemplateActionTranslator.translate(templateAction, "legendary"))
-//                .collect(Collectors.toList()));
-//        actionMap.put("special", Optional.ofNullable(templateCreature.getSpecial_abilities()).orElse(Collections.emptyList())
-//                .stream()
-//                .map(templateAction -> TemplateActionTranslator.translate(templateAction, "special"))
-//                .collect(Collectors.toList()));
         creature.setActionMap(actionMap);
 
         Map<String, Spell> spellMap = new HashMap<>();
