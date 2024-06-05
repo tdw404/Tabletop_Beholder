@@ -137,7 +137,6 @@ const EMPTY_DATASTORE_STATE = {
         document.getElementById('spellLevel').value = spell.spellLevel;
         document.getElementById('spellSchool').value = spell.spellSchool;
         document.getElementById('innateCasts').value = spell.innateCasts;
-
     }
 
     async deleteButton() {

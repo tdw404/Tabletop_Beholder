@@ -41,11 +41,11 @@
                     </select>
                 </div>
                 <div class="mb-3 col">
-                    <label for="crAboveSearch" class="form-label">CR ></label>
+                    <label for="crAboveSearch" class="form-label">CR &ge;</label>
                     <input class="form-control" id="crAboveSearch" type="number" min="-1" data-bind="value:replyNumber">
                 </div>
                 <div class="mb-3 col">
-                    <label for="crBelowSearch" class="form-label">CR <</label>
+                    <label for="crBelowSearch" class="form-label">CR &le;</label>
                     <input class="form-control" id="crBelowSearch" type="number" min="-1" data-bind="value:replyNumber">
                 </div>
                 <div class="mb-3 col">
@@ -364,6 +364,9 @@
                     </li>
                 </ul>
                 <div class="tab-content">
+                    <hr>
+                    <button type="button" class="btn btn-outline-dark" id="new-action-btn" >Add Action</button>
+                    <hr>
                     <div class="tab-pane fade show active actions-tab" id="standard" role="tabpanel" aria-labelledby="standard-tab">
                         <div class="table-responsive">
                             <table id = "standard-table"  class="table table-striped actions-table">
@@ -460,6 +463,99 @@
             </div>
         </div>
 
+    </div>
+    <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasEditAction" aria-labelledby="offcanvasEditActionLabel">
+        <div class="offcanvas-header">
+            <h5 id="offcanvasEditActionLabel">View Action</h5>
+            <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close" id = "close-edit-action"></button>
+        </div>
+        <hr/>
+        <div class="offcanvas-body" id="offcanvas-edit-action-body">
+            <div class="mb-3">
+                <label for="nameActionEdit" class="form-label">Name</label>
+                <input class="form-control" id="nameActionEdit">
+            </div>
+            <div class="mb-3">
+                <label for="descriptionActionEdit" class="form-label">Name</label>
+                <textarea class="form-control" id="descriptionActionEdit" rows="3"></textarea>
+            </div>
+            <div class="mb-3">
+                <label for="typeEditAction" class="form-label">Type</label>
+                <select class="form-select" id="typeEditAction">
+                    <option selected value ='standard'>Standard</option>
+                    <option value='bonus'>Bonus</option>
+                    <option value='reaction'>Reaction</option>
+                    <option value='legendary'>Legendary</option>
+                    <option value='special'>Special</option>
+                </select>
+            </div>
+            <div class="row">
+                <div class="mb-3 col">
+                    <label for="usesEditAction" class="form-label">Uses</label>
+                    <input class="form-control" id="usesEditAction" type="number" min="0" data-bind="value:replyNumber">
+                </div>
+                <div class="mb-3 col">
+                    <label for="rechargeEditAction" class="form-label">Recharge On</label>
+                    <select class="form-select" id="rechargeEditAction">
+                        <option selected value =''></option>
+                        <option value='1'>1</option>
+                        <option value='2'>2</option>
+                        <option value='3'>3</option>
+                        <option value='4'>4</option>
+                        <option value='5'>5</option>
+                        <option value='6'>6</option>
+                    </select>
+                </div>
+            </div>
+            <button type="button" class="btn btn-outline-dark" id="update-action-btn">Update Action</button>
+            <button type="button" class="btn btn-outline-dark" id="remove-action-btn">Remove Action</button>
+        </div>
+    </div>
+    <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasNewAction" aria-labelledby="offcanvasNewActionLabel">
+        <div class="offcanvas-header">
+            <h5 id="offcanvasNewActionLabel">Add Action</h5>
+            <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close" id = "close-new-action"></button>
+        </div>
+        <hr/>
+        <div class="offcanvas-body" id="offcanvas-new-action-body">
+            <div class="mb-3">
+                <label for="nameActionNew" class="form-label">Name</label>
+                <input class="form-control" id="nameActionNew">
+            </div>
+            <div class="mb-3">
+                <label for="descriptionActionNew" class="form-label">Name</label>
+                <textarea class="form-control" id="descriptionActionNew" rows="3"></textarea>
+            </div>
+            <div class="mb-3">
+                <label for="typeNewAction" class="form-label">Type</label>
+                <select class="form-select" id="typeNewAction">
+                    <option selected value ='standard'>Standard</option>
+                    <option value='bonus'>Bonus</option>
+                    <option value='reaction'>Reaction</option>
+                    <option value='legendary'>Legendary</option>
+                    <option value='special'>Special</option>
+                </select>
+            </div>
+            <div class="row">
+                <div class="mb-3 col">
+                    <label for="usesNewAction" class="form-label">Uses</label>
+                    <input class="form-control" id="usesNewAction" type="number" min="0" data-bind="value:replyNumber">
+                </div>
+                <div class="mb-3 col">
+                    <label for="rechargeNewAction" class="form-label">Recharge On</label>
+                    <select class="form-select" id="rechargeNewAction">
+                        <option selected value =''></option>
+                        <option value='1'>1</option>
+                        <option value='2'>2</option>
+                        <option value='3'>3</option>
+                        <option value='4'>4</option>
+                        <option value='5'>5</option>
+                        <option value='6'>6</option>
+                    </select>
+                </div>
+            </div>
+            <button type="button" class="btn btn-outline-dark" id="add-action-btn">Add</button>
+        </div>
     </div>
     <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasWarn" aria-labelledby="offcanvasWarnLabel">
         <div class="offcanvas-header">
