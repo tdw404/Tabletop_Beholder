@@ -97,7 +97,10 @@ const EMPTY_DATASTORE_STATE = {
             for(var creature of creatureList) {
                 if (
                     (nameSearch == '' || creature.objectName.toLowerCase().includes(nameSearch.toLowerCase())) &&
-                    (pcSearch == 'Both' || creature.isPC == true && pcSearch == 'PC' || creature.isPC == false && pcSearch == 'NPC')
+                    (pcSearch == 'Both' || creature.isPC == true && pcSearch == 'PC' || creature.isPC == false && pcSearch == 'NPC') &&
+                    (crAboveSearch == '' || creature.challengeRating >= crAboveSearch) &&
+                    (crBelowSearch == '' || creature.challengeRating <= crBelowSearch) &&
+                    (sizeSearch == '' || creature.size == sizeSearch)
                 ) {
                     var row = newTableBody.insertRow(-1);
                     row.setAttribute('id', creature.objectId);
