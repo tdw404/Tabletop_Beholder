@@ -69,7 +69,17 @@ public class TemplateCreatureTranslator {
         creature.setImmunities(templateCreature.getDamage_immunities());
         creature.setSenses(templateCreature.getSenses());
         creature.setLanguages(templateCreature.getLanguages());
-        creature.setChallengeRating(new Double(templateCreature.getChallenge_rating()));
+        if(templateCreature.getChallenge_rating().contains("1/4")) {
+            creature.setChallengeRating(0.25D);
+        } else if(templateCreature.getChallenge_rating().contains("1/2")) {
+            creature.setChallengeRating(0.5D);
+        } else {
+            try {
+                creature.setChallengeRating(new Double(templateCreature.getChallenge_rating()));
+            } catch (Exception e) {
+                creature.setChallengeRating(0D);
+            }
+        }
         creature.setLegendaryDesc(templateCreature.getLegendary_desc());
         creature.setCreateDateTime(ZonedDateTime.now());
         creature.setEditDateTime(creature.getEditDateTime());
@@ -79,7 +89,7 @@ public class TemplateCreatureTranslator {
         Map<String, Action> actionMap = new HashMap<>();
         Optional.ofNullable(templateCreature.getActions()).orElse(Collections.emptyList())
                 .stream()
-                .map(templateAction -> TemplateActionTranslator.translate(templateAction, "action"))
+                .map(templateAction -> TemplateActionTranslator.translate(templateAction, "standard"))
                 .forEach(action -> actionMap.put(action.getObjectId(), action));
         Optional.ofNullable(templateCreature.getBonus_actions()).orElse(Collections.emptyList())
                 .stream()
@@ -97,28 +107,6 @@ public class TemplateCreatureTranslator {
                 .stream()
                 .map(templateAction -> TemplateActionTranslator.translate(templateAction, "special"))
                 .forEach(action -> actionMap.put(action.getObjectId(), action));
-
-
-//        actionMap.put("action", Optional.ofNullable(templateCreature.getActions()).orElse(Collections.emptyList())
-//                .stream()
-//                .map(templateAction -> TemplateActionTranslator.translate(templateAction, "action"))
-//                .collect(Collectors.toList()));
-//        actionMap.put("bonus", Optional.ofNullable(templateCreature.getBonus_actions()).orElse(Collections.emptyList())
-//                .stream()
-//                .map(templateAction -> TemplateActionTranslator.translate(templateAction, "bonus"))
-//                .collect(Collectors.toList()));
-//        actionMap.put("reaction", Optional.ofNullable(templateCreature.getReactions()).orElse(Collections.emptyList())
-//                .stream()
-//                .map(templateAction -> TemplateActionTranslator.translate(templateAction, "reaction"))
-//                .collect(Collectors.toList()));
-//        actionMap.put("legendary", Optional.ofNullable(templateCreature.getLegendary_actions()).orElse(Collections.emptyList())
-//                .stream()
-//                .map(templateAction -> TemplateActionTranslator.translate(templateAction, "legendary"))
-//                .collect(Collectors.toList()));
-//        actionMap.put("special", Optional.ofNullable(templateCreature.getSpecial_abilities()).orElse(Collections.emptyList())
-//                .stream()
-//                .map(templateAction -> TemplateActionTranslator.translate(templateAction, "special"))
-//                .collect(Collectors.toList()));
         creature.setActionMap(actionMap);
 
         Map<String, Spell> spellMap = new HashMap<>();
@@ -136,8 +124,9 @@ public class TemplateCreatureTranslator {
         if (castAction != null) {
             sentenceTokens = Arrays.asList(castAction
                     .getActionDescription()
-                    .split("\\n\\n"));
+                    .split("\\n\\n |. "));
         }
+
 
         sentenceTokens.forEach(sentenceToken -> {
             if (sentenceToken.contains("spellcasting ability")) {
