@@ -69,7 +69,17 @@ public class TemplateCreatureTranslator {
         creature.setImmunities(templateCreature.getDamage_immunities());
         creature.setSenses(templateCreature.getSenses());
         creature.setLanguages(templateCreature.getLanguages());
-        creature.setChallengeRating(new Double(templateCreature.getChallenge_rating()));
+        if(templateCreature.getChallenge_rating().contains("1/4")) {
+            creature.setChallengeRating(0.25D);
+        } else if(templateCreature.getChallenge_rating().contains("1/2")) {
+            creature.setChallengeRating(0.5D);
+        } else {
+            try {
+                creature.setChallengeRating(new Double(templateCreature.getChallenge_rating()));
+            } catch (Exception e) {
+                creature.setChallengeRating(0D);
+            }
+        }
         creature.setLegendaryDesc(templateCreature.getLegendary_desc());
         creature.setCreateDateTime(ZonedDateTime.now());
         creature.setEditDateTime(creature.getEditDateTime());
@@ -114,8 +124,9 @@ public class TemplateCreatureTranslator {
         if (castAction != null) {
             sentenceTokens = Arrays.asList(castAction
                     .getActionDescription()
-                    .split("\\n\\n"));
+                    .split("\\n\\n |. "));
         }
+
 
         sentenceTokens.forEach(sentenceToken -> {
             if (sentenceToken.contains("spellcasting ability")) {
