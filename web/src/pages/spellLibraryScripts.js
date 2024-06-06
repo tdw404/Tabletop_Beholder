@@ -69,8 +69,10 @@ const EMPTY_DATASTORE_STATE = {
         document.getElementById('import-btn').addEventListener('click', await this.importButton);
         document.getElementById('search-btn').addEventListener('click', await this.searchButton);
         document.getElementById('import-finish-btn').addEventListener('click', await this.importFinishButton);
-        document.getElementById('spell-table').addEventListener('click', (event) => this.spellRowClick(event.target.parentNode.dataset.id));
-        document.getElementById('template-table').addEventListener('click', (event) => this.templateRowClick(event.target.parentNode.dataset.id));
+        document.getElementById('spell-table').addEventListener('click', (event) => {
+                                            if (event.target.closest('tbody')) {this.spellRowClick(event.target.parentNode.dataset.id)}});
+        document.getElementById('template-table').addEventListener('click', (event) => {
+                                            if (event.target.closest('tbody')) {this.templateRowClick(event.target.parentNode.dataset.id)}});
     }
 
     async populateTable() {

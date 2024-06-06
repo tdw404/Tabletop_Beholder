@@ -59,7 +59,7 @@ const EMPTY_DATASTORE_STATE = {
                                 'addSpellButton', 'addSpellRowClick',
                                 'addSpellFinishButton', 'cloneButton',
                                 'pcSwitch', 'rebaseSpells',
-                                'rebaseSpellsContinue'], this);
+                                'rebaseSpellsContinue', 'templateRowClick'], this);
         this.dataStore = new DataStore(EMPTY_DATASTORE_STATE);
         this.navbarProvider = new NavbarProvider();
     };
@@ -103,6 +103,10 @@ const EMPTY_DATASTORE_STATE = {
                                                 if (event.target.closest('tbody')) {this.spellRowClick(event.target.parentNode.dataset.id)}});
         document.getElementById('add-spells-table').addEventListener('click', (event) => {
                                                 if (event.target.closest('tbody')) {this.addSpellRowClick(event.target.parentNode.dataset.id)}});
+        document.getElementById('add-spells-table').addEventListener('click', (event) => {
+                                                        if (event.target.closest('tbody')) {this.addSpellRowClick(event.target.parentNode.dataset.id)}});
+        document.getElementById('template-table').addEventListener('click', (event) => {
+                                                    if (event.target.closest('tbody')) {this.templateRowClick(event.target.parentNode.dataset.id)}});
         document.getElementById('remove-action-btn').addEventListener('click', await this.removeActionButton);
         document.getElementById('update-action-btn').addEventListener('click', await this.updateActionButton);
         document.getElementById('new-action-btn').addEventListener('click', await this.addActionButton);
@@ -314,6 +318,15 @@ const EMPTY_DATASTORE_STATE = {
           switching = true;
         }
       }
+    }
+
+    async templateRowClick(templateId) {
+        this.dataStore.set([SELECTED_TEMPLATE_KEY], templateId);
+        var table = document.getElementById('template-table');
+        for (var i = 0; i < table.rows.length; i++){
+            table.rows[i].removeAttribute('class');
+        }
+        document.getElementById(templateId).setAttribute('class','selectedRow');
     }
 
     async spellRowClick(spellId) {
@@ -709,71 +722,67 @@ const EMPTY_DATASTORE_STATE = {
     }
 
     importButton() {
-//        var myOffcanvas = document.getElementById('offcanvasImport');
-//        var bsOffcanvas = new bootstrap.Offcanvas(myOffcanvas);
-//        bsOffcanvas.show();
+        var myOffcanvas = document.getElementById('offcanvasImport');
+        var bsOffcanvas = new bootstrap.Offcanvas(myOffcanvas);
+        bsOffcanvas.show();
     }
 
     async importFinishButton() {
-//        var slug = this.dataStore.get(SELECTED_TEMPLATE_KEY);
-//        if(!slug=='') {
-//            try {
-//                this.hideElements();
-//                document.getElementById('close-import-btn').click()
-//                var newCreature = await this.creatureClient.createTemplate(slug);
-//                this.dataStore.set([CREATURE_LIST_KEY], await this.creatureClient.getMultipleCreatures());
-//                await this.populateTable();
-//                this.showElements();
-//                document.getElementById(newCreature.objectId).click();
-//            } catch (error) {
-//                this.showElements();
-//                document.getElementById('offcanvas-warn-body').innerText = "You already have a creature with the name " + document.getElementById('objectName').value + " in your library."
-//                var myOffcanvas = document.getElementById('offcanvasWarn');
-//                var bsOffcanvas = new bootstrap.Offcanvas(myOffcanvas);
-//                bsOffcanvas.show();
-//            }
-//        }
+        var slug = this.dataStore.get(SELECTED_TEMPLATE_KEY);
+        if(!slug=='') {
+            try {
+                this.hideElements();
+                document.getElementById('close-import-btn').click()
+                var newCreature = await this.creatureClient.createTemplate(slug);
+                this.dataStore.set([CREATURE_LIST_KEY], await this.creatureClient.getMultipleCreatures());
+                var creatureMap = new Map(this.dataStore.get([CREATURE_LIST_KEY]).map((obj) => [obj.objectId, obj]));
+                this.dataStore.set([CREATURE_MAP_KEY], creatureMap);
+                await this.populateTable();
+                this.showElements();
+                this.creatureRowClick(newCreature.objectId);
+            } catch (error) {
+                this.showElements();
+                document.getElementById('offcanvas-warn-body').innerText = "You already have a creature with the name " + document.getElementById('objectName').value + " in your library."
+                var myOffcanvas = document.getElementById('offcanvasWarn');
+                var bsOffcanvas = new bootstrap.Offcanvas(myOffcanvas);
+                bsOffcanvas.show();
+            }
+        }
     }
 
     async searchButton() {
-//        this.dataStore.set([SELECTED_TEMPLATE_KEY], '');
-//        document.getElementById('template-table').hidden = true;
-//        document.getElementById('spinner-side').hidden = false;
-//        var templates = await this.creatureClient.searchTemplate(document.getElementById('templateSearch').value, document.getElementById('limit').value)
-//        document.getElementById('template-table').hidden = false;
-//        document.getElementById('spinner-side').hidden = true;
-//        var table = document.getElementById("template-table");
-//                    var oldTableBody = table.getElementsByTagName('tbody')[0];
-//                    var newTableBody = document.createElement('tbody');
-//                    var creatureList = templates;
-//                    creatureList.sort((a, b) => a.name.localeCompare(b.name));
-//                    for(var templateCreature of creatureList) {
-//                        if (
-//                            !templateCreature.resourceExists
-//                        ) {
-//
-//                            var row = newTableBody.insertRow(-1);
-//                            row.setAttribute('id', templateCreature.slug);
-//                            var cell1 = row.insertCell(0);
-//                            var cell2 = row.insertCell(1);
-//                            var cell3 = row.insertCell(2);
-//                            cell1.innerHTML = templateCreature.name;
-//                            cell2.innerHTML = templateCreature.level;
-//                            cell3.innerHTML = templateCreature.document__title
-//                            var createClickHandler = function(row, dataStore) {
-//                                return function() {
-//                                    for (var i = 0; i < table.rows.length; i++){
-//                                        table.rows[i].removeAttribute('class');
-//                                    }
-//                                    row.setAttribute('class','selectedRow')
-//                                    dataStore.set([SELECTED_TEMPLATE_KEY], templateCreature.slug);
-//
-//                                };
-//                            };
-//                            row.onclick = createClickHandler(row, this.dataStore);
-//                        }
-//                    }
-//                    oldTableBody.parentNode.replaceChild(newTableBody, oldTableBody);
+        this.dataStore.set([SELECTED_TEMPLATE_KEY], '');
+        document.getElementById('template-table').hidden = true;
+        document.getElementById('spinner-side').hidden = false;
+        var templates = await this.creatureClient.searchTemplate(document.getElementById('templateSearch').value, document.getElementById('limit').value)
+        document.getElementById('template-table').hidden = false;
+        document.getElementById('spinner-side').hidden = true;
+        var table = document.getElementById("template-table");
+                    var oldTableBody = table.getElementsByTagName('tbody')[0];
+                    var newTableBody = document.createElement('tbody');
+                    var creatureList = templates;
+                    creatureList.sort((a, b) => a.name.localeCompare(b.name));
+                    for(var templateCreature of creatureList) {
+                        if (
+                            !templateCreature.resourceExists
+                        ) {
+
+                            var row = newTableBody.insertRow(-1);
+                            row.setAttribute('id', templateCreature.slug);
+                            row.setAttribute('data-id', templateCreature.slug);
+                            var cell1 = row.insertCell(0);
+                            var cell2 = row.insertCell(1);
+                            var cell3 = row.insertCell(2);
+                            var cell4 = row.insertCell(3);
+                            var cell5 = row.insertCell(4);
+                            cell1.innerHTML = templateCreature.name;
+                            cell2.innerHTML = templateCreature.cr;
+                            cell3.innerHTML = templateCreature.size;
+                            cell4.innerHTML = templateCreature.type;
+                            cell5.innerHTML = templateCreature.document__title;
+                        }
+                    }
+                    oldTableBody.parentNode.replaceChild(newTableBody, oldTableBody);
     }
 
     pcSwitch() {
