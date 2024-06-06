@@ -15,6 +15,9 @@ public class Encounter implements BeholderObject {
     private String objectId;
     private String objectName;
     private List<Creature> creatureList;
+    private Integer encounterTurn;
+    private List<String> turnOrder;
+    private String topOfOrder;
     private ZonedDateTime createDateTime;
     private ZonedDateTime editDateTime;
 
@@ -78,6 +81,33 @@ public class Encounter implements BeholderObject {
     @Override
     public void setEditDateTime(ZonedDateTime editDateTime) {
         this.editDateTime = editDateTime;
+    }
+
+    @DynamoDBAttribute(attributeName = "encounterTurn")
+    public Integer getEncounterTurn() {
+        return encounterTurn;
+    }
+
+    public void setEncounterTurn(Integer encounterTurn) {
+        this.encounterTurn = encounterTurn;
+    }
+
+    @DynamoDBAttribute(attributeName = "topOfOrder")
+    public String getTopOfOrder() {
+        return topOfOrder;
+    }
+
+    public void setTopOfOrder(String topOfOrder) {
+        this.topOfOrder = topOfOrder;
+    }
+
+    @DynamoDBAttribute(attributeName = "turnOrder")
+    public List<String> getTurnOrder() {
+        return turnOrder;
+    }
+
+    public void setTurnOrder(List<String> turnOrder) {
+        this.turnOrder = turnOrder;
     }
 
     @Override

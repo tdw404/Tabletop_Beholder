@@ -17,6 +17,12 @@ public class EncounterHelper {
         List<Creature> creatureList = new ArrayList<>();
         creatureList.add(CreatureHelper.provideCreature(1));
         creatureList.add(CreatureHelper.provideCreature(2));
+        encounter.setEncounterTurn(mod);
+        List<String> stringList = new ArrayList<>();
+        stringList.add("test1");
+        stringList.add("test2");
+        encounter.setTurnOrder(stringList);
+        encounter.setTopOfOrder("topOfOrder");
         encounter.setCreatureList(creatureList);
         encounter.setCreateDateTime(ZonedDateTime.now());
         encounter.setEditDateTime(ZonedDateTime.now());
