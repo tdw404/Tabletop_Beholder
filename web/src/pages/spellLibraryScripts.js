@@ -6,15 +6,15 @@ import DataStore from "../util/DataStore";
 
 const COGNITO_NAME_KEY = 'cognito-name';
 const COGNITO_EMAIL_KEY = 'cognito-name-results';
-const SPELLLIST_KEY = 'spell-list';
-const SPELLMAP_KEY = 'spell-map';
+const SPELL_LIST_KEY = 'spell-list';
+const SPELL_MAP_KEY = 'spell-map';
 const SELECTED_SPELL_KEY = 'selected-spell-key';
 const SELECTED_TEMPLATE_KEY = 'selected-template-key';
 const EMPTY_DATASTORE_STATE = {
     [COGNITO_NAME_KEY]: '',
     [COGNITO_EMAIL_KEY]: '',
-    [SPELLLIST_KEY]: [],
-    [SPELLMAP_KEY]: '',
+    [SPELL_LIST_KEY]: [],
+    [SPELL_MAP_KEY]: '',
     [SELECTED_SPELL_KEY]: '',
     [SELECTED_TEMPLATE_KEY]: '',
 };
@@ -33,7 +33,7 @@ const EMPTY_DATASTORE_STATE = {
                                 'createButton', 'createFinishButton',
                                 'importButton', 'importFinishButton',
                                 'searchButton', 'spellRowClick',
-                                'templateRowClick'], this);
+                                'templateRowClick', 'attachEventListeners'], this);
         this.dataStore = new DataStore(EMPTY_DATASTORE_STATE);
         this.navbarProvider = new NavbarProvider();
     };
@@ -48,32 +48,36 @@ const EMPTY_DATASTORE_STATE = {
             var{email, name} = await this.client.getIdentity().then(result => result);
             this.dataStore.set([COGNITO_EMAIL_KEY], email);
             this.dataStore.set([COGNITO_NAME_KEY], name);
-            this.dataStore.set([SPELLLIST_KEY], await this.spellClient.getMultipleSpells());
-            var spellMap = new Map(this.dataStore.get([SPELLLIST_KEY]).map((obj) => [obj.objectId, obj]));
-            this.dataStore.set([SPELLMAP_KEY], spellMap);
+            this.dataStore.set([SPELL_LIST_KEY], await this.spellClient.getMultipleSpells());
+            var spellMap = new Map(this.dataStore.get([SPELL_LIST_KEY]).map((obj) => [obj.objectId, obj]));
+            this.dataStore.set([SPELL_MAP_KEY], spellMap);
             await this.populateTable();
+            this.attachEventListeners();
             this.showElements();
-            document.getElementById('delete-btn').addEventListener('click', await this.deleteButton);
-            document.getElementById('filter-btn').addEventListener('click', await this.populateTable);
-            document.getElementById('clear-btn').addEventListener('click', await this.filterResetButton);
-            document.getElementById('update-btn').addEventListener('click', await this.updateButton);
-            document.getElementById('create-btn').addEventListener('click', await this.createButton);
-            document.getElementById('create-finish-btn').addEventListener('click', await this.createFinishButton);
-            document.getElementById('import-btn').addEventListener('click', await this.importButton);
-            document.getElementById('search-btn').addEventListener('click', await this.searchButton);
-            document.getElementById('import-finish-btn').addEventListener('click', await this.importFinishButton);
-            document.getElementById('spell-table').addEventListener('click', (event) => this.spellRowClick(event.target.parentNode.dataset.id));
-            document.getElementById('template-table').addEventListener('click', (event) => this.templateRowClick(event.target.parentNode.dataset.id));
         } else {
             window.location.href = "index.html";
         }
+    }
+
+    async attachEventListeners() {
+        document.getElementById('delete-btn').addEventListener('click', await this.deleteButton);
+        document.getElementById('filter-btn').addEventListener('click', await this.populateTable);
+        document.getElementById('clear-btn').addEventListener('click', await this.filterResetButton);
+        document.getElementById('update-btn').addEventListener('click', await this.updateButton);
+        document.getElementById('create-btn').addEventListener('click', await this.createButton);
+        document.getElementById('create-finish-btn').addEventListener('click', await this.createFinishButton);
+        document.getElementById('import-btn').addEventListener('click', await this.importButton);
+        document.getElementById('search-btn').addEventListener('click', await this.searchButton);
+        document.getElementById('import-finish-btn').addEventListener('click', await this.importFinishButton);
+        document.getElementById('spell-table').addEventListener('click', (event) => this.spellRowClick(event.target.parentNode.dataset.id));
+        document.getElementById('template-table').addEventListener('click', (event) => this.templateRowClick(event.target.parentNode.dataset.id));
     }
 
     async populateTable() {
             var table = document.getElementById("spell-table");
             var oldTableBody = table.getElementsByTagName('tbody')[0];
             var newTableBody = document.createElement('tbody');
-            var spellList = this.dataStore.get(SPELLLIST_KEY);
+            var spellList = this.dataStore.get(SPELL_LIST_KEY);
             spellList.sort((a, b) => a.objectName.localeCompare(b.objectName));
             var nameSearch = document.getElementById('nameSearch').value;
             var levelSearch = document.getElementById('levelSearch').value;
@@ -110,11 +114,10 @@ const EMPTY_DATASTORE_STATE = {
             table.rows[i].removeAttribute('class');
         }
         document.getElementById(templateId).setAttribute('class','selectedRow');
-        this.dataStore.set([SELECTED_TEMPLATE_KEY], templateId);
     }
 
     async spellRowClick(spellId) {
-        var spell = this.dataStore.get(SPELLMAP_KEY).get(spellId);
+        var spell = this.dataStore.get(SPELL_MAP_KEY).get(spellId);
         this.dataStore.set([SELECTED_SPELL_KEY], spell);
         var table = document.getElementById('spell-table');
         for (var i = 0; i < table.rows.length; i++){
@@ -214,9 +217,9 @@ const EMPTY_DATASTORE_STATE = {
                 document.getElementById('newDesc').value = '';
                 document.getElementById('newLevel').value = '';
                 document.getElementById('newSchool').value = '';
-                this.dataStore.set([SPELLLIST_KEY], await this.spellClient.getMultipleSpells());
-                var spellMap = new Map(this.dataStore.get([SPELLLIST_KEY]).map((obj) => [obj.objectId, obj]));
-                this.dataStore.set([SPELLMAP_KEY], spellMap);
+                this.dataStore.set([SPELL_LIST_KEY], await this.spellClient.getMultipleSpells());
+                var spellMap = new Map(this.dataStore.get([SPELL_LIST_KEY]).map((obj) => [obj.objectId, obj]));
+                this.dataStore.set([SPELL_MAP_KEY], spellMap);
                 await this.populateTable();
                 this.showElements();
                 this.spellRowClick(newSpell.objectId);
@@ -243,9 +246,9 @@ const EMPTY_DATASTORE_STATE = {
                 this.hideElements();
                 document.getElementById('close-import-btn').click()
                 var newSpell = await this.spellClient.createTemplate(slug);
-                this.dataStore.set([SPELLLIST_KEY], await this.spellClient.getMultipleSpells());
-                var spellMap = new Map(this.dataStore.get([SPELLLIST_KEY]).map((obj) => [obj.objectId, obj]));
-                this.dataStore.set([SPELLMAP_KEY], spellMap);
+                this.dataStore.set([SPELL_LIST_KEY], await this.spellClient.getMultipleSpells());
+                var spellMap = new Map(this.dataStore.get([SPELL_LIST_KEY]).map((obj) => [obj.objectId, obj]));
+                this.dataStore.set([SPELL_MAP_KEY], spellMap);
                 this.populateTable();
                 this.showElements();
                 this.spellRowClick(newSpell.objectId);

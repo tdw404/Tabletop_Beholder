@@ -85,6 +85,7 @@
         <h2 class="text-center align-self-center" id="creatureNameBig" pad-up>Creature</h2>
         <button type="button" class="btn btn-outline-dark" id="update-btn">Save Changes</button>
         <button type="button" class="btn btn-outline-dark" id="delete-btn">Delete Creature</button>
+        <button type="button" class="btn btn-outline-dark" id="clone-btn">Clone Creature</button>
         <button type="button" class="btn btn-outline-dark" id="create-btn">New Creature</button>
         <button type="button" class="btn btn-outline-dark" id="import-btn">Import Creature</button>
         <hr/>
@@ -175,6 +176,40 @@
                     <div class="mb-3 col">
                         <label for="hitDice" class="form-label">Hit Dice</label>
                         <input class="form-control" id="hitDice">
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="mb-3 col">
+                        <label for="vulnerabilities" class="form-label">Vulnerabilities</label>
+                        <input class="form-control" id="vulnerabilities">
+                    </div>
+                    <div class="mb-3 col">
+                        <label for="resistances" class="form-label">Resistances</label>
+                        <input class="form-control" id="resistances">
+                    </div>
+                    <div class="mb-3 col">
+                        <label for="immunities" class="form-label">Immunities</label>
+                        <input class="form-control" id="immunities">
+                    </div>
+                    <div class="mb-3 col">
+                        <label for="conditionImmunities" class="form-label">Condition Immunities</label>
+                        <input class="form-control" id="conditionImmunities">
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="mb-3 col">
+                        <label for="senses" class="form-label">Senses</label>
+                        <input class="form-control" id="senses">
+                    </div>
+                    <div class="mb-3 col">
+                        <label for="languages" class="form-label">Languages</label>
+                        <input class="form-control" id="languages">
+                    </div>
+                    <div class="mb-3 col">
+                        <label for="challengeRating" class="form-label">Challenge Rating</label>
+                        <input class="form-control" id="challengeRating" type="number" min="0" data-bind="value:replyNumber">
+                    </div>
+                    <div class="mb-3 col">
                     </div>
                 </div>
                 <hr>
@@ -421,6 +456,10 @@
                                 </tbody>
                             </table>
                         </div>
+                        <div class="mb-3">
+                            <label for="legendaryDesc" class="form-label">Legendary Description</label>
+                            <textarea class="form-control" id="legendaryDesc" rows="3"></textarea>
+                        </div>
                     </div>
 
                     <div class="tab-pane fade show actions-tab" id="special" role="tabpanel" aria-labelledby="special-tab">
@@ -440,7 +479,96 @@
 
 
             <div class="tab-pane fade" id="spells" role="tabpanel" aria-labelledby="spells-tab">
-
+                <hr>
+                <div class="row">
+                    <div class="mb-3 col">
+                        <label for="spellcastingAbility" class="form-label">Spellcasting Ability</label>
+                        <select class="form-select" id="spellcastingAbility">
+                            <option selected value =''></option>
+                            <option value="Strength">Strength</option>
+                            <option value="Dexterity">Dexterity</option>
+                            <option value="Constitution">Constitution</option>
+                            <option value="Intelligence">Intelligence</option>
+                            <option value="Wisdom">Wisdom</option>
+                            <option value="Charisma">Charisma</option>
+                        </select>
+                    </div>
+                    <div class="mb-3 col">
+                        <label for="spellSaveDC" class="form-label">Spell Save DC</label>
+                        <input class="form-control" id="spellSaveDC" type="number" min="0" data-bind="value:replyNumber">
+                    </div>
+                    <div class="mb-3 col">
+                        <label for="spellAttackModifier" class="form-label">Spell Attack Modifier</label>
+                        <input class="form-control" id="spellAttackModifier" type="number" min="0" data-bind="value:replyNumber">
+                    </div>
+                    <div class="mb-3 col">
+                    </div>
+                </div>
+                <div>Spell Slots</div>
+                <div class="row">
+                    <div class="mb-3 col">
+                        <label for="ss1" class="form-label">1</label>
+                        <input class="form-control" id="ss1" type="number" min="0" data-bind="value:replyNumber" value = 0 >
+                    </div>
+                    <div class="mb-3 col">
+                        <label for="ss2" class="form-label">2</label>
+                        <input class="form-control" id="ss2" type="number" min="0" data-bind="value:replyNumber">
+                    </div>
+                    <div class="mb-3 col">
+                        <label for="ss3" class="form-label">3</label>
+                        <input class="form-control" id="ss3" type="number" min="0" data-bind="value:replyNumber">
+                    </div>
+                    <div class="mb-3 col">
+                        <label for="ss4" class="form-label">4</label>
+                        <input class="form-control" id="ss4" type="number" min="0" data-bind="value:replyNumber">
+                    </div>
+                    <div class="mb-3 col">
+                        <label for="ss5" class="form-label">5</label>
+                        <input class="form-control" id="ss5" type="number" min="0" data-bind="value:replyNumber">
+                    </div>
+                    <div class="mb-3 col">
+                        <label for="ss6" class="form-label">6</label>
+                        <input class="form-control" id="ss6" type="number" min="0" data-bind="value:replyNumber">
+                    </div>
+                    <div class="mb-3 col">
+                        <label for="ss7" class="form-label">7</label>
+                        <input class="form-control" id="ss7" type="number" min="0" data-bind="value:replyNumber">
+                    </div>
+                    <div class="mb-3 col">
+                        <label for="ss8" class="form-label">8</label>
+                        <input class="form-control" id="ss8" type="number" min="0" data-bind="value:replyNumber">
+                    </div>
+                    <div class="mb-3 col">
+                        <label for="ss9" class="form-label">9</label>
+                        <input class="form-control" id="ss9" type="number" min="0" data-bind="value:replyNumber">
+                    </div>
+                    <div class="mb-3 col">
+                    </div>
+                    <div class="mb-3 col">
+                    </div>
+                    <div class="mb-3 col">
+                    </div>
+                    <div class="mb-3 col">
+                    </div>
+                </div>
+                <hr>
+                <button type="button" class="btn btn-outline-dark" id="new-spell-btn" >Add Spell</button>
+                <button type="button" class="btn btn-outline-dark" id="rebase-spells-btn" >Rebase Spells</button>
+                <hr>
+                <div class="table-responsive">
+                    <table id = "spells-table"  class="table table-striped">
+                        <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Level</th>
+                            <th>Ritual Cast</th>
+                            <th>School</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        </tbody>
+                    </table>
+                </div>
             </div>
 
             <div class="tab-pane fade" id="pc" role="tabpanel" aria-labelledby="pc-tab">
@@ -463,6 +591,114 @@
             </div>
         </div>
 
+    </div>
+    <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasViewSpell" aria-labelledby="offcanvasViewSpellLabel">
+        <div class="offcanvas-header">
+            <h5 id="offcanvasViewSpellLabel">View Spell</h5>
+            <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close" id = "close-view-spell"></button>
+        </div>
+        <hr/>
+        <div class="offcanvas-body" id="offcanvas-view-spell-body">
+            <form>
+                <div class="mb-3">
+                    <label for="spellName" class="form-label">Spell Name</label>
+                    <input class="form-control" id="spellName" disabled>
+                </div>
+                <div class="mb-3">
+                    <label for="spellDescription" class="form-label">Description</label>
+                    <textarea class="form-control" id="spellDescription" rows="3" disabled></textarea>
+                </div>
+                <div class="mb-3">
+                    <label for="spellHigherLevel" class="form-label">At Higher Levels</label>
+                    <textarea class="form-control" id="spellHigherLevel" rows="3" disabled></textarea>
+                </div>
+                <div class="row">
+                    <div class="mb-3 col">
+                        <label for="spellComponents" class="form-label">Spell Components</label>
+                        <input class="form-control" id="spellComponents" disabled>
+                    </div>
+                    <div class="mb-3 col">
+                        <label for="spellMaterial" class="form-label">Spell Material</label>
+                        <input class="form-control" id="spellMaterial" disabled>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="mb-3 col">
+                        <label for="spellRange" class="form-label">Spell Range (ft.)</label>
+                        <input class="form-control" id="spellRange" disabled>
+                    </div>
+                    <div class="mb-3 col">
+                        <label for="reaction" class="form-label">Reaction</label>
+                        <select class="form-select" id="reaction" disabled>
+                            <option selected></option>
+                            <option value="yes">Yes</option>
+                            <option value="only">Only</option>
+                            <option value="no">No</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="mb-3 col">
+                        <label for="ritualCast" class="form-label">Ritual Cast</label>
+                        <select class="form-select" id="ritualCast" disabled>
+                            <option selected value = ''></option>
+                            <option value="yes">Yes</option>
+                            <option value="no">No</option>
+                        </select>
+                    </div>
+                    <div class="mb-3 col">
+                        <label for="castingTime" class="form-label">Casting Time</label>
+                        <input class="form-control" id="castingTime" disabled>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="mb-3 col">
+                        <label for="castingTurns" class="form-label">Casting Turns</label>
+                        <input class="form-control" id="castingTurns" type="number" min="-1" data-bind="value:replyNumber" disabled>
+                    </div>
+                    <div class="mb-3 col">
+                        <label for="spellLevel" class="form-label">Spell Level</label>
+                        <select class="form-select" id="spellLevel" disabled>
+                            <option selected></option>
+                            <option value="0">Cantrip</option>
+                            <option value="1">1st</option>
+                            <option value="2">2nd</option>
+                            <option value="3">3rd</option>
+                            <option value="4">4th</option>
+                            <option value="5">5th</option>
+                            <option value="6">6th</option>
+                            <option value="7">7th</option>
+                            <option value="8">8th</option>
+                            <option value="9">9th</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="mb-3 col">
+                        <label for="spellSchool" class="form-label">Spell School</label>
+                        <select class="form-select" id="spellSchool" disabled>
+                            <option selected></option>
+                            <option value="Abjuration">Abjuration</option>
+                            <option value="Conjuration">Conjuration</option>
+                            <option value="Divination">Divination</option>
+                            <option value="Enchantment">Enchantment</option>
+                            <option value="Evocation">Evocation</option>
+                            <option value="Illusion">Illusion</option>
+                            <option value="Necromancy">Necromancy</option>
+                            <option value="Transmutation">Transmutation</option>
+                        </select>
+                    </div>
+                    <div class="mb-3 col">
+                        <label for="innateCasts" class="form-label">Innate Casts</label>
+                        <input class="form-control" id="innateCasts" type="number" min="-1" data-bind="value:replyNumber" disabled>
+                    </div>
+                </div>
+                <button type="button" class="btn btn-outline-dark" id="remove-spell-btn">Remove Spell</button>
+        </div>
+        </form>
+
+        </div>
+        </div>
     </div>
     <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasEditAction" aria-labelledby="offcanvasEditActionLabel">
         <div class="offcanvas-header">
@@ -509,6 +745,33 @@
             </div>
             <button type="button" class="btn btn-outline-dark" id="update-action-btn">Update Action</button>
             <button type="button" class="btn btn-outline-dark" id="remove-action-btn">Remove Action</button>
+        </div>
+    </div>
+    <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasAddSpell" aria-labelledby="offcanvasAddSpellLabel">
+        <div class="offcanvas-header">
+            <h5 id="offcanvasAddSpellLabel">Add Spell</h5>
+            <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close" id = "close-add-spell"></button>
+        </div>
+        <hr/>
+        <div class="table-responsive">
+            <table id = "add-spells-table"  class="table table-striped">
+                <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Level</th>
+                    <th>Ritual Cast</th>
+                    <th>School</th>
+                </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
+        </div>
+        <button type="button" class="btn btn-outline-dark" id="add-spell-btn">Add</button>
+        <div class="d-flex justify-content-center pad-up" >
+            <div class="spinner-border" role="status" id = "spinner-new-spell" hidden>
+            </div>
+        </div>
         </div>
     </div>
     <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasNewAction" aria-labelledby="offcanvasNewActionLabel">
@@ -576,42 +839,24 @@
         <div class="offcanvas-body" id="offcanvas-create-body">
             <div>Please enter a few details about your new creature:</div>
             <div class="mb-3">
+                <div class="form-check form-switch">
+                    <input class="form-check-input" type="checkbox" role="switch" id="pcSwitch">
+                    <label class="form-check-label" for="pcSwitch">PC</label>
+                </div>
                 <label for="newName" class="form-label">Name</label>
                 <input class="form-control" id="newName">
                 <label for="newDesc" class="form-label">Description</label>
                 <textarea class="form-control" id="newDesc" rows="3"></textarea>
-                <div class="row">
-                    <div class="mb-3 col">
-                        <label for="newLevel" class="form-label">Creature Level</label>
-                        <select class="form-select" id="newLevel">
-                            <option selected value=''></option>
-                            <option value="0">Cantrip</option>
-                            <option value="1">1st</option>
-                            <option value="2">2nd</option>
-                            <option value="3">3rd</option>
-                            <option value="4">4th</option>
-                            <option value="5">5th</option>
-                            <option value="6">6th</option>
-                            <option value="7">7th</option>
-                            <option value="8">8th</option>
-                            <option value="9">9th</option>
-                        </select>
-                    </div>
-                    <div class="mb-3 col">
-                        <label for="newSchool" class="form-label">Creature School</label>
-                        <select class="form-select" id="newSchool">
-                            <option selected value=''></option>
-                            <option value="Abjuration">Abjuration</option>
-                            <option value="Conjuration">Conjuration</option>
-                            <option value="Divination">Divination</option>
-                            <option value="Enchantment">Enchantment</option>
-                            <option value="Evocation">Evocation</option>
-                            <option value="Illusion">Illusion</option>
-                            <option value="Necromancy">Necromancy</option>
-                            <option value="Transmutation">Transmutation</option>
-                        </select>
-                    </div>
-                </div>
+                <label for="sizeCreate" class="form-label">Size</label>
+                <select class="form-select" id="sizeCreate">
+                    <option selected value =''></option>
+                    <option value="Tiny">Tiny</option>
+                    <option value="Small">Small</option>
+                    <option value="Medium">Medium</option>
+                    <option value="Large">Large</option>
+                    <option value="Huge">Huge</option>
+                    <option value="Gargantuan">Gargantuan</option>
+                </select>
                 <button type="button" class="btn btn-outline-dark" id="create-finish-btn">Create</button>
             </div>
         </div>
