@@ -58,7 +58,8 @@ const EMPTY_DATASTORE_STATE = {
                                 'spellRowClick', 'removeSpellButton',
                                 'addSpellButton', 'addSpellRowClick',
                                 'addSpellFinishButton', 'cloneButton',
-                                'pcSwitch'], this);
+                                'pcSwitch', 'rebaseSpells',
+                                'rebaseSpellsContinue'], this);
         this.dataStore = new DataStore(EMPTY_DATASTORE_STATE);
         this.navbarProvider = new NavbarProvider();
     };
@@ -111,6 +112,8 @@ const EMPTY_DATASTORE_STATE = {
         document.getElementById('add-spell-btn').addEventListener('click', await this.addSpellFinishButton);
         document.getElementById('clone-btn').addEventListener('click', await this.cloneButton);
         document.getElementById('pcSwitch').addEventListener('change', await this.pcSwitch);
+        document.getElementById('rebase-spells-btn').addEventListener('click', await this.rebaseSpells);
+        document.getElementById('rebase-continue-btn').addEventListener('click', await this.rebaseSpellsContinue);
     }
 
     async populateTable() {
@@ -171,6 +174,7 @@ const EMPTY_DATASTORE_STATE = {
                             for(var i = 0; i < hide.length; i++) {
                                 hide[i].hidden = true;
                             }
+            document.getElementById('pc-tab').click()
         } else {
             var show = document.getElementsByClassName('npc-tab');
                             for(var i = 0; i < show.length; i++) {
@@ -180,6 +184,7 @@ const EMPTY_DATASTORE_STATE = {
                             for(var i = 0; i < hide.length; i++) {
                                 hide[i].hidden = true;
                             }
+            document.getElementById('details-tab').click()
         }
         document.getElementById('creatureNameBig').innerText = creature.objectName;
         document.getElementById('objectName').value = creature.objectName;
@@ -207,53 +212,54 @@ const EMPTY_DATASTORE_STATE = {
         document.getElementById('spellcastingAbility').value = creature.spellcastingAbility;
         document.getElementById('spellSaveDC').value = creature.spellSaveDC;
         document.getElementById('spellAttackModifier').value = creature.spellAttackModifier;
-        var spellSlotMap = new Map(Object.entries(creature.spellSlots));
-        document.getElementById('ss1').value = spellSlotMap.get(1);
-        document.getElementById('ss2').value = spellSlotMap.get(2);
-        document.getElementById('ss3').value = spellSlotMap.get(3);
-        document.getElementById('ss4').value = spellSlotMap.get(4);
-        document.getElementById('ss5').value = spellSlotMap.get(5);
-        document.getElementById('ss6').value = spellSlotMap.get(6);
-        document.getElementById('ss7').value = spellSlotMap.get(7);
-        document.getElementById('ss8').value = spellSlotMap.get(8);
-        document.getElementById('ss9').value = spellSlotMap.get(9);
-        var spellMap = new Map(Object.entries(creature.spellMap));
-        document.getElementById('walkSpeed').value = creature.speedMap.walk;
-        document.getElementById('flySpeed').value = creature.speedMap.fly;
-        document.getElementById('swimSpeed').value = creature.speedMap.swim;
-        document.getElementById('burrowSpeed').value = creature.speedMap.burrow;
-        document.getElementById('climbSpeed').value = creature.speedMap.climb;
-        document.getElementById('hoverSpeed').value = creature.speedMap.hover;
-        document.getElementById('strStat').value = creature.statMap.strength;
-        document.getElementById('dexStat').value = creature.statMap.dexterity;
-        document.getElementById('conStat').value = creature.statMap.constitution;
-        document.getElementById('intStat').value = creature.statMap.intelligence;
-        document.getElementById('wisStat').value = creature.statMap.wisdom;
-        document.getElementById('chaStat').value = creature.statMap.charisma;
-        document.getElementById('strSave').value = creature.saveMap.strength_save;
-        document.getElementById('dexSave').value = creature.saveMap.dexterity_save;
-        document.getElementById('conSave').value = creature.saveMap.constitution_save;
-        document.getElementById('intSave').value = creature.saveMap.intelligence_save;
-        document.getElementById('wisSave').value = creature.saveMap.wisdom_save;
-        document.getElementById('chaSave').value = creature.saveMap.charisma_save;
-        document.getElementById('acrobatics').value = creature.skillsMap.acrobatics;
-        document.getElementById('animalHandling').value = creature.skillsMap.animalHandling;
-        document.getElementById('arcana').value = creature.skillsMap.arcana;
-        document.getElementById('athletics').value = creature.skillsMap.athletics;
-        document.getElementById('deception').value = creature.skillsMap.deception;
-        document.getElementById('history').value = creature.skillsMap.history;
-        document.getElementById('insight').value = creature.skillsMap.insight;
-        document.getElementById('intimidation').value = creature.skillsMap.intimidation;
-        document.getElementById('investigation').value = creature.skillsMap.investigation;
-        document.getElementById('medicine').value = creature.skillsMap.medicine;
-        document.getElementById('nature').value = creature.skillsMap.nature;
-        document.getElementById('perception').value = creature.skillsMap.perception;
-        document.getElementById('performance').value = creature.skillsMap.performance;
-        document.getElementById('persuasion').value = creature.skillsMap.persuasion;
-        document.getElementById('religion').value = creature.skillsMap.religion;
-        document.getElementById('sleight').value = creature.skillsMap.sleight;
-        document.getElementById('stealth').value = creature.skillsMap.stealth;
-        document.getElementById('survival').value = creature.skillsMap.survival;
+        if (creature.spellSlots !== null) {
+            var spellSlotMap = new Map(Object.entries(creature.spellSlots));
+            document.getElementById('ss1').value = spellSlotMap.get(1);
+            document.getElementById('ss2').value = spellSlotMap.get(2);
+            document.getElementById('ss3').value = spellSlotMap.get(3);
+            document.getElementById('ss4').value = spellSlotMap.get(4);
+            document.getElementById('ss5').value = spellSlotMap.get(5);
+            document.getElementById('ss6').value = spellSlotMap.get(6);
+            document.getElementById('ss7').value = spellSlotMap.get(7);
+            document.getElementById('ss8').value = spellSlotMap.get(8);
+            document.getElementById('ss9').value = spellSlotMap.get(9);
+        }
+        document.getElementById('walkSpeed').value = creature.speedMap?.walk;
+        document.getElementById('flySpeed').value = creature.speedMap?.fly;
+        document.getElementById('swimSpeed').value = creature.speedMap?.swim;
+        document.getElementById('burrowSpeed').value = creature.speedMap?.burrow;
+        document.getElementById('climbSpeed').value = creature.speedMap?.climb;
+        document.getElementById('hoverSpeed').value = creature.speedMap?.hover;
+        document.getElementById('strStat').value = creature.statMap?.strength;
+        document.getElementById('dexStat').value = creature.statMap?.dexterity;
+        document.getElementById('conStat').value = creature.statMap?.constitution;
+        document.getElementById('intStat').value = creature.statMap?.intelligence;
+        document.getElementById('wisStat').value = creature.statMap?.wisdom;
+        document.getElementById('chaStat').value = creature.statMap?.charisma;
+        document.getElementById('strSave').value = creature.saveMap?.strength_save;
+        document.getElementById('dexSave').value = creature.saveMap?.dexterity_save;
+        document.getElementById('conSave').value = creature.saveMap?.constitution_save;
+        document.getElementById('intSave').value = creature.saveMap?.intelligence_save;
+        document.getElementById('wisSave').value = creature.saveMap?.wisdom_save;
+        document.getElementById('chaSave').value = creature.saveMap?.charisma_save;
+        document.getElementById('acrobatics').value = creature.skillsMap?.acrobatics;
+        document.getElementById('animalHandling').value = creature.skillsMap?.animalHandling;
+        document.getElementById('arcana').value = creature.skillsMap?.arcana;
+        document.getElementById('athletics').value = creature.skillsMap?.athletics;
+        document.getElementById('deception').value = creature.skillsMap?.deception;
+        document.getElementById('history').value = creature.skillsMap?.history;
+        document.getElementById('insight').value = creature.skillsMap?.insight;
+        document.getElementById('intimidation').value = creature.skillsMap?.intimidation;
+        document.getElementById('investigation').value = creature.skillsMap?.investigation;
+        document.getElementById('medicine').value = creature.skillsMap?.medicine;
+        document.getElementById('nature').value = creature.skillsMap?.nature;
+        document.getElementById('perception').value = creature.skillsMap?.perception;
+        document.getElementById('performance').value = creature.skillsMap?.performance;
+        document.getElementById('persuasion').value = creature.skillsMap?.persuasion;
+        document.getElementById('religion').value = creature.skillsMap?.religion;
+        document.getElementById('sleight').value = creature.skillsMap?.sleight;
+        document.getElementById('stealth').value = creature.skillsMap?.stealth;
+        document.getElementById('survival').value = creature.skillsMap?.survival;
         this.actionTablePopulate();
         this.spellTablePopulate();
 
@@ -261,6 +267,7 @@ const EMPTY_DATASTORE_STATE = {
 
     async spellTablePopulate() {
         var creature = this.dataStore.get(SELECTED_CREATURE_KEY);
+        if (creature.spellMap !== null) {
         var spellMap = new Map(Object.entries(creature.spellMap));
         var spellTable = document.getElementById(('spells-table'));
         spellTable.getElementsByTagName('tbody')[0].innerHTML = '';
@@ -283,6 +290,7 @@ const EMPTY_DATASTORE_STATE = {
         }
         this.dataStore.set([SPELL_MAP_KEY], spellMap);
         this.sortSpellTable(spellTable);
+        }
     }
 
     sortSpellTable(table) {
@@ -354,6 +362,7 @@ const EMPTY_DATASTORE_STATE = {
                    tabs[i].getElementsByTagName('tbody')[0].innerHTML = '';
                 };
         var creature = this.dataStore.get(SELECTED_CREATURE_KEY);
+        if (creature.actionMap !== null) {
         var actionMap = new Map(Object.entries(creature.actionMap));
         for (var [key, value] of actionMap) {
             var actionType = value.actionType;
@@ -367,6 +376,7 @@ const EMPTY_DATASTORE_STATE = {
             actionCell.innerHTML = value.objectName;
         }
         this.dataStore.set([ACTION_MAP_KEY], actionMap);
+        }
     }
 
     async actionRowClick(actionId) {
@@ -613,7 +623,7 @@ const EMPTY_DATASTORE_STATE = {
         skillsMap.set('stealth', document.getElementById('stealth').value);
         skillsMap.set('survival', document.getElementById('survival').value);
         creature.skillsMap = this.mapToObj(skillsMap);
-        var spellSlotMap = new Map();
+        var spellSlotMap = new Map;
         spellSlotMap.set(1, document.getElementById('ss1').value);
         spellSlotMap.set(2, document.getElementById('ss2').value);
         spellSlotMap.set(3, document.getElementById('ss3').value);
@@ -665,35 +675,37 @@ const EMPTY_DATASTORE_STATE = {
     }
 
     async createFinishButton() {
-//        if(document.getElementById('newName').value != '') {
-//            //this.creatureClient = this.dataStore.get(CREATURE_CLIENT_KEY);
-//            var creature = {};
-//            creature.userEmail = this.dataStore.get(COGNITO_EMAIL_KEY);
-//            creature.objectName = document.getElementById('newName').value;
-//            creature.creatureDescription = document.getElementById('newDesc').value;
-//            creature.creatureLevel = document.getElementById('newLevel').value;
-//            creature.creatureSchool = document.getElementById('newSchool').value;
-//
-//            try {
-//                this.hideElements();
-//                document.getElementById('close-btn').click()
-//                var newCreature = await this.creatureClient.createCreature(creature);
-//                document.getElementById('newName').value = '';
-//                document.getElementById('newDesc').value = '';
-//                document.getElementById('newLevel').value = '';
-//                document.getElementById('newSchool').value = '';
-//                this.dataStore.set([CREATURE_LIST_KEY], await this.creatureClient.getMultipleCreatures());
-//                await this.populateTable();
-//                this.showElements();
-//                document.getElementById(newCreature.objectId).click();
-//            } catch (error) {
-//                this.showElements();
-//                document.getElementById('offcanvas-warn-body').innerText = "You already have a creature with the name " + document.getElementById('objectName').value + " in your library."
-//                var myOffcanvas = document.getElementById('offcanvasWarn');
-//                var bsOffcanvas = new bootstrap.Offcanvas(myOffcanvas);
-//                bsOffcanvas.show();
-//            }
-//        }
+        if(document.getElementById('newName').value != '') {
+            var creature = {};
+            creature.userEmail = this.dataStore.get(COGNITO_EMAIL_KEY);
+            creature.objectName = document.getElementById('newName').value;
+            creature.isPC = document.getElementById('pcSwitch').checked;
+            if (!document.getElementById('pcSwitch').checked) {
+                creature.creatureDescription = document.getElementById('newDesc').value;
+                creature.size = document.getElementById('sizeCreate').value;
+            }
+            try {
+                this.hideElements();
+                document.getElementById('close-btn').click()
+                var newCreature = await this.creatureClient.createCreature(creature);
+                document.getElementById('newName').value = '';
+                document.getElementById('newDesc').value = '';
+                document.getElementById('sizeCreate').value = '';
+                document.getElementById('pcSwitch').checked = false;
+                this.dataStore.set([CREATURE_LIST_KEY], await this.creatureClient.getMultipleCreatures());
+                var creatureMap = new Map(this.dataStore.get([CREATURE_LIST_KEY]).map((obj) => [obj.objectId, obj]));
+                this.dataStore.set([CREATURE_MAP_KEY], creatureMap);
+                await this.populateTable();
+                this.showElements();
+                this.creatureRowClick(newCreature.objectId);
+            } catch (error) {
+                this.showElements();
+                document.getElementById('offcanvas-warn-body').innerText = "You already have a creature with the name " + document.getElementById('objectName').value + " in your library."
+                var myOffcanvas = document.getElementById('offcanvasWarn');
+                var bsOffcanvas = new bootstrap.Offcanvas(myOffcanvas);
+                bsOffcanvas.show();
+            }
+        }
     }
 
     importButton() {
@@ -770,6 +782,28 @@ const EMPTY_DATASTORE_STATE = {
                                             document.getElementById('sizeCreate').disabled = true)
                                         : (document.getElementById('newDesc').disabled = false,
                                           document.getElementById('sizeCreate').disabled = false)
+    }
+
+    rebaseSpells() {
+        var myOffcanvas = document.getElementById('offcanvasRebaseWarn');
+        var bsOffcanvas = new bootstrap.Offcanvas(myOffcanvas);
+        bsOffcanvas.show();
+    }
+
+    async rebaseSpellsContinue() {
+        var spellMap = this.dataStore.get(SPELL_MAP_KEY);
+        this.hideElements();
+        for (var [key, value] of spellMap) {
+            try {
+                var rebaseSpell = await this.spellClient.getSingleSpell(key);
+            } catch (error) {
+                spellMap.delete(key);
+            }
+            spellMap.set(key, rebaseSpell);
+        }
+        this.dataStore.get(SELECTED_CREATURE_KEY).spellMap = this.mapToObj(spellMap);
+        this.updateButton();
+        document.getElementById('rebase-warn-close').click()
     }
 
     showElements() {

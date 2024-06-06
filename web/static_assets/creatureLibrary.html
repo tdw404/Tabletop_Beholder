@@ -830,6 +830,19 @@
             ...
         </div>
     </div>
+    <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasRebaseWarn" aria-labelledby="offcanvasRebaseWarnLabel">
+        <div class="offcanvas-header">
+            <h5 id="offcanvasRebaseWarnLabel">Warning!</h5>
+            <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close" id="rebase-warn-close"></button>
+        </div>
+        <hr/>
+        <div class="offcanvas-body" id="offRebasecanvas-warn-body">
+            All spells will be updated to match the latest versions in the library, then this and any other changes you've made will be saved. This may take some time. Continue?
+            <div>
+                <button type="button" class="btn btn-outline-dark" id="rebase-continue-btn">Continue</button>
+            </div>
+        </div>
+    </div>
     <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasCreate" aria-labelledby="offcanvasCreateLabel">
         <div class="offcanvas-header">
             <h5 id="offcanvasCreateLabel">Create New Creature</h5>
@@ -844,7 +857,7 @@
                     <label class="form-check-label" for="pcSwitch">PC</label>
                 </div>
                 <label for="newName" class="form-label">Name</label>
-                <input class="form-control" id="newName">
+                <input class="form-control" id="newName" autocomplete="off">
                 <label for="newDesc" class="form-label">Description</label>
                 <textarea class="form-control" id="newDesc" rows="3"></textarea>
                 <label for="sizeCreate" class="form-label">Size</label>
