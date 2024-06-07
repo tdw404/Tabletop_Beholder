@@ -23,11 +23,6 @@ import BindingClass from "../util/bindingClass";
                                     </a>
                                     <ul class="list-unstyled ps-0" id = "list">
                                         <li class="mb-1">
-                                            <a href="sessionLibrary.html" class="btn btn-flat align-items-center rounded preload disabled">
-                                                Session Library
-                                            </a>
-                                        </li>
-                                        <li class="mb-1">
                                             <a href="encounterLibrary.html" class="btn btn-flat align-items-center rounded preload disabled">
                                                 Encounter Library
                                             </a>

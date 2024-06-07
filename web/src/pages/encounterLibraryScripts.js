@@ -60,19 +60,19 @@ const EMPTY_DATASTORE_STATE = {
     }
 
     async attachEventListeners() {
-        document.getElementById('delete-btn').addEventListener('click', await this.deleteButton);
-        document.getElementById('filter-btn').addEventListener('click', await this.populateTable);
-        document.getElementById('clear-btn').addEventListener('click', await this.filterResetButton);
-        document.getElementById('update-btn').addEventListener('click', await this.updateButton);
-        document.getElementById('create-btn').addEventListener('click', await this.createButton);
-        document.getElementById('create-finish-btn').addEventListener('click', await this.createFinishButton);
-        document.getElementById('import-btn').addEventListener('click', await this.importButton);
-        document.getElementById('search-btn').addEventListener('click', await this.searchButton);
-        document.getElementById('import-finish-btn').addEventListener('click', await this.importFinishButton);
-        document.getElementById('encounter-table').addEventListener('click', (event) => {
-                                            if (event.target.closest('tbody')) {this.encounterRowClick(event.target.parentNode.dataset.id)}});
-        document.getElementById('template-table').addEventListener('click', (event) => {
-                                            if (event.target.closest('tbody')) {this.templateRowClick(event.target.parentNode.dataset.id)}});
+//        document.getElementById('delete-btn').addEventListener('click', await this.deleteButton);
+//        document.getElementById('filter-btn').addEventListener('click', await this.populateTable);
+//        document.getElementById('clear-btn').addEventListener('click', await this.filterResetButton);
+//        document.getElementById('update-btn').addEventListener('click', await this.updateButton);
+//        document.getElementById('create-btn').addEventListener('click', await this.createButton);
+//        document.getElementById('create-finish-btn').addEventListener('click', await this.createFinishButton);
+//        document.getElementById('import-btn').addEventListener('click', await this.importButton);
+//        document.getElementById('search-btn').addEventListener('click', await this.searchButton);
+//        document.getElementById('import-finish-btn').addEventListener('click', await this.importFinishButton);
+//        document.getElementById('encounter-table').addEventListener('click', (event) => {
+//                                            if (event.target.closest('tbody')) {this.encounterRowClick(event.target.parentNode.dataset.id)}});
+//        document.getElementById('template-table').addEventListener('click', (event) => {
+//                                            if (event.target.closest('tbody')) {this.templateRowClick(event.target.parentNode.dataset.id)}});
     }
 
     async populateTable() {

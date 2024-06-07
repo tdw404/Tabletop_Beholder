@@ -125,7 +125,7 @@ const EMPTY_DATASTORE_STATE = {
             var oldTableBody = table.getElementsByTagName('tbody')[0];
             var newTableBody = document.createElement('tbody');
             var creatureList = this.dataStore.get(CREATURE_LIST_KEY);
-            creatureList.sort((a, b) => a.objectName.localeCompare(b.objectName));
+            creatureList?.sort((a, b) => a.objectName.localeCompare(b.objectName));
             var nameSearch = document.getElementById('nameSearch').value;
             var pcSearch = document.getElementById('pcSearch').value;
             var crAboveSearch = document.getElementById('crAboveSearch').value;
@@ -761,25 +761,27 @@ const EMPTY_DATASTORE_STATE = {
                     var oldTableBody = table.getElementsByTagName('tbody')[0];
                     var newTableBody = document.createElement('tbody');
                     var creatureList = templates;
-                    creatureList.sort((a, b) => a.name.localeCompare(b.name));
-                    for(var templateCreature of creatureList) {
-                        if (
-                            !templateCreature.resourceExists
-                        ) {
+                    if(creatureList) {
+                        creatureList.sort((a, b) => a.name.localeCompare(b.name));
+                        for(var templateCreature of creatureList) {
+                            if (
+                                !templateCreature.resourceExists
+                            ) {
 
-                            var row = newTableBody.insertRow(-1);
-                            row.setAttribute('id', templateCreature.slug);
-                            row.setAttribute('data-id', templateCreature.slug);
-                            var cell1 = row.insertCell(0);
-                            var cell2 = row.insertCell(1);
-                            var cell3 = row.insertCell(2);
-                            var cell4 = row.insertCell(3);
-                            var cell5 = row.insertCell(4);
-                            cell1.innerHTML = templateCreature.name;
-                            cell2.innerHTML = templateCreature.cr;
-                            cell3.innerHTML = templateCreature.size;
-                            cell4.innerHTML = templateCreature.type;
-                            cell5.innerHTML = templateCreature.document__title;
+                                var row = newTableBody.insertRow(-1);
+                                row.setAttribute('id', templateCreature.slug);
+                                row.setAttribute('data-id', templateCreature.slug);
+                                var cell1 = row.insertCell(0);
+                                var cell2 = row.insertCell(1);
+                                var cell3 = row.insertCell(2);
+                                var cell4 = row.insertCell(3);
+                                var cell5 = row.insertCell(4);
+                                cell1.innerHTML = templateCreature.name;
+                                cell2.innerHTML = templateCreature.cr;
+                                cell3.innerHTML = templateCreature.size;
+                                cell4.innerHTML = templateCreature.type;
+                                cell5.innerHTML = templateCreature.document__title;
+                            }
                         }
                     }
                     oldTableBody.parentNode.replaceChild(newTableBody, oldTableBody);

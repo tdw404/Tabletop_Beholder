@@ -80,7 +80,7 @@ const EMPTY_DATASTORE_STATE = {
             var oldTableBody = table.getElementsByTagName('tbody')[0];
             var newTableBody = document.createElement('tbody');
             var spellList = this.dataStore.get(SPELL_LIST_KEY);
-            spellList.sort((a, b) => a.objectName.localeCompare(b.objectName));
+            spellList?.sort((a, b) => a.objectName.localeCompare(b.objectName));
             var nameSearch = document.getElementById('nameSearch').value;
             var levelSearch = document.getElementById('levelSearch').value;
             var schoolSearch = document.getElementById('schoolSearch').value;
@@ -275,20 +275,22 @@ const EMPTY_DATASTORE_STATE = {
         var oldTableBody = table.getElementsByTagName('tbody')[0];
         var newTableBody = document.createElement('tbody');
         var spellList = templates;
-        spellList.sort((a, b) => a.name.localeCompare(b.name));
-        for(var templateSpell of spellList) {
-            if (
-                !templateSpell.resourceExists
-            ) {
-                var row = newTableBody.insertRow(-1);
-                row.setAttribute('id', templateSpell.slug);
-                row.setAttribute('data-id', templateSpell.slug);
-                var cell1 = row.insertCell(0);
-                var cell2 = row.insertCell(1);
-                var cell3 = row.insertCell(2);
-                cell1.innerHTML = templateSpell.name;
-                cell2.innerHTML = templateSpell.level;
-                cell3.innerHTML = templateSpell.document__title
+        if(spellList) {
+        spellList?.sort((a, b) => a.name.localeCompare(b.name));
+            for(var templateSpell of spellList) {
+                if (
+                    !templateSpell.resourceExists
+                ) {
+                    var row = newTableBody.insertRow(-1);
+                    row.setAttribute('id', templateSpell.slug);
+                    row.setAttribute('data-id', templateSpell.slug);
+                    var cell1 = row.insertCell(0);
+                    var cell2 = row.insertCell(1);
+                    var cell3 = row.insertCell(2);
+                    cell1.innerHTML = templateSpell.name;
+                    cell2.innerHTML = templateSpell.level;
+                    cell3.innerHTML = templateSpell.document__title
+                }
             }
         }
         oldTableBody.parentNode.replaceChild(newTableBody, oldTableBody);

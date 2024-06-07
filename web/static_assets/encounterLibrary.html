@@ -26,52 +26,21 @@
         </div>
         <form>
             <div class="row hide-while-loading" id="search-fields" hidden>
-                <div class="mb-3 col">
-                    <label for="nameSearch" class="form-label">Name</label>
-                    <input class="form-control" id="nameSearch">
-                </div>
-                <div class="mb-3 col">
-                    <label for="levelSearch" class="form-label">Level</label>
-                    <select class="form-select" id="levelSearch">
-                        <option selected></option>
-                        <option value="0">0</option>
-                        <option value="1">1</option>
-                        <option value="2">2</option>
-                        <option value="3">3</option>
-                        <option value="4">4</option>
-                        <option value="5">5</option>
-                        <option value="6">6</option>
-                        <option value="7">7</option>
-                        <option value="8">8</option>
-                        <option value="9">9</option>
-                    </select>
-                </div>
-                <div class="mb-3 col">
-                    <label for="schoolSearch" class="form-label">School</label>
-                    <select class="form-select" id="schoolSearch">
-                        <option selected></option>
-                        <option value="Abjuration">Abjuration</option>
-                        <option value="Conjuration">Conjuration</option>
-                        <option value="Divination">Divination</option>
-                        <option value="Enchantment">Enchantment</option>
-                        <option value="Evocation">Evocation</option>
-                        <option value="Illusion">Illusion</option>
-                        <option value="Necromancy">Necromancy</option>
-                        <option value="Transmutation">Transmutation</option>
-                    </select>
-                </div>
+                    <div class="mb-3 col">
+                        <label for="session-search" class="form-label">Session</label>
+                        <select class="form-select" id="session-search">
+                        </select>
+                        <button type="button" class="btn btn-outline-dark hide-while-loading" id="new-session-btn" hidden>New Session</button>
+                        <button type="button" class="btn btn-outline-dark hide-while-loading" id="delete-session-btn" hidden>Delete Session</button>
+                    </div>
+
             </div>
         </form>
-        <button type="button" class="btn btn-outline-dark hide-while-loading" id="filter-btn" hidden>Filter</button>
-        <button type="button" class="btn btn-outline-dark hide-while-loading" id="clear-btn" hidden>Clear</button>
         <div class="table-responsive">
             <table id = "encounter-table"  class="table table-striped hide-while-loading" hidden>
                 <thead>
                 <tr>
                     <th>Name</th>
-                    <th>Level</th>
-                    <th>Ritual Cast</th>
-                    <th>School</th>
                 </tr>
                 </thead>
                 <tbody>

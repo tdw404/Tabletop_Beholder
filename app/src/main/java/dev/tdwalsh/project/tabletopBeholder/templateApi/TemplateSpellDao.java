@@ -81,13 +81,14 @@ public class TemplateSpellDao {
         //First, uses the search term chain of the external object to build a uri
         //Then, makes a GET call with that url
         //Then, converts the result to a list of model objects and returns it
+        String cleanedTerms = searchTerms.replace(" ", "%20");
         HttpClient client = HttpClient.newBuilder()
                 .followRedirects(HttpClient.Redirect.NORMAL)
                 .connectTimeout(Duration.ofSeconds(20))
                 .build();
 
         HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create(URI_PATH + "?" + searchTerms))
+                .uri(URI.create(URI_PATH + "?" + cleanedTerms))
                 .timeout(Duration.ofMinutes(2))
                 .header("Content-Type", "application/json")
                 .GET()
