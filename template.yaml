@@ -934,7 +934,7 @@ Resources:
           Projection:
             ProjectionType: "INCLUDE"
             NonKeyAttributes:
-              -"objectId"
+              - "objectId"
   CreatureTable:
     Type: AWS::DynamoDB::Table
     Properties:
