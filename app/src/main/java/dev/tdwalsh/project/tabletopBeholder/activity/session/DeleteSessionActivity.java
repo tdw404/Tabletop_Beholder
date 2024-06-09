@@ -42,9 +42,10 @@ public class DeleteSessionActivity {
     public DeleteSessionResult handleRequest(DeleteSessionRequest deleteSessionRequest) {
         //First, deletes all encounters associated with session
         //Then, deletes the session itself
-        Optional.ofNullable(Optional.ofNullable(sessionDao.getSingle(deleteSessionRequest.getUserEmail(), deleteSessionRequest.getObjectId())).orElse(new Session())
-                        .getEncounterList()).orElse(Collections.emptyList())
-                        .forEach(encounter -> encounterDao.deleteObject(encounter.getUserEmail(), encounter.getObjectId()));
+        //TODO update delete session activity
+//        Optional.ofNullable(Optional.ofNullable(sessionDao.getSingle(deleteSessionRequest.getUserEmail(), deleteSessionRequest.getObjectId())).orElse(new Session())
+//                        .getEncounterList()).orElse(Collections.emptyList())
+//                        .forEach(encounter -> encounterDao.deleteObject(encounter.getUserEmail(), encounter.getObjectId()));
         sessionDao.deleteObject(deleteSessionRequest.getUserEmail(), deleteSessionRequest.getObjectId());
         return null;
     }

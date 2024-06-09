@@ -915,6 +915,8 @@ Resources:
           AttributeType: "S"
         - AttributeName: "objectId"
           AttributeType: "S"
+        - AttributeName: "session"
+          AttributeType: "S"
       KeySchema:
         - AttributeName: "userEmail"
           KeyType: "HASH"
@@ -922,7 +924,17 @@ Resources:
           KeyType: "RANGE"
       BillingMode: PAY_PER_REQUEST
       TableName: "TabletopBeholder_EncounterTable"
-
+      GlobalSecondaryIndexes:
+        - IndexName: "EncountersSortBySessionIndex"
+          KeySchema:
+            - AttributeName: "userEmail"
+              KeyType: "HASH"
+            - AttributeName: "session"
+              KeyType: "RANGE"
+          Projection:
+            ProjectionType: "INCLUDE"
+            NonKeyAttributes:
+              -"objectId"
   CreatureTable:
     Type: AWS::DynamoDB::Table
     Properties:

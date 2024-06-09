@@ -1,20 +1,29 @@
 package dev.tdwalsh.project.tabletopBeholder.dynamodb.models;
 
 import com.amazonaws.services.dynamodbv2.datamodeling.*;
+import com.amazonaws.services.dynamodbv2.xspec.M;
 import dev.tdwalsh.project.tabletopBeholder.converters.CreatureConverter;
+import dev.tdwalsh.project.tabletopBeholder.converters.StringCreaturesMapConverter;
 import dev.tdwalsh.project.tabletopBeholder.converters.ZonedDateTimeConverter;
 import org.apache.commons.text.WordUtils;
 
 import java.time.ZonedDateTime;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
+import java.util.PriorityQueue;
 
 @DynamoDBTable(tableName = "TabletopBeholder_EncounterTable")
 public class Encounter implements BeholderObject {
     private String userEmail;
     private String objectId;
     private String objectName;
-    private List<Creature> creatureList;
+    private Map<String, Creature> creatureMap;
+    //TODO PriorityQueue
+    private Integer encounterTurn;
+    private List<String> turnOrder;
+    private String topOfOrder;
+    private String session;
     private ZonedDateTime createDateTime;
     private ZonedDateTime editDateTime;
 
@@ -48,14 +57,14 @@ public class Encounter implements BeholderObject {
         this.objectName = WordUtils.capitalizeFully(objectName);
     }
 
-    @DynamoDBAttribute(attributeName = "creatureList")
-    @DynamoDBTypeConverted(converter = CreatureConverter.class)
-    public List<Creature> getCreatureList() {
-        return creatureList;
+    @DynamoDBAttribute(attributeName = "creatureMap")
+    @DynamoDBTypeConverted(converter = StringCreaturesMapConverter.class)
+    public Map<String, Creature> getCreatureMap() {
+        return this.creatureMap;
     }
 
-    public void setCreatureList(List<Creature> creatureList) {
-        this.creatureList = creatureList;
+    public void setCreatureMap(Map<String, Creature> creatureMap) {
+        this.creatureMap = creatureMap;
     }
 
     @DynamoDBAttribute(attributeName = "createDateTime")
@@ -78,6 +87,43 @@ public class Encounter implements BeholderObject {
     @Override
     public void setEditDateTime(ZonedDateTime editDateTime) {
         this.editDateTime = editDateTime;
+    }
+
+    @DynamoDBAttribute(attributeName = "encounterTurn")
+    public Integer getEncounterTurn() {
+        return encounterTurn;
+    }
+
+    public void setEncounterTurn(Integer encounterTurn) {
+        this.encounterTurn = encounterTurn;
+    }
+
+    @DynamoDBAttribute(attributeName = "topOfOrder")
+    public String getTopOfOrder() {
+        return topOfOrder;
+    }
+
+    public void setTopOfOrder(String topOfOrder) {
+        this.topOfOrder = topOfOrder;
+    }
+
+    @DynamoDBAttribute(attributeName = "turnOrder")
+    @DynamoDBTyped(DynamoDBMapperFieldModel.DynamoDBAttributeType.SS)
+    public List<String> getTurnOrder() {
+        return turnOrder;
+    }
+
+    public void setTurnOrder(List<String> turnOrder) {
+        this.turnOrder = turnOrder;
+    }
+
+    @DynamoDBAttribute(attributeName = "belongsToSession")
+    public String getSession() {
+        return session;
+    }
+
+    public void setSession(String session) {
+        this.session = session;
     }
 
     @Override

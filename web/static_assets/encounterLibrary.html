@@ -1,0 +1,196 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <link rel="stylesheet" type="text/css" href="css/sidebars.css">
+    <title>Encounter Library - Beholder</title>
+    <link rel="icon" type="image/x-icon" href="/images/favicon.ico">
+    <script type="text/javascript" src="assets/encounterLibraryScripts.js"></script>
+</head>
+<body>
+
+
+<main>
+    <div id = "navbar">
+
+    </div>
+    <div class="vert-divider"></div>
+    <div class="container align-items-center pad-up">
+        <h2 class="text-center align-self-center">Encounter Library</h2>
+        <div class="d-flex justify-content-center pad-up">
+            <div class="spinner-border show-while-loading" role="status" id = "spinner">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+        </div>
+        <form>
+            <div class="row hide-while-loading" id="search-fields" hidden>
+                    <div class="mb-3 col">
+                        <label for="session-search" class="form-label">Session</label>
+                        <select class="form-select" id="session-search">
+                            <option class = "session-dropdown" selected value = '0'></option>
+                            <option class = "session-dropdown"  value = ''>(None)</option>
+                        </select>
+                        <button type="button" class="btn btn-outline-dark hide-while-loading" id="filter-session-btn" hidden>Filter</button>
+                        <button type="button" class="btn btn-outline-dark hide-while-loading" id="new-session-btn" hidden>New Session</button>
+                        <button type="button" class="btn btn-outline-dark hide-while-loading" id="delete-session-btn" hidden>Delete Session</button>
+                    </div>
+
+            </div>
+        </form>
+        <div class="table-responsive">
+            <table id = "encounter-table"  class="table table-striped hide-while-loading" hidden>
+                <thead>
+                <tr>
+                    <th>Name</th>
+                </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div class="container align-items-center pad-up overflow-auto">
+        <h2 class="text-center align-self-center" id="encounterNameBig" pad-up>Encounter</h2>
+        <button type="button" class="btn btn-outline-dark" id="update-btn">Save Changes</button>
+        <button type="button" class="btn btn-outline-dark" id="delete-btn">Delete Encounter</button>
+        <button type="button" class="btn btn-outline-dark" id="create-btn">New Encounter</button>
+        <hr/>
+    <form>
+        <div class="mb-3">
+            <label for="objectName" class="form-label">Encounter Name</label>
+            <input class="form-control" id="objectName">
+        </div>
+        <div class="row">
+            <div class="mb-3 col">
+                <label for="currentTurn" class="form-label">Current Turn</label>
+                <input class="form-control" id="currentTurn" disabled>
+            </div>
+            <div class="mb-3 col">
+                <label for="session-list" class="form-label">Session</label>
+                <select class="form-select" id="session-list">
+                    <option class = "session-dropdown"  value = ''>(None)</option>
+                </select>
+            </div>
+        </div>
+    </form>
+        <hr/>
+        <button type="button" class="btn btn-outline-dark" id="add-creature-btn">Add Creature</button>
+        <div class="table-responsive">
+            <table id = "creature-table"  class="table table-striped">
+                <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Creature</th>
+                    <th>PC</th>
+                    <th>CR</th>
+                    <th>Size</th>
+                    <th>Type</th>
+                    <th>Alignment</th>
+                </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasWarn" aria-labelledby="offcanvasWarnLabel">
+        <div class="offcanvas-header">
+            <h5 id="offcanvasWarnLabel">Warning!</h5>
+            <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+        </div>
+        <hr/>
+        <div class="offcanvas-body" id="offcanvas-warn-body">
+            ...
+        </div>
+    </div>
+    <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasCreate" aria-labelledby="offcanvasCreateLabel">
+        <div class="offcanvas-header">
+            <h5 id="offcanvasCreateLabel">Create New Encounter</h5>
+            <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close" id="close-btn"></button>
+        </div>
+        <hr/>
+        <div class="offcanvas-body" id="offcanvas-create-body">
+            <div>Please enter a few details about your new encounter:</div>
+            <div class="mb-3">
+                <label for="newName" class="form-label">Name</label>
+                <input class="form-control" id="newName">
+            </div>
+            <div class="mb-3 col">
+                <label for="newSession" class="form-label">Session</label>
+                <select class="form-select" id="newSession">
+                    <option class = "session-dropdown" selected value = '0'></option>
+                    <option class = "session-dropdown"  value = ''>(None)</option>
+                </select>
+            </div>
+                </div>
+                <button type="button" class="btn btn-outline-dark" id="create-finish-btn">Create</button>
+            </div>
+        </div>
+    </div>
+    <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasCreateSession" aria-labelledby="offcanvasCreateSessionLabel">
+        <div class="offcanvas-header">
+            <h5 id="offcanvasCreateSessionLabel">Create New Session</h5>
+            <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close" id="close-sesion-create-btn"></button>
+        </div>
+        <hr/>
+        <div class="offcanvas-body" id="offcanvas-create-session-body">
+            <div>Please enter a name for your new session:</div>
+            <div class="mb-3">
+                <label for="new-session-name" class="form-label">Name</label>
+                <input class="form-control" id="new-session-name">
+            </div>
+            <div class="mb-3">
+            <button type="button" class="btn btn-outline-dark" id="create-session-finish-btn">Create</button>
+            </div>
+        </div>
+    </div>
+    </div>
+    </div>
+    <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasImport" aria-labelledby="offcanvasImportLabel">
+        <div class="offcanvas-header">
+            <h5 id="offcanvasImportLabel">Import Encounter From Template</h5>
+            <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close" id="close-import-btn"></button>
+        </div>
+        <hr/>
+        <div class="offcanvas-body" id="offcanvas-import-body">
+            <div>Search for templates by a word, part of a word, or the name of the encounter you're seeking:</div>
+            <input class="form-control" id="templateSearch">
+            <label for="limit" class="form-label pad-up-mini">Results</label>
+            <select class="form-select" id="limit">
+                <option value="20">20</option>
+                <option selected value="50">50</option>
+                <option value="100">100</option>
+                <option value="150">150</option>
+                <option value="200">200</option>
+            </select>
+            <div class = "pad-up-mini">
+                <button type="button" class="btn btn-outline-dark" id="search-btn">Search</button>
+                <button type="button" class="btn btn-outline-dark" id="import-finish-btn">Import Selected</button>
+            </div>
+            <div class="table-responsive table-short pad-up-mini">
+                <table id = "template-table"  class="table table-striped">
+                    <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Session</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+            </div>
+            <div class="d-flex justify-content-center pad-up">
+                <div class="spinner-border" role="status" id = "spinner-side" hidden>
+                    <span class="visually-hidden">Loading...</span>
+                </div>
+            </div>
+            </div>
+        </div>
+    </div>
+</main>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+
+</body>
+</html>

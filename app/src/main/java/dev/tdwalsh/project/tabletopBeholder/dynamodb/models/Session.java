@@ -15,7 +15,6 @@ public class Session implements BeholderObject {
     private String userEmail;
     private String objectId;
     private String objectName;
-    private List<Encounter> encounterList;
     private ZonedDateTime createDateTime;
     private ZonedDateTime editDateTime;
 
@@ -47,16 +46,6 @@ public class Session implements BeholderObject {
 
     public void setObjectName(String objectName) {
         this.objectName = WordUtils.capitalizeFully(objectName);
-    }
-
-    @DynamoDBAttribute(attributeName = "encounterList")
-    @DynamoDBTypeConverted(converter = EncounterConverter.class)
-    public List<Encounter> getEncounterList() {
-        return encounterList;
-    }
-
-    public void setEncounterList(List<Encounter> encounterList) {
-        this.encounterList = encounterList;
     }
 
     @DynamoDBAttribute(attributeName= "createDateTime")

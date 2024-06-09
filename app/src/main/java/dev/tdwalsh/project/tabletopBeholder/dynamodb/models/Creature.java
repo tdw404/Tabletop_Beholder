@@ -493,7 +493,7 @@ public class Creature implements BeholderObject {
 
     @Override
     public int hashCode() {
-        return Objects.hash(this.userEmail + this.objectId);
+        return Objects.hash(this.userEmail + this.objectId + this.encounterCreatureId);
     }
 
     @Override
@@ -508,6 +508,6 @@ public class Creature implements BeholderObject {
             return false;
         }
         Creature other = (Creature) o;
-        return (this.userEmail.equals(other.userEmail)) && (this.objectId.equals(other.objectId));
+        return (this.userEmail.equals(other.userEmail)) && (this.objectId.equals(other.objectId) && this.encounterCreatureId.equals(other.encounterCreatureId));
     }
 }

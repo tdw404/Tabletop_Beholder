@@ -14,10 +14,6 @@ public class SessionHelper {
         session.setUserEmail("userEmail" + mod);
         session.setObjectId("objectId" + mod);
         session.setObjectName("objectName" + mod);
-        List<Encounter> encounterList = new ArrayList<>();
-        encounterList.add(EncounterHelper.provideEncounter(1));
-        encounterList.add(EncounterHelper.provideEncounter(2));
-        session.setEncounterList(encounterList);
         session.setCreateDateTime(ZonedDateTime.now());
         session.setEditDateTime(ZonedDateTime.now());
         return session;
