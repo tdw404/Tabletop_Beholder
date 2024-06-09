@@ -1,22 +1,27 @@
 import AuthClient from "../api/authClient";
 import EncounterClient from "../api/encounterClient"
+import SessionClient from "../api/sessionClient"
 import NavbarProvider from"../components/navbarProvider";
 import BindingClass from "../util/bindingClass";
 import DataStore from "../util/DataStore";
 
 const COGNITO_NAME_KEY = 'cognito-name';
 const COGNITO_EMAIL_KEY = 'cognito-name-results';
-const SPELL_LIST_KEY = 'encounter-list';
-const SPELL_MAP_KEY = 'encounter-map';
-const SELECTED_SPELL_KEY = 'selected-encounter-key';
+const ENCOUNTER_LIST_KEY = 'encounter-list';
+const ENCOUNTER_MAP_KEY = 'encounter-map';
+const SELECTED_ENCOUNTER_KEY = 'selected-encounter-key';
 const SELECTED_TEMPLATE_KEY = 'selected-template-key';
+const SESSION_MAP_KEY = 'session-map-key';
+const SELECTED_SESSION_KEY = 'selected-session-key';
 const EMPTY_DATASTORE_STATE = {
     [COGNITO_NAME_KEY]: '',
     [COGNITO_EMAIL_KEY]: '',
-    [SPELL_LIST_KEY]: [],
-    [SPELL_MAP_KEY]: '',
-    [SELECTED_SPELL_KEY]: '',
+    [ENCOUNTER_LIST_KEY]: [],
+    [ENCOUNTER_MAP_KEY]: '',
+    [SELECTED_ENCOUNTER_KEY]: '',
     [SELECTED_TEMPLATE_KEY]: '',
+    [SESSION_MAP_KEY]: '',
+    [SELECTED_SESSION_KEY]: '',
 };
 /**
  * Adds functionality to the landing page.
@@ -26,13 +31,18 @@ const EMPTY_DATASTORE_STATE = {
         super();
         this.client = new AuthClient();
         this.encounterClient = new EncounterClient();
+        this.sessionClient = new SessionClient();
         this.bindClassMethods(['mount', 'startupActivities',
-                                'populateTable', 'deleteButton',
+                                'populateTable', 'populateSessions',
+                                'encounterRowClick', 'hideElements',
+                                'showElements', 'createButton',
+                                'deleteButton', 'createSessionButton',
+                                'createSessionFinishButton',
+
                                 'filterResetButton', 'updateButton',
-                                'hideElements', 'showElements',
-                                'createButton', 'createFinishButton',
+                                 'createFinishButton',
                                 'importButton', 'importFinishButton',
-                                'searchButton', 'encounterRowClick',
+                                'searchButton',
                                 'templateRowClick', 'attachEventListeners'], this);
         this.dataStore = new DataStore(EMPTY_DATASTORE_STATE);
         this.navbarProvider = new NavbarProvider();
@@ -48,10 +58,15 @@ const EMPTY_DATASTORE_STATE = {
             var{email, name} = await this.client.getIdentity().then(result => result);
             this.dataStore.set([COGNITO_EMAIL_KEY], email);
             this.dataStore.set([COGNITO_NAME_KEY], name);
-            this.dataStore.set([SPELL_LIST_KEY], await this.encounterClient.getMultipleEncounters());
-            var encounterMap = new Map(this.dataStore.get([SPELL_LIST_KEY]).map((obj) => [obj.objectId, obj]));
-            this.dataStore.set([SPELL_MAP_KEY], encounterMap);
+            this.dataStore.set([ENCOUNTER_LIST_KEY], await this.encounterClient.getMultipleEncounters());
+            var encounterMap = new Map(this.dataStore.get([ENCOUNTER_LIST_KEY]).map((obj) => [obj.objectId, obj]));
+            this.dataStore.set([ENCOUNTER_MAP_KEY], encounterMap);
+            var sessionList = await this.sessionClient.getMultipleSessions();
+            var sessionMap = new Map(sessionList.map((obj) => [obj.objectId, obj]));
+            this.dataStore.set([SESSION_MAP_KEY], sessionMap)
             await this.populateTable();
+            await this.populateSessions('session-search');
+            await this.populateSessions('session-list');
             this.attachEventListeners();
             this.showElements();
         } else {
@@ -60,53 +75,59 @@ const EMPTY_DATASTORE_STATE = {
     }
 
     async attachEventListeners() {
-//        document.getElementById('delete-btn').addEventListener('click', await this.deleteButton);
+        document.getElementById('filter-session-btn').addEventListener('click', await this.populateTable);
+        document.getElementById('delete-btn').addEventListener('click', await this.deleteButton);
+        document.getElementById('new-session-btn').addEventListener('click', await this.createSessionButton);
+        document.getElementById('create-session-finish-btn').addEventListener('click', await this.createSessionFinishButton);
 //        document.getElementById('filter-btn').addEventListener('click', await this.populateTable);
 //        document.getElementById('clear-btn').addEventListener('click', await this.filterResetButton);
 //        document.getElementById('update-btn').addEventListener('click', await this.updateButton);
-//        document.getElementById('create-btn').addEventListener('click', await this.createButton);
+        document.getElementById('create-btn').addEventListener('click', await this.createButton);
 //        document.getElementById('create-finish-btn').addEventListener('click', await this.createFinishButton);
 //        document.getElementById('import-btn').addEventListener('click', await this.importButton);
 //        document.getElementById('search-btn').addEventListener('click', await this.searchButton);
 //        document.getElementById('import-finish-btn').addEventListener('click', await this.importFinishButton);
-//        document.getElementById('encounter-table').addEventListener('click', (event) => {
-//                                            if (event.target.closest('tbody')) {this.encounterRowClick(event.target.parentNode.dataset.id)}});
+        document.getElementById('encounter-table').addEventListener('click', (event) => {
+                                            if (event.target.closest('tbody')) {this.encounterRowClick(event.target.parentNode.dataset.id)}});
 //        document.getElementById('template-table').addEventListener('click', (event) => {
 //                                            if (event.target.closest('tbody')) {this.templateRowClick(event.target.parentNode.dataset.id)}});
     }
 
     async populateTable() {
-//            var table = document.getElementById("encounter-table");
-//            var oldTableBody = table.getElementsByTagName('tbody')[0];
-//            var newTableBody = document.createElement('tbody');
-//            var encounterList = this.dataStore.get(SPELL_LIST_KEY);
-//            encounterList.sort((a, b) => a.objectName.localeCompare(b.objectName));
-//            var nameSearch = document.getElementById('nameSearch').value;
-//            var levelSearch = document.getElementById('levelSearch').value;
-//            var schoolSearch = document.getElementById('schoolSearch').value;
-//            for(var encounter of encounterList) {
-//                if (
-//                    (nameSearch == '' || encounter.objectName.toLowerCase().includes(nameSearch.toLowerCase())) &&
-//                    (levelSearch == '' || encounter.encounterLevel == levelSearch) &&
-//                    (schoolSearch == '' || encounter.encounterSchool == schoolSearch)
-//                ) {
-//
-//                    var row = newTableBody.insertRow(-1);
-//                    row.setAttribute('id', encounter.objectId);
-//                    row.setAttribute('data-id', encounter.objectId);
-//                    var cell1 = row.insertCell(0);
-//                    var cell2 = row.insertCell(1);
-//                    var cell3 = row.insertCell(2);
-//                    var cell4 = row.insertCell(3);
-//                    cell1.innerHTML = encounter.objectName;
-//                    cell2.innerHTML = encounter.encounterLevel;
-//                    cell3.innerHTML = encounter.ritualCast
-//                                        ? "Yes"
-//                                        : "No";
-//                    cell4.innerHTML = encounter.encounterSchool;
-//                }
-//            }
-//            oldTableBody.parentNode.replaceChild(newTableBody, oldTableBody);
+            var table = document.getElementById("encounter-table");
+            var oldTableBody = table.getElementsByTagName('tbody')[0];
+            var newTableBody = document.createElement('tbody');
+            var encounterList = this.dataStore.get(ENCOUNTER_LIST_KEY);
+            encounterList.sort((a, b) => a.objectName.localeCompare(b.objectName));
+            var sessionSearch = document.getElementById('session-search').value;
+            for(var encounter of encounterList) {
+                if (
+                    (sessionSearch == '0' || encounter.session == sessionSearch)
+                ) {
+
+                    var row = newTableBody.insertRow(-1);
+                    row.setAttribute('id', encounter.objectId);
+                    row.setAttribute('data-id', encounter.objectId);
+                    var cell1 = row.insertCell(0);
+                    cell1.innerHTML = encounter.objectName;
+                }
+            }
+            oldTableBody.parentNode.replaceChild(newTableBody, oldTableBody);
+    }
+
+    async populateSessions(element) {
+        var dropDown = document.getElementById(element);
+        for (var i = dropDown.options.length; i > 1; i--) {
+            dropDown.options.remove(i);
+        }
+        for (var [key, value] of this.dataStore.get(SESSION_MAP_KEY)) {
+            var option = document.createElement('option');
+                option.value = value.objectId;
+                option.innerHTML = value.objectName;
+                option.setAttribute('dataset-id', key);
+                option.classList.add("session-dropdown");
+                dropDown.appendChild(option);
+        }
     }
 
     async templateRowClick(templateId) {
@@ -119,43 +140,57 @@ const EMPTY_DATASTORE_STATE = {
     }
 
     async encounterRowClick(encounterId) {
-//        var encounter = this.dataStore.get(SPELL_MAP_KEY).get(encounterId);
-//        this.dataStore.set([SELECTED_SPELL_KEY], encounter);
-//        var table = document.getElementById('encounter-table');
-//        for (var i = 0; i < table.rows.length; i++){
-//            table.rows[i].removeAttribute('class');
-//        }
-//        document.getElementById(encounterId).setAttribute('class','selectedRow');
-//        document.getElementById('encounterNameBig').innerText = encounter.objectName;
-//        document.getElementById('objectName').value = encounter.objectName;
-//        document.getElementById('encounterDescription').value = encounter.encounterDescription;
-//        document.getElementById('encounterHigherLevel').value = encounter.encounterHigherLevel;
-//        document.getElementById('encounterRange').value = encounter.encounterRange;
-//        document.getElementById('encounterComponents').value = encounter.encounterComponents;
-//        document.getElementById('encounterMaterial').value = encounter.encounterMaterial;
-//        document.getElementById('reaction').value = encounter.reaction;
-//        document.getElementById('ritualCast').value = encounter.ritualCast
-//                                                      ? "yes"
-//                                                      : "no";
-//        document.getElementById('castingTime').value = encounter.castingTime;
-//        document.getElementById('castingTurns').value = encounter.castingTurns;
-//        document.getElementById('encounterLevel').value = encounter.encounterLevel;
-//        document.getElementById('encounterSchool').value = encounter.encounterSchool;
-//        document.getElementById('innateCasts').value = encounter.innateCasts;
+        var encounter = this.dataStore.get(ENCOUNTER_MAP_KEY).get(encounterId);
+        this.dataStore.set([SELECTED_ENCOUNTER_KEY], encounter);
+        var table = document.getElementById('encounter-table');
+        for (var i = 0; i < table.rows.length; i++){
+            table.rows[i].removeAttribute('class');
+        }
+        document.getElementById(encounterId).setAttribute('class','selectedRow');
+        document.getElementById('encounterNameBig').innerText = encounter.objectName;
+        document.getElementById('objectName').value = encounter.objectName;
+        document.getElementById('currentTurn').value = encounter.encounterTurn;
+        document.getElementById('session-list').value = encounter.session;
+        var creatureTable = document.getElementById(('creature-table'));
+        creatureTable.getElementsByTagName('tbody')[0].innerHTML = '';
+        var creatureBody = creatureTable.getElementsByTagName('tbody')[0]
+        if(encounter.creatureMap) {
+            for(var[key, value] of encounter.creatureMap) {
+                var row = creatureBody.insertRow(-1);
+                row.setAttribute('id', creature.encounterCreatureId);
+                row.setAttribute('data-id', creature.encounterCreatureId);
+                var cell0 = row.insertCell(0);
+                var cell1 = row.insertCell(1);
+                var cell2 = row.insertCell(2);
+                var cell3 = row.insertCell(3);
+                var cell4 = row.insertCell(4);
+                var cell5 = row.insertCell(5);
+                var cell6 = row.insertCell(6);
+                cell0.innerHTML = creature.encounterCreatureName;
+                cell1.innerHTML = creature.objectName;
+                cell2.innerHTML = creature.isPC
+                                    ? "Yes"
+                                    : "No";
+                cell3.innerHTML = creature.challengeRating;
+                cell4.innerHTML = creature.size;
+                cell5.innerHTML = creature.type;
+                cell6.innerHTML = creature.alignment;
+            }
+        }
     }
 
     async deleteButton() {
-//        var objectId = this.dataStore.get(SELECTED_SPELL_KEY).objectId;
-//        if(objectId != '') {
-//            this.hideElements();
-//            await this.encounterClient.deleteEncounter(objectId);
-//            location.reload();
-//        }
+        var objectId = this.dataStore.get(SELECTED_ENCOUNTER_KEY).objectId;
+        if(objectId != '') {
+            this.hideElements();
+            await this.encounterClient.deleteEncounter(objectId);
+            location.reload();
+        }
     }
 
     async updateButton() {
 //        this.hideElements();
-//        var encounter = this.dataStore.get(SELECTED_SPELL_KEY);
+//        var encounter = this.dataStore.get(SELECTED_ENCOUNTER_KEY);
 //        encounter.objectName = document.getElementById('objectName').value;
 //        encounter.encounterDescription = document.getElementById('encounterDescription').value;
 //        encounter.encounterHigherLevel = document.getElementById('encounterHigherLevel').value;
@@ -197,9 +232,15 @@ const EMPTY_DATASTORE_STATE = {
     }
 
     createButton() {
-//        var myOffcanvas = document.getElementById('offcanvasCreate');
-//        var bsOffcanvas = new bootstrap.Offcanvas(myOffcanvas);
-//        bsOffcanvas.show();
+        this.populateSessions('newSession')
+//        if(document.getElementById('session-search').value = '0') {
+//            document.getElementById('newSession').value = '';
+//        } else {
+//         document.getElementById('newSession').value = document.getElementById('session-search');
+//        }
+        var myOffcanvas = document.getElementById('offcanvasCreate');
+        var bsOffcanvas = new bootstrap.Offcanvas(myOffcanvas);
+        bsOffcanvas.show();
     }
 
     async createFinishButton() {
@@ -219,9 +260,9 @@ const EMPTY_DATASTORE_STATE = {
 //                document.getElementById('newDesc').value = '';
 //                document.getElementById('newLevel').value = '';
 //                document.getElementById('newSchool').value = '';
-//                this.dataStore.set([SPELL_LIST_KEY], await this.encounterClient.getMultipleEncounters());
-//                var encounterMap = new Map(this.dataStore.get([SPELL_LIST_KEY]).map((obj) => [obj.objectId, obj]));
-//                this.dataStore.set([SPELL_MAP_KEY], encounterMap);
+//                this.dataStore.set([ENCOUNTER_LIST_KEY], await this.encounterClient.getMultipleEncounters());
+//                var encounterMap = new Map(this.dataStore.get([ENCOUNTER_LIST_KEY]).map((obj) => [obj.objectId, obj]));
+//                this.dataStore.set([ENCOUNTER_MAP_KEY], encounterMap);
 //                await this.populateTable();
 //                this.showElements();
 //                this.encounterRowClick(newEncounter.objectId);
@@ -233,6 +274,29 @@ const EMPTY_DATASTORE_STATE = {
 //                bsOffcanvas.show();
 //            }
 //        }
+    }
+
+    createSessionButton() {
+            var myOffcanvas = document.getElementById('offcanvasCreateSession');
+            var bsOffcanvas = new bootstrap.Offcanvas(myOffcanvas);
+            bsOffcanvas.show();
+        }
+
+    async createSessionFinishButton() {
+        var session = {};
+        session.objectName = document.getElementById('new-session-name').value;
+        try {
+            this.hideElements();
+            document.getElementById('close-btn').click()
+            await this.sessionClient.createSession(session);
+            location.reload;
+        } catch (error) {
+            this.showElements();
+            document.getElementById('offcanvas-warn-body').innerText = "You already have a encounter with the name " + document.getElementById('objectName').value + " in your library."
+            var myOffcanvas = document.getElementById('offcanvasWarn');
+            var bsOffcanvas = new bootstrap.Offcanvas(myOffcanvas);
+            bsOffcanvas.show();
+        }
     }
 
     importButton() {
@@ -248,9 +312,9 @@ const EMPTY_DATASTORE_STATE = {
 //                this.hideElements();
 //                document.getElementById('close-import-btn').click()
 //                var newEncounter = await this.encounterClient.createTemplate(slug);
-//                this.dataStore.set([SPELL_LIST_KEY], await this.encounterClient.getMultipleEncounters());
-//                var encounterMap = new Map(this.dataStore.get([SPELL_LIST_KEY]).map((obj) => [obj.objectId, obj]));
-//                this.dataStore.set([SPELL_MAP_KEY], encounterMap);
+//                this.dataStore.set([ENCOUNTER_LIST_KEY], await this.encounterClient.getMultipleEncounters());
+//                var encounterMap = new Map(this.dataStore.get([ENCOUNTER_LIST_KEY]).map((obj) => [obj.objectId, obj]));
+//                this.dataStore.set([ENCOUNTER_MAP_KEY], encounterMap);
 //                this.populateTable();
 //                this.showElements();
 //                this.encounterRowClick(newEncounter.objectId);
