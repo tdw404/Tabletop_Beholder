@@ -33,6 +33,7 @@ public class Spell implements BeholderObject {
 
     @Override
     @DynamoDBHashKey(attributeName = "userEmail")
+    @DynamoDBIndexHashKey(globalSecondaryIndexName = "SpellsSortByNameIndex")
     public String getUserEmail() {
         return userEmail;
     }
@@ -52,7 +53,7 @@ public class Spell implements BeholderObject {
     }
 
     @Override
-    @DynamoDBAttribute(attributeName = "objectName")
+    @DynamoDBIndexRangeKey(globalSecondaryIndexName = "SpellsSortByNameIndex", attributeName = "objectName")
     public String getObjectName() {
         return objectName;
     }

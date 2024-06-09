@@ -29,6 +29,7 @@ public class Encounter implements BeholderObject {
 
     @Override
     @DynamoDBHashKey(attributeName = "userEmail")
+    @DynamoDBIndexHashKey(globalSecondaryIndexName = "EncountersSortBySessionIndex")
     public String getUserEmail() {
         return userEmail;
     }
@@ -117,7 +118,7 @@ public class Encounter implements BeholderObject {
         this.turnOrder = turnOrder;
     }
 
-    @DynamoDBAttribute(attributeName = "belongsToSession")
+    @DynamoDBIndexRangeKey(globalSecondaryIndexName = "EncountersSortBySessionIndex", attributeName = "session")
     public String getSession() {
         return session;
     }
