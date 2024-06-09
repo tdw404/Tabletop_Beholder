@@ -208,6 +208,9 @@ Resources:
             - Effect: Allow
               Action: dynamodb:*
               Resource: !Sub "arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/TabletopBeholder_EncounterTable"
+            - Effect: Allow
+              Action: dynamodb:query
+              Resource: !Sub "arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/TabletopBeholder_EncounterTable/index/EncountersSortBySessionIndex"
 
         - PolicyName: 'AccessSessionTable'
           PolicyDocument:
