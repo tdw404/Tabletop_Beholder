@@ -918,7 +918,7 @@ Resources:
           AttributeType: "S"
         - AttributeName: "objectId"
           AttributeType: "S"
-        - AttributeName: "session"
+        - AttributeName: "sessionId"
           AttributeType: "S"
       KeySchema:
         - AttributeName: "userEmail"
@@ -932,7 +932,7 @@ Resources:
           KeySchema:
             - AttributeName: "userEmail"
               KeyType: "HASH"
-            - AttributeName: "session"
+            - AttributeName: "sessionId"
               KeyType: "RANGE"
           Projection:
             ProjectionType: "INCLUDE"

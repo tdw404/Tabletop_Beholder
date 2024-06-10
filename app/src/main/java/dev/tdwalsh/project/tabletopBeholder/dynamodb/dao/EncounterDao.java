@@ -107,12 +107,12 @@ public class EncounterDao implements BeholderDao {
      * Searches for all encounters belonging to a session.
      *
      * @param userEmail The userEmail to search
-     * @param sessionId The sessionId to search
+     * @param session The session to search
      */
     public List<Encounter> getEncounterBySession(String userEmail, String sessionId) {
         Map<String, AttributeValue> valueMap = new HashMap<>();
         valueMap.put(":userEmail", new AttributeValue(userEmail));
-        valueMap.put((":sessionId"), new AttributeValue(sessionId));
+        valueMap.put(":sessionId", new AttributeValue(sessionId));
         DynamoDBQueryExpression<Encounter> queryExpression = new DynamoDBQueryExpression<Encounter>()
                 .withIndexName("EncountersSortBySessionIndex")
                 .withConsistentRead(false)
