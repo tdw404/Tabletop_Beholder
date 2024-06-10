@@ -30,7 +30,7 @@
                         <label for="session-search" class="form-label">Session</label>
                         <select class="form-select" id="session-search">
                             <option class = "session-dropdown" selected value = '0'></option>
-                            <option class = "session-dropdown"  value = ''>(None)</option>
+                            <option class = "session-dropdown"  value = 'none'>(None)</option>
                         </select>
                         <button type="button" class="btn btn-outline-dark hide-while-loading" id="filter-session-btn" hidden>Filter</button>
                         <button type="button" class="btn btn-outline-dark hide-while-loading" id="new-session-btn" hidden>New Session</button>
@@ -43,7 +43,7 @@
             <table id = "encounter-table"  class="table table-striped hide-while-loading" hidden>
                 <thead>
                 <tr>
-                    <th>Name</th>
+                    <th>Encounter</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -70,7 +70,8 @@
             <div class="mb-3 col">
                 <label for="session-list" class="form-label">Session</label>
                 <select class="form-select" id="session-list">
-                    <option class = "session-dropdown"  value = ''>(None)</option>
+                    <option class = "session-dropdown" selected value = '0'></option>
+                    <option class = "session-dropdown"  value = 'none'>(None)</option>
                 </select>
             </div>
         </div>
@@ -121,18 +122,16 @@
                 <label for="newSession" class="form-label">Session</label>
                 <select class="form-select" id="newSession">
                     <option class = "session-dropdown" selected value = '0'></option>
-                    <option class = "session-dropdown"  value = ''>(None)</option>
+                    <option class = "session-dropdown"  value = 'none'>(None)</option>
                 </select>
             </div>
-                </div>
                 <button type="button" class="btn btn-outline-dark" id="create-finish-btn">Create</button>
-            </div>
         </div>
     </div>
     <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasCreateSession" aria-labelledby="offcanvasCreateSessionLabel">
         <div class="offcanvas-header">
             <h5 id="offcanvasCreateSessionLabel">Create New Session</h5>
-            <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close" id="close-sesion-create-btn"></button>
+            <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close" id="close-session-create-btn"></button>
         </div>
         <hr/>
         <div class="offcanvas-body" id="offcanvas-create-session-body">
@@ -146,47 +145,77 @@
             </div>
         </div>
     </div>
-    </div>
-    </div>
-    <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasImport" aria-labelledby="offcanvasImportLabel">
+    <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasNewCreature" aria-labelledby="offcanvasNewCreatureLabel">
         <div class="offcanvas-header">
-            <h5 id="offcanvasImportLabel">Import Encounter From Template</h5>
-            <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close" id="close-import-btn"></button>
+            <h5 id="offcanvasNewCreatureLabel">Add Creature to Encounter</h5>
+            <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close" id="close-new-creature-btn"></button>
         </div>
         <hr/>
-        <div class="offcanvas-body" id="offcanvas-import-body">
-            <div>Search for templates by a word, part of a word, or the name of the encounter you're seeking:</div>
-            <input class="form-control" id="templateSearch">
-            <label for="limit" class="form-label pad-up-mini">Results</label>
-            <select class="form-select" id="limit">
-                <option value="20">20</option>
-                <option selected value="50">50</option>
-                <option value="100">100</option>
-                <option value="150">150</option>
-                <option value="200">200</option>
-            </select>
-            <div class = "pad-up-mini">
-                <button type="button" class="btn btn-outline-dark" id="search-btn">Search</button>
-                <button type="button" class="btn btn-outline-dark" id="import-finish-btn">Import Selected</button>
-            </div>
-            <div class="table-responsive table-short pad-up-mini">
-                <table id = "template-table"  class="table table-striped">
+        <div class="offcanvas-body" id="offcanvas-new-creature-body">
+            <div class="table-responsive">
+                <table id = "add-creature-table"  class="table table-striped">
                     <thead>
-                    <tr>
-                        <th>Name</th>
-                        <th>Session</th>
-                    </tr>
+                        <tr>
+                            <th>Name</th>
+                            <th>PC</th>
+                            <th>CR</th>
+                            <th>Size</th>
+                            <th>Type</th>
+                            <th>Alignment</th>
+                        </tr>
                     </thead>
                     <tbody>
                     </tbody>
                 </table>
             </div>
-            <div class="d-flex justify-content-center pad-up">
-                <div class="spinner-border" role="status" id = "spinner-side" hidden>
-                    <span class="visually-hidden">Loading...</span>
+            <div class="mb-3" id="new-creature-field">
+                <label for="new-creature-name" class="form-label">Individual Name</label>
+                <input class="form-control" id="new-creature-name">
+            </div>
+            <button type="button" class="btn btn-outline-dark" id="add-creature-finish-btn">Add</button>
+            <div class="d-flex justify-content-center pad-up" >
+                <div class="spinner-border" role="status" id = "spinner-new-creature" hidden>
                 </div>
             </div>
+        </div>
+    </div>
+    <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasEditCreature" aria-labelledby="offcanvasEditCreatureLabel">
+        <div class="offcanvas-header">
+            <h5 id="offcanvasEditCreatureLabel">Creature Details</h5>
+            <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close" id="close-edit-creature-btn"></button>
+        </div>
+        <hr/>
+        <div class="offcanvas-body" id="offcanvas-edit-creature-body">
+            <div class="mb-3">
+                <label for="edit-creature-name" class="form-label">Individual Name</label>
+                <input class="form-control" id="edit-creature-name">
             </div>
+            <div class="mb-3">
+                <label for="edit-creature-objectName" class="form-label">Creature</label>
+                <input class="form-control" id="edit-creature-objectName" disabled>
+            </div>
+            <div class="row">
+                <div class="mb-3 col">
+                    <label for="edit-creature-hp" class="form-label">Current HP</label>
+                    <input class="form-control" id="edit-creature-hp" disabled>
+                </div>
+                <div class="mb-3 col">
+                    <label for="edit-creature-status" class="form-label">Status</label>
+                    <input class="form-control" id="edit-creature-status" disabled>
+                </div>
+            </div>
+            <div class="row">
+                <div class="mb-3 col">
+                    <label for="edit-creature-size" class="form-label">Size</label>
+                    <input class="form-control" id="edit-creature-size" disabled>
+                </div>
+                <div class="mb-3 col">
+                    <label for="edit-creature-type" class="form-label">Alignment</label>
+                    <input class="form-control" id="edit-creature-type" disabled>
+                </div>
+            </div>
+            <button type="button" class="btn btn-outline-dark" id="save-creature-btn">Update</button>
+            <button type="button" class="btn btn-outline-dark" id="delete-creature-btn">Remove</button>
         </div>
     </div>
 </main>

@@ -16,7 +16,6 @@ const ACTION_MAP_KEY = 'action-map-key';
 const SELECTED_ACTION_KEY = 'selected-action-key';
 const SPELL_MAP_KEY = 'spell-map-key';
 const SELECTED_SPELL_KEY = 'selected-spell-key';
-const NEW_SPELL_LIST_KEY = 'new-spell-list-key';
 const SELECTED_NEW_SPELL_KEY = 'selected-new-spell-key';
 const NEW_SPELL_MAP_KEY = 'new-spell-map-key';
 const EMPTY_DATASTORE_STATE = {
@@ -31,7 +30,6 @@ const EMPTY_DATASTORE_STATE = {
     [SPELL_MAP_KEY]: '',
     [SELECTED_SPELL_KEY]: '',
     [SELECTED_NEW_SPELL_KEY]: '',
-    [NEW_SPELL_LIST_KEY]: '',
     [NEW_SPELL_MAP_KEY]: '',
 };
 /**
@@ -272,28 +270,28 @@ const EMPTY_DATASTORE_STATE = {
     async spellTablePopulate() {
         var creature = this.dataStore.get(SELECTED_CREATURE_KEY);
         if (creature.spellMap !== null) {
-        var spellMap = new Map(Object.entries(creature.spellMap));
-        var spellTable = document.getElementById(('spells-table'));
-        spellTable.getElementsByTagName('tbody')[0].innerHTML = '';
-        var spellBody = spellTable.getElementsByTagName('tbody')[0];
-        for (var [key, value] of spellMap) {
-            var spellId = value.objectId;
-            var spellRow = spellBody.insertRow(-1);
-            spellRow.setAttribute('id', spellId);
-            spellRow.setAttribute('data-id', spellId);
-            var spellCell0 = spellRow.insertCell(0);
-            var spellCell1 = spellRow.insertCell(1);
-            var spellCell2 = spellRow.insertCell(2);
-            var spellCell3 = spellRow.insertCell(3);
-            spellCell0.innerHTML = value.objectName;
-            spellCell1.innerHTML = value.spellLevel;
-            spellCell2.innerHTML = value.ritualCast
-                                    ? "Yes"
-                                    : "No";
-            spellCell3.innerHTML = value.spellSchool;
-        }
-        this.dataStore.set([SPELL_MAP_KEY], spellMap);
-        this.sortSpellTable(spellTable);
+            var spellMap = new Map(Object.entries(creature.spellMap));
+            var spellTable = document.getElementById(('spells-table'));
+            var spellBody = spellTable.getElementsByTagName('tbody')[0];
+            spellBody.innerHTML = '';
+            for (var [key, value] of spellMap) {
+                var spellId = value.objectId;
+                var spellRow = spellBody.insertRow(-1);
+                spellRow.setAttribute('id', spellId);
+                spellRow.setAttribute('data-id', spellId);
+                var spellCell0 = spellRow.insertCell(0);
+                var spellCell1 = spellRow.insertCell(1);
+                var spellCell2 = spellRow.insertCell(2);
+                var spellCell3 = spellRow.insertCell(3);
+                spellCell0.innerHTML = value.objectName;
+                spellCell1.innerHTML = value.spellLevel;
+                spellCell2.innerHTML = value.ritualCast
+                                        ? "Yes"
+                                        : "No";
+                spellCell3.innerHTML = value.spellSchool;
+            }
+            this.dataStore.set([SPELL_MAP_KEY], spellMap);
+            this.sortSpellTable(spellTable);
         }
     }
 
@@ -489,12 +487,11 @@ const EMPTY_DATASTORE_STATE = {
             bsOffcanvas.show();
             var newSpellList = await this.spellClient.getMultipleSpells();
             var spellMap = this.dataStore.get(SPELL_MAP_KEY);
-            this.dataStore.set([NEW_SPELL_LIST_KEY], newSpellList);
-            var newSpellMap = new Map(this.dataStore.get([NEW_SPELL_LIST_KEY]).map((obj) => [obj.objectId, obj]));
+            var newSpellMap = new Map(newSpellList.map((obj) => [obj.objectId, obj]));
             this.dataStore.set([NEW_SPELL_MAP_KEY], newSpellMap);
             var spellTable = document.getElementById(('add-spells-table'));
-            spellTable.getElementsByTagName('tbody')[0].innerHTML = '';
             var spellBody = spellTable.getElementsByTagName('tbody')[0];
+            spellBody.innerHTML = '';
             for(var spell of newSpellList) {
                             if (
                                 !spellMap.has(spell.objectId)

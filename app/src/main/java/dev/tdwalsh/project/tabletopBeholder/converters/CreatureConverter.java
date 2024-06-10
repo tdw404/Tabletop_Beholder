@@ -12,7 +12,7 @@ import java.util.List;
 
 public class CreatureConverter implements DynamoDBTypeConverter<String, List<Creature>>{
     private JavaTimeModule javaTimeModule = new JavaTimeModule();
-    private ObjectMapper objectMapper =new ObjectMapper().registerModule(javaTimeModule);
+    private ObjectMapper objectMapper = new ObjectMapper().registerModule(javaTimeModule);
     @Override
     public String convert(List<Creature> creatureList) {
         try {
