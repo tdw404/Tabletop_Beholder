@@ -23,7 +23,7 @@ public class Encounter implements BeholderObject {
     private Integer encounterTurn;
     private List<String> turnOrder;
     private String topOfOrder;
-    private String session;
+    private String sessionId;
     private ZonedDateTime createDateTime;
     private ZonedDateTime editDateTime;
 
@@ -119,12 +119,12 @@ public class Encounter implements BeholderObject {
     }
 
     @DynamoDBIndexRangeKey(globalSecondaryIndexName = "EncountersSortBySessionIndex", attributeName = "session")
-    public String getSession() {
-        return session;
+    public String getSessionId() {
+        return sessionId;
     }
 
-    public void setSession(String session) {
-        this.session = session;
+    public void setSessionId(String session) {
+        this.sessionId = sessionId;
     }
 
     @Override

@@ -26,7 +26,7 @@ public class EncounterHelper {
         stringList.add("test2");
         encounter.setTurnOrder(stringList);
         encounter.setTopOfOrder("topOfOrder" + mod);
-        encounter.setSession("belongsToSession" + mod);
+        encounter.setSessionId("sessionId" + mod);
         encounter.setCreatureMap(creatureMap);
         encounter.setCreateDateTime(ZonedDateTime.now());
         encounter.setEditDateTime(ZonedDateTime.now());

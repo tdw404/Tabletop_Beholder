@@ -4,10 +4,12 @@ import dev.tdwalsh.project.tabletopBeholder.activity.session.request.DeleteSessi
 import dev.tdwalsh.project.tabletopBeholder.activity.session.result.DeleteSessionResult;
 import dev.tdwalsh.project.tabletopBeholder.dynamodb.dao.EncounterDao;
 import dev.tdwalsh.project.tabletopBeholder.dynamodb.dao.SessionDao;
+import dev.tdwalsh.project.tabletopBeholder.dynamodb.models.Encounter;
 import dev.tdwalsh.project.tabletopBeholder.dynamodb.models.Session;
 
 import javax.inject.Inject;
 import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 
 /**

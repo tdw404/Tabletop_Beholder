@@ -37,7 +37,7 @@ const EMPTY_DATASTORE_STATE = {
                                 'encounterRowClick', 'hideElements',
                                 'showElements', 'createButton',
                                 'deleteButton', 'createSessionButton',
-                                'createSessionFinishButton',
+                                'createSessionFinishButton', 'deleteSessionButton',
 
                                 'filterResetButton', 'updateButton',
                                  'createFinishButton',
@@ -79,6 +79,7 @@ const EMPTY_DATASTORE_STATE = {
         document.getElementById('delete-btn').addEventListener('click', await this.deleteButton);
         document.getElementById('new-session-btn').addEventListener('click', await this.createSessionButton);
         document.getElementById('create-session-finish-btn').addEventListener('click', await this.createSessionFinishButton);
+        document.getElementById('delete-session-btn').addEventListener('click', await this.deleteSessionButton);
 //        document.getElementById('filter-btn').addEventListener('click', await this.populateTable);
 //        document.getElementById('clear-btn').addEventListener('click', await this.filterResetButton);
 //        document.getElementById('update-btn').addEventListener('click', await this.updateButton);
@@ -186,6 +187,11 @@ const EMPTY_DATASTORE_STATE = {
             await this.encounterClient.deleteEncounter(objectId);
             location.reload();
         }
+    }
+
+    async deleteSessionButton() {
+        await this.sessionClient.deleteSession(document.getElementById('session-search').value);
+        location.reload();
     }
 
     async updateButton() {
