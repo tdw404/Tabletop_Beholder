@@ -61,6 +61,7 @@ public class Creature implements BeholderObject {
 
     @Override
     @DynamoDBHashKey(attributeName = "userEmail")
+    @DynamoDBIndexHashKey(globalSecondaryIndexName = "CreaturesSortByNameIndex")
     public String getUserEmail() {
         return userEmail;
     }
@@ -80,7 +81,7 @@ public class Creature implements BeholderObject {
     }
 
     @Override
-    @DynamoDBAttribute(attributeName = "objectName")
+    @DynamoDBIndexRangeKey(globalSecondaryIndexName = "CreaturesSortByNameIndex", attributeName = "objectName")
     public String getObjectName() {
         return objectName;
     }

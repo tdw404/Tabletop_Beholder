@@ -20,6 +20,7 @@ public class Session implements BeholderObject {
 
     @Override
     @DynamoDBHashKey(attributeName = "userEmail")
+    @DynamoDBIndexHashKey(globalSecondaryIndexName = "SessionsSortByNameIndex")
     public String getUserEmail() {
         return userEmail;
     }
@@ -39,7 +40,7 @@ public class Session implements BeholderObject {
     }
 
     @Override
-    @DynamoDBAttribute(attributeName = "objectName")
+    @DynamoDBIndexRangeKey(globalSecondaryIndexName = "SessionsSortByNameIndex", attributeName = "objectName")
     public String getObjectName() {
         return objectName;
     }
