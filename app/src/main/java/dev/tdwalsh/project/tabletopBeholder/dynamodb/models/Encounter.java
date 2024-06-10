@@ -118,12 +118,12 @@ public class Encounter implements BeholderObject {
         this.turnOrder = turnOrder;
     }
 
-    @DynamoDBIndexRangeKey(globalSecondaryIndexName = "EncountersSortBySessionIndex", attributeName = "session")
+    @DynamoDBIndexRangeKey(globalSecondaryIndexName = "EncountersSortBySessionIndex", attributeName = "sessionId")
     public String getSessionId() {
         return sessionId;
     }
 
-    public void setSessionId(String session) {
+    public void setSessionId(String sessionId) {
         this.sessionId = sessionId;
     }
 
