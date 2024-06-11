@@ -23,11 +23,20 @@ public class GetAllSpellsResult {
     public static class Builder {
         private List<Spell> spellList;
 
+        /**
+         * Builder setter.
+         * @param spellList - To set.
+         * @return Builder.
+         */
         public Builder withSpellList(List<Spell> spellList) {
             this.spellList = spellList;
             return this;
         }
 
+        /**
+         * Builder method.
+         * @return GetAllSpellsResult
+         */
         public GetAllSpellsResult build() {
             return new GetAllSpellsResult(spellList);
         }

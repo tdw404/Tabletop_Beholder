@@ -1,18 +1,19 @@
 package dev.tdwalsh.project.tabletopBeholder.converters;
 
+import dev.tdwalsh.project.tabletopBeholder.dynamodb.models.Encounter;
+import dev.tdwalsh.project.tabletopBeholder.exceptions.SerializationException;
+
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBTypeConverter;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import dev.tdwalsh.project.tabletopBeholder.dynamodb.models.Encounter;
-import dev.tdwalsh.project.tabletopBeholder.exceptions.SerializationException;
 
 import java.util.List;
 
-public class EncounterConverter implements DynamoDBTypeConverter<String, List<Encounter>>{
+public class EncounterConverter implements DynamoDBTypeConverter<String, List<Encounter>> {
     private JavaTimeModule javaTimeModule = new JavaTimeModule();
-    private ObjectMapper objectMapper =new ObjectMapper().registerModule(javaTimeModule);
+    private ObjectMapper objectMapper = new ObjectMapper().registerModule(javaTimeModule);
     @Override
     public String convert(List<Encounter> encounterList) {
         try {
@@ -25,7 +26,7 @@ public class EncounterConverter implements DynamoDBTypeConverter<String, List<En
     @Override
     public List<Encounter> unconvert(String encounterString) {
         try {
-            return objectMapper.readValue(encounterString, new TypeReference<>(){});
+            return objectMapper.readValue(encounterString, new TypeReference<>() { });
         } catch (JsonProcessingException e) {
             throw new SerializationException("Error deserializing effect list", e);
         }

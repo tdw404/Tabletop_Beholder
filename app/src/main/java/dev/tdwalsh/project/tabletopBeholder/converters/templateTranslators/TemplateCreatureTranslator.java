@@ -8,25 +8,41 @@ import dev.tdwalsh.project.tabletopBeholder.dynamodb.models.Spell;
 import dev.tdwalsh.project.tabletopBeholder.templateApi.TemplateSpellDao;
 import dev.tdwalsh.project.tabletopBeholder.templateApi.model.TemplateCreature;
 import dev.tdwalsh.project.tabletopBeholder.templateApi.model.TemplateSpell;
+
 import org.apache.commons.text.WordUtils;
 
-import javax.inject.Inject;
 import java.time.ZonedDateTime;
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import javax.inject.Inject;
 
 public class TemplateCreatureTranslator {
 
     private SpellDao spellDao;
     private TemplateSpellDao templateSpellDao;
 
+    /**
+     * Constructor.
+     * @param spellDao - Dao dependency.
+     * @param templateSpellDao - Dao dependency.
+     */
     @Inject
-    public TemplateCreatureTranslator (SpellDao spellDao, TemplateSpellDao templateSpellDao) {
+    public TemplateCreatureTranslator(SpellDao spellDao, TemplateSpellDao templateSpellDao) {
         this.spellDao = spellDao;
         this.templateSpellDao = templateSpellDao;
     }
 
-
+    /**
+     * Translates between the Creature model used by Open5E and the Creature model used by Beholder.
+     * @param templateCreature - Template to be translated.
+     * @param userEmail - User whose account this creature should be associated with.
+     * @return Beholder Creature
+     */
     public Creature translate(TemplateCreature templateCreature, String userEmail) {
         Creature creature = new Creature();
 
@@ -46,7 +62,7 @@ public class TemplateCreatureTranslator {
         creature.setCurrentHitPoints(templateCreature.getHit_points());
         creature.setHitDice(templateCreature.getHit_dice());
         creature.setSpeedMap(templateCreature.getSpeed());
-        HashMap<String, Integer> statMap = new HashMap<>();
+        Map<String, Integer> statMap = new HashMap<>();
         statMap.put("strength", templateCreature.getStrength());
         statMap.put("dexterity", templateCreature.getDexterity());
         statMap.put("constitution", templateCreature.getConstitution());
@@ -54,7 +70,7 @@ public class TemplateCreatureTranslator {
         statMap.put("wisdom", templateCreature.getWisdom());
         statMap.put("charisma", templateCreature.getCharisma());
         creature.setStatMap(statMap);
-        HashMap<String, Integer> saveMap = new HashMap<>();
+        Map<String, Integer> saveMap = new HashMap<>();
         saveMap.put("strength_save", templateCreature.getStrength_save());
         saveMap.put("dexterity_save", templateCreature.getDexterity_save());
         saveMap.put("constitution_save", templateCreature.getConstitution_save());
@@ -69,9 +85,9 @@ public class TemplateCreatureTranslator {
         creature.setImmunities(templateCreature.getDamage_immunities());
         creature.setSenses(templateCreature.getSenses());
         creature.setLanguages(templateCreature.getLanguages());
-        if(templateCreature.getChallenge_rating().contains("1/4")) {
+        if (templateCreature.getChallenge_rating().contains("1/4")) {
             creature.setChallengeRating(0.25D);
-        } else if(templateCreature.getChallenge_rating().contains("1/2")) {
+        } else if (templateCreature.getChallenge_rating().contains("1/2")) {
             creature.setChallengeRating(0.5D);
         } else {
             try {
@@ -134,7 +150,7 @@ public class TemplateCreatureTranslator {
                 creature.setSpellcastingAbility(Arrays.asList(sentenceToken.split("ability is | \\(")).get(1));
                 String protoSpellSave = Arrays.asList(sentenceToken.split("save DC |\\)")).get(1);
                 creature.setSpellSaveDC(Arrays.asList(protoSpellSave.split(",")).get(0));
-                if(sentenceToken.contains("to hit with spell attacks")) {
+                if (sentenceToken.contains("to hit with spell attacks")) {
                     List<String> splitTokens = Arrays.asList(
                             Arrays.asList(sentenceToken.split(" to hit with spell attacks"))
                                     .get(0).split(", | "));
@@ -147,8 +163,7 @@ public class TemplateCreatureTranslator {
                 int casts = 0;
                 if (sentenceToken.contains("at will")) {
                     casts = -1;
-                }
-                else {
+                } else {
                     List<String> innateSplit = Arrays.asList(sentenceToken.split("/day"));
                     try {
                         casts = Integer.parseInt(innateSplit.get(0));
@@ -171,7 +186,7 @@ public class TemplateCreatureTranslator {
                                 //Since the external api does not appear to allow searches by name
                                 //It looks like we're forced to get a list of partial matches
                                 //Then filter through and find the matching name manually
-                                List<TemplateSpell> templateSpellList= templateSpellDao.getMultiple("search=" + spellName.replace(" ", "%20"));
+                                List<TemplateSpell> templateSpellList = templateSpellDao.getMultiple("search=" + spellName.replace(" ", "%20"));
                                 TemplateSpell templateSpell = templateSpellList.stream()
                                         .filter(template -> template.getName().equals(spellName))
                                         .findFirst().orElse(null);
@@ -201,7 +216,7 @@ public class TemplateCreatureTranslator {
 
 
         sentenceTokens = new ArrayList<>();
-        Map<Integer,Integer> spellSlots = new HashMap<>();
+        Map<Integer, Integer> spellSlots = new HashMap<>();
         castAction = Optional.ofNullable(actionMap.values())
                 .orElse(Collections.emptyList())
                 .stream()
@@ -219,7 +234,7 @@ public class TemplateCreatureTranslator {
                 creature.setSpellcastingAbility(Arrays.asList(sentenceToken.split("ability is | \\(")).get(1));
                 String protoSpellSave = Arrays.asList(sentenceToken.split("save DC |\\)")).get(1);
                 creature.setSpellSaveDC(Arrays.asList(protoSpellSave.split(",")).get(0));
-                if(sentenceToken.contains("to hit with spell attacks")) {
+                if (sentenceToken.contains("to hit with spell attacks")) {
                     List<String> splitTokens = Arrays.asList(
                             Arrays.asList(sentenceToken.split(" to hit with spell attacks"))
                                     .get(0).split(", | "));
@@ -234,8 +249,7 @@ public class TemplateCreatureTranslator {
                 if (sentenceToken.contains("at will")) {
                     level = -1;
                     casts = -1;
-                }
-                else {
+                } else {
                     List<String> slotsSplit = Arrays.asList(sentenceToken.split("\\(| slots"));
                     try {
                         casts = Integer.parseInt(slotsSplit.get(1));
@@ -243,7 +257,7 @@ public class TemplateCreatureTranslator {
                         casts = 1;
                     }
                     try {
-                        level = Integer.parseInt(sentenceToken.substring(0,1));
+                        level = Integer.parseInt(sentenceToken.substring(0, 1));
                     } catch (Exception e) {
                         level = 1;
                     }
@@ -263,7 +277,7 @@ public class TemplateCreatureTranslator {
                                 //Since the external api does not appear to allow searches by name
                                 //It looks like we're forced to get a list of partial matches
                                 //Then filter through and find the matching name manually
-                                List<TemplateSpell> templateSpellList= templateSpellDao.getMultiple("search=" + spellName.replace(" ", "%20"));
+                                List<TemplateSpell> templateSpellList = templateSpellDao.getMultiple("search=" + spellName.replace(" ", "%20"));
                                 TemplateSpell templateSpell = templateSpellList.stream()
                                         .filter(template -> template.getName().equals(spellName))
                                         .findFirst().orElse(null);
