@@ -1,20 +1,12 @@
 package dev.tdwalsh.project.tabletopBeholder.dynamodb.models;
 
-import com.amazonaws.services.dynamodbv2.datamodeling.*;
-import dev.tdwalsh.project.tabletopBeholder.converters.EffectConverter;
-import dev.tdwalsh.project.tabletopBeholder.converters.ZonedDateTimeConverter;
 import org.apache.commons.text.WordUtils;
 
 import java.time.ZonedDateTime;
-import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-@DynamoDBTable(tableName = "TabletopBeholder_ActionTable")
 public class Action implements BeholderObject {
-    //TODO remove useremail after pulling Action out of DB
-    //TODO Action should no longer be a Beholder Object
-    //TODO But, actions still need an object ID to work on the frontend
     private String userEmail;
     private String objectId;
     private String objectName;
@@ -23,12 +15,10 @@ public class Action implements BeholderObject {
     private Integer uses;
     private Integer rechargeOn;
     private Map<String, Effect> appliesEffects;
-    //TODO Can remove ZDTs after pulling action out of DB
     private ZonedDateTime createDateTime;
     private ZonedDateTime editDateTime;
 
     @Override
-    @DynamoDBHashKey(attributeName = "userEmail")
     public String getUserEmail() {
         return userEmail;
     }
@@ -38,7 +28,6 @@ public class Action implements BeholderObject {
     }
 
     @Override
-    @DynamoDBRangeKey(attributeName = "objectId")
     public String getObjectId() {
         return objectId;
     }
@@ -48,7 +37,6 @@ public class Action implements BeholderObject {
     }
 
     @Override
-    @DynamoDBAttribute(attributeName = "objectName")
     public String getObjectName() {
         return objectName;
     }
@@ -57,7 +45,6 @@ public class Action implements BeholderObject {
         this.objectName = WordUtils.capitalizeFully(objectName);
     }
 
-    @DynamoDBAttribute(attributeName = "actionType")
     public String getActionType() {
         return actionType;
     }
@@ -66,7 +53,6 @@ public class Action implements BeholderObject {
         this.actionType = actionType;
     }
 
-    @DynamoDBAttribute(attributeName = "actionDescription")
     public String getActionDescription() {
         return actionDescription;
     }
@@ -75,7 +61,6 @@ public class Action implements BeholderObject {
         this.actionDescription = actionDescription;
     }
 
-    @DynamoDBAttribute(attributeName = "uses")
     public Integer getUses() {
         return uses;
     }
@@ -84,7 +69,6 @@ public class Action implements BeholderObject {
         this.uses = uses;
     }
 
-    @DynamoDBAttribute(attributeName = "rechargeOn")
     public Integer getRechargeOn() {
         return rechargeOn;
     }
@@ -93,8 +77,6 @@ public class Action implements BeholderObject {
         this.rechargeOn = rechargeOn;
     }
 
-    @DynamoDBAttribute(attributeName = "appliesEffects")
-    @DynamoDBTypeConverted(converter = EffectConverter.class)
     public Map<String, Effect> getAppliesEffects() {
         return appliesEffects;
     }
@@ -102,8 +84,6 @@ public class Action implements BeholderObject {
     public void setAppliesEffects(Map<String, Effect> appliesEffects) {
         this.appliesEffects = appliesEffects;
     }
-    @DynamoDBAttribute(attributeName= "createDateTime")
-    @DynamoDBTypeConverted(converter = ZonedDateTimeConverter.class)
     public ZonedDateTime getCreateDateTime() {
         return createDateTime;
     }
@@ -113,8 +93,6 @@ public class Action implements BeholderObject {
         this.createDateTime = createDateTime;
     }
 
-    @DynamoDBAttribute(attributeName = "editDateTime")
-    @DynamoDBTypeConverted(converter = ZonedDateTimeConverter.class)
     public ZonedDateTime getEditDateTime() {
         return editDateTime;
     }
