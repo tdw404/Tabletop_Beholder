@@ -1,9 +1,12 @@
 package dev.tdwalsh.project.tabletopBeholder.exceptions;
 
-public class MalformedInputException extends RuntimeException{
+public class MalformedInputException extends RuntimeException {
 
     private static final long serialVersionUID = 8737421218023502169L;
 
+    /**
+     * Constructor.
+     */
     public MalformedInputException() {
         super();
     }

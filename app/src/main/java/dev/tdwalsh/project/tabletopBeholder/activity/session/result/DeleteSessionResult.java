@@ -5,10 +5,16 @@ public class DeleteSessionResult {
     private DeleteSessionResult() {
     }
 
+    /**
+     * Builder
+     */
     public static Builder builder() {
         return new Builder();
     }
 
+    /**
+     * Builder
+     */
     public static class Builder {
 
 

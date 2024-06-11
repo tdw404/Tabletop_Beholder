@@ -1,7 +1,6 @@
 package dev.tdwalsh.project.tabletopBeholder.activity.encounter;
 
 import dev.tdwalsh.project.tabletopBeholder.activity.helpers.CreateObjectHelper;
-import dev.tdwalsh.project.tabletopBeholder.activity.helpers.NameHelper;
 import dev.tdwalsh.project.tabletopBeholder.activity.encounter.request.CreateEncounterRequest;
 import dev.tdwalsh.project.tabletopBeholder.activity.encounter.result.CreateEncounterResult;
 import dev.tdwalsh.project.tabletopBeholder.dynamodb.dao.EncounterDao;

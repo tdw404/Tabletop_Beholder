@@ -1,18 +1,18 @@
 package dev.tdwalsh.project.tabletopBeholder.dynamodb.dao;
 
+import dev.tdwalsh.project.tabletopBeholder.dynamodb.models.BeholderObject;
+import dev.tdwalsh.project.tabletopBeholder.dynamodb.models.Spell;
+
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBQueryExpression;
 import com.amazonaws.services.dynamodbv2.datamodeling.PaginatedQueryList;
 import com.amazonaws.services.dynamodbv2.model.AttributeValue;
-import dev.tdwalsh.project.tabletopBeholder.dynamodb.models.BeholderObject;
-import dev.tdwalsh.project.tabletopBeholder.dynamodb.models.Spell;
 
-import javax.inject.Inject;
-import javax.inject.Singleton;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.MissingResourceException;
+import javax.inject.Inject;
+import javax.inject.Singleton;
 
 /**
  * Stores, reads, updates, or deletes Spell models in DynamoDB using {@link Spell}.
@@ -29,7 +29,9 @@ public class SpellDao implements BeholderDao {
      */
 
     @Inject
-    public SpellDao(DynamoDBMapper mapper) { this.mapper = mapper; }
+    public SpellDao(DynamoDBMapper mapper) {
+        this.mapper = mapper;
+    }
 
     /**
      * Retrieves a spell by objectId and userEmail.
@@ -96,7 +98,7 @@ public class SpellDao implements BeholderDao {
     public Boolean objectNameExists(String userEmail, String objectName) {
         Map<String, AttributeValue> valueMap = new HashMap<>();
         valueMap.put(":userEmail", new AttributeValue(userEmail));
-        valueMap.put((":objectName"), new AttributeValue(objectName));
+        valueMap.put(":objectName", new AttributeValue(objectName));
         DynamoDBQueryExpression<Spell> queryExpression = new DynamoDBQueryExpression<Spell>()
                 .withIndexName("SpellsSortByNameIndex")
                 .withConsistentRead(false)
@@ -110,11 +112,12 @@ public class SpellDao implements BeholderDao {
      *
      * @param userEmail The userEmail to search
      * @param objectName The objectName to search
+     * @return Spell.
      */
     public Spell getSpellByName(String userEmail, String objectName) {
         Map<String, AttributeValue> valueMap = new HashMap<>();
         valueMap.put(":userEmail", new AttributeValue(userEmail));
-        valueMap.put((":objectName"), new AttributeValue(objectName));
+        valueMap.put(":objectName", new AttributeValue(objectName));
         DynamoDBQueryExpression<Spell> queryExpression = new DynamoDBQueryExpression<Spell>()
                 .withIndexName("SpellsSortByNameIndex")
                 .withConsistentRead(false)

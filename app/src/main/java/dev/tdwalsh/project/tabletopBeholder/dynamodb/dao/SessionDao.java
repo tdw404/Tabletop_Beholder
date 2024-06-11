@@ -1,16 +1,17 @@
 package dev.tdwalsh.project.tabletopBeholder.dynamodb.dao;
 
-import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
-import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBQueryExpression;
-import com.amazonaws.services.dynamodbv2.model.AttributeValue;
 import dev.tdwalsh.project.tabletopBeholder.dynamodb.models.BeholderObject;
 import dev.tdwalsh.project.tabletopBeholder.dynamodb.models.Session;
 
-import javax.inject.Inject;
-import javax.inject.Singleton;
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBQueryExpression;
+import com.amazonaws.services.dynamodbv2.model.AttributeValue;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import javax.inject.Inject;
+import javax.inject.Singleton;
 
 /**
  * Stores, reads, updates, or deletes Session models in DynamoDB using {@link Session}.
@@ -27,7 +28,9 @@ public class SessionDao implements BeholderDao {
      */
 
     @Inject
-    public SessionDao(DynamoDBMapper mapper) { this.mapper = mapper; }
+    public SessionDao(DynamoDBMapper mapper) {
+        this.mapper = mapper;
+    }
 
     /**
      * Retrieves a session by objectId and userEmail.
@@ -94,7 +97,7 @@ public class SessionDao implements BeholderDao {
     public Boolean objectNameExists(String userEmail, String objectName) {
         Map<String, AttributeValue> valueMap = new HashMap<>();
         valueMap.put(":userEmail", new AttributeValue(userEmail));
-        valueMap.put((":objectName"), new AttributeValue(objectName));
+        valueMap.put(":objectName", new AttributeValue(objectName));
         DynamoDBQueryExpression<Session> queryExpression = new DynamoDBQueryExpression<Session>()
                 .withIndexName("SessionsSortByNameIndex")
                 .withConsistentRead(false)

@@ -1,16 +1,17 @@
 package dev.tdwalsh.project.tabletopBeholder.dynamodb.dao;
 
-import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
-import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBQueryExpression;
-import com.amazonaws.services.dynamodbv2.model.AttributeValue;
 import dev.tdwalsh.project.tabletopBeholder.dynamodb.models.BeholderObject;
 import dev.tdwalsh.project.tabletopBeholder.dynamodb.models.Creature;
 
-import javax.inject.Inject;
-import javax.inject.Singleton;
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBQueryExpression;
+import com.amazonaws.services.dynamodbv2.model.AttributeValue;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import javax.inject.Inject;
+import javax.inject.Singleton;
 
 /**
  * Stores, reads, updates, or deletes Creature models in DynamoDB using {@link Creature}.
@@ -27,7 +28,9 @@ public class CreatureDao implements BeholderDao {
      */
 
     @Inject
-    public CreatureDao(DynamoDBMapper mapper) { this.mapper = mapper; }
+    public CreatureDao(DynamoDBMapper mapper) {
+        this.mapper = mapper;
+    }
 
     /**
      * Retrieves a creature by objectId and userEmail.
@@ -89,12 +92,13 @@ public class CreatureDao implements BeholderDao {
      *
      * @param userEmail The userEmail to search
      * @param objectName The objectName to search
+     * @return Boolean, whether object exists.
      */
     @Override
     public Boolean objectNameExists(String userEmail, String objectName) {
         Map<String, AttributeValue> valueMap = new HashMap<>();
         valueMap.put(":userEmail", new AttributeValue(userEmail));
-        valueMap.put((":objectName"), new AttributeValue(objectName));
+        valueMap.put(":objectName", new AttributeValue(objectName));
         DynamoDBQueryExpression<Creature> queryExpression = new DynamoDBQueryExpression<Creature>()
                 .withIndexName("CreaturesSortByNameIndex")
                 .withConsistentRead(false)

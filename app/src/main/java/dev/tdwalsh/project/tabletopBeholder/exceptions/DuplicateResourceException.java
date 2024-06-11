@@ -1,9 +1,12 @@
 package dev.tdwalsh.project.tabletopBeholder.exceptions;
 
-public class DuplicateResourceException extends RuntimeException{
+public class DuplicateResourceException extends RuntimeException {
 
     private static final long serialVersionUID = 9111179180093207396L;
 
+    /**
+     * Constructor.
+     */
     public DuplicateResourceException() {
         super();
     }

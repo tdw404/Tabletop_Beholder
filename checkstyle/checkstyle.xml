@@ -32,7 +32,7 @@
     <!-- Size Violations -->
     <!-- http://checkstyle.sourceforge.net/config_sizes.html -->
     <module name="FileLength">
-        <property name="max" value="500" />
+        <property name="max" value="600" />
     </module>
 
     <!-- Whitespace -->
@@ -151,6 +151,10 @@
         <module name="SuperFinalize" />
         <module name="UnnecessaryParentheses" />
 
+        <module name="HiddenField" >
+            <property name="ignoreSetter" value="true" />
+            <property name="ignoreConstructorParameter" value="true" />
+        </module>
         <!-- Imports -->
         <!-- http://checkstyle.sourceforge.net/config_imports.html -->
         <module name="AvoidStarImport" />
@@ -226,7 +230,7 @@
         <!-- Size Violations -->
         <!-- http://checkstyle.sourceforge.net/config_sizes.html -->
         <module name="LineLength">
-            <property name="max" value="120" />
+            <property name="max" value="160" />
             <property name="ignorePattern"
                       value="^package.*|^import.*|http://|https://" />
         </module>

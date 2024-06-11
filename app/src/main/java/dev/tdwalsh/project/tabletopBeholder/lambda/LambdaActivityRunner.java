@@ -6,7 +6,7 @@ import dev.tdwalsh.project.tabletopBeholder.dependency.ServiceComponent;
 import java.util.function.BiFunction;
 import java.util.function.Supplier;
 
-public class LambdaActivityRunner <TRequest, TResult> {
+public class LambdaActivityRunner<TRequest, TResult> {
     private ServiceComponent service;
 
     /**
@@ -33,7 +33,9 @@ public class LambdaActivityRunner <TRequest, TResult> {
 
             ServiceComponent serviceComponent = getService();
             TResult result = handleRequest.apply(request, serviceComponent);
-            if(result == null) { return LambdaResponse.successNoContent(); }
+            if (result == null) {
+                return LambdaResponse.successNoContent();
+            }
             return LambdaResponse.success(result);
         } catch (Exception e) {
             return LambdaResponse.error(e);

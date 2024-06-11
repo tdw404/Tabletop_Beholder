@@ -1,9 +1,12 @@
 package dev.tdwalsh.project.tabletopBeholder.exceptions.resourceNotFoundExceptions;
 
-public class CreatureNotFoundException extends DBResourceNotFoundException{
+public class CreatureNotFoundException extends DBResourceNotFoundException {
 
     private static final long serialVersionUID = 7786692599125919823L;
 
+    /**
+     * Constructor.
+     */
     public CreatureNotFoundException() {
         super();
     }

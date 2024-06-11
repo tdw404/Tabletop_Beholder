@@ -1,9 +1,12 @@
 package dev.tdwalsh.project.tabletopBeholder.exceptions.resourceNotFoundExceptions;
 
-public class DBResourceNotFoundException extends RuntimeException{
+public class DBResourceNotFoundException extends RuntimeException {
 
     private static final long serialVersionUID = -6919308022947662551L;
 
+    /**
+     * Constructor.
+     */
     public DBResourceNotFoundException() {
         super();
     }

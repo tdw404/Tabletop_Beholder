@@ -1,5 +1,7 @@
 package dev.tdwalsh.project.tabletopBeholder.activity.session.result;
 
+import dev.tdwalsh.project.tabletopBeholder.dynamodb.dao.EncounterDao;
+import dev.tdwalsh.project.tabletopBeholder.dynamodb.models.Encounter;
 import dev.tdwalsh.project.tabletopBeholder.dynamodb.models.Session;
 
 public class CreateSessionResult {
@@ -25,6 +27,9 @@ public class CreateSessionResult {
             return this;
         }
 
+        /**
+         * Builds object
+         */
         public CreateSessionResult build() {
             return new CreateSessionResult(session);
         }

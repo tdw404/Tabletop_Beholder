@@ -1,9 +1,12 @@
 package dev.tdwalsh.project.tabletopBeholder.exceptions.resourceNotFoundExceptions;
 
-public class SpellNotFoundException extends DBResourceNotFoundException{
+public class SpellNotFoundException extends DBResourceNotFoundException {
 
     private static final long serialVersionUID = -6438113079975039107L;
 
+    /**
+     * Constructor.
+     */
     public SpellNotFoundException() {
         super();
     }

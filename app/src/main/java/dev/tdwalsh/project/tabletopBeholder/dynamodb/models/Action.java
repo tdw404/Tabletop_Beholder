@@ -109,13 +109,13 @@ public class Action implements BeholderObject {
 
     @Override
     public boolean equals(Object o) {
-        if(o == null) {
+        if (o == null) {
             return false;
         }
-        if(this == o) {
+        if (this == o) {
             return true;
         }
-        if(this.getClass() != o.getClass()) {
+        if (this.getClass() != o.getClass()) {
             return false;
         }
         Action other = (Action) o;

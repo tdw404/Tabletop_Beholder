@@ -1,9 +1,12 @@
 package dev.tdwalsh.project.tabletopBeholder.exceptions.resourceNotFoundExceptions;
 
-public class TemplateCreatureNotFoundException extends DBResourceNotFoundException{
+public class TemplateCreatureNotFoundException extends DBResourceNotFoundException {
 
     private static final long serialVersionUID = 2703872068858749333L;
 
+    /**
+     * Constructor.
+     */
     public TemplateCreatureNotFoundException() {
         super();
     }

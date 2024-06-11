@@ -1,10 +1,13 @@
 package dev.tdwalsh.project.tabletopBeholder.exceptions.resourceNotFoundExceptions;
 
-public class SessionNotFoundException extends DBResourceNotFoundException{
+public class SessionNotFoundException extends DBResourceNotFoundException {
 
 
     private static final long serialVersionUID = 1563017179320693235L;
 
+    /**
+     * Constructor.
+     */
     public SessionNotFoundException() {
         super();
     }

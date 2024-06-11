@@ -1,16 +1,13 @@
 package dev.tdwalsh.project.tabletopBeholder.templateApi;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import dev.tdwalsh.project.tabletopBeholder.exceptions.CurlException;
 import dev.tdwalsh.project.tabletopBeholder.exceptions.MissingResourceException;
 import dev.tdwalsh.project.tabletopBeholder.templateApi.model.TemplateSpell;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import javax.inject.Inject;
-import javax.inject.Singleton;
 import java.io.IOException;
 import java.net.URI;
 import java.net.http.HttpClient;
@@ -19,15 +16,20 @@ import java.net.http.HttpResponse;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
+import javax.inject.Inject;
+import javax.inject.Singleton;
 
 /**
  * Class responsible for taking in query parameters and returning results as {@link TemplateSpell}.
  */
 @Singleton
 public class TemplateSpellDao {
-    private final static String URI_PATH = "https://api.open5e.com/spells/";
+    private static final String URI_PATH = "https://api.open5e.com/spells/";
     ObjectMapper objectMapper;
 
+    /**
+     * Constructor.
+     */
     @Inject
     public TemplateSpellDao() {
         objectMapper = new ObjectMapper();
@@ -54,7 +56,7 @@ public class TemplateSpellDao {
                 .header("Content-Type", "application/json")
                 .GET()
                 .build();
-        try{
+        try {
             HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
             switch (response.statusCode()) {
                 case 404:
@@ -62,7 +64,8 @@ public class TemplateSpellDao {
                 case 200:
                     return  objectMapper.readValue(response.body(), TemplateSpell.class);
                 default:
-                    throw new CurlException("Error making call to 5E API: " + response.statusCode() + "  " + response.body());
+                    throw new CurlException("Error making call to 5E API: " +
+                            response.statusCode() + "  " + response.body());
             }
         } catch (IOException e) {
             throw new CurlException("Error making call to 5E API: ", e);
@@ -93,21 +96,24 @@ public class TemplateSpellDao {
                 .header("Content-Type", "application/json")
                 .GET()
                 .build();
-        try{
+        try {
             HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
             switch (response.statusCode()) {
                 case 404:
-                    throw new MissingResourceException("5E API could not return resource with parameters: " + searchTerms);
+                    throw new MissingResourceException("5E API could not return resource with parameters: " +
+                            searchTerms);
                 case 200:
                     JSONObject spellJson = new JSONObject(response.body());
                     JSONArray spellArray =  spellJson.getJSONArray("results");
                     List<TemplateSpell> templateSpellList = new ArrayList<>();
-                    for(int i = 0; i < spellArray.length(); i++) {
-                        templateSpellList.add(objectMapper.readValue(spellArray.get(i).toString(), TemplateSpell.class));
+                    for (int i = 0; i < spellArray.length(); i++) {
+                        templateSpellList.add(objectMapper
+                                .readValue(spellArray.get(i).toString(), TemplateSpell.class));
                     }
                     return templateSpellList;
                 default:
-                    throw new CurlException("Error making call to 5E API: " + response.statusCode() + "  " + response.body());
+                    throw new CurlException("Error making call to 5E API: " +
+                            response.statusCode() + "  " + response.body());
             }
         } catch (IOException e) {
             throw new CurlException("Error making call to 5E API: ", e);

@@ -1,9 +1,12 @@
 package dev.tdwalsh.project.tabletopBeholder.exceptions;
 
-public class SerializationException extends RuntimeException{
+public class SerializationException extends RuntimeException {
 
     private static final long serialVersionUID = 1856361457854183093L;
 
+    /**
+     * Constructor.
+     */
     public SerializationException() {
         super();
     }
