@@ -35,7 +35,7 @@ import javax.inject.Singleton;
  * Dagger component for providing dependency injection in the Tabletop Beholder App.
  */
 @Singleton
-@Component(modules = {DaoModule.class})
+@Component(modules = {DaoModule.class, HTPPClientModule.class})
 public interface ServiceComponent {
 
     /**

@@ -140,7 +140,7 @@ public class TemplateCreatureTranslator {
         if (castAction != null) {
             sentenceTokens = Arrays.asList(castAction
                     .getActionDescription()
-                    .split("\\n\\n |. "));
+                    .split("\\n\\n|\\. "));
         }
 
 

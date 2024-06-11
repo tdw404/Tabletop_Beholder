@@ -40,7 +40,7 @@ public class TemplateSpellHelper {
         templateSpell.setCircles("circles" + mod);
         templateSpell.setDocument__slug("document__slug" + mod);
         templateSpell.setDocument__title("document__title" + mod);
-        templateSpell.setDocument__license_url("docuement__license_url" + mod);
+        templateSpell.setDocument__license_url("document__license_url" + mod);
         templateSpell.setDocument__url("document__url" + mod);
         templateSpell.setResourceExists(false);
         return templateSpell;

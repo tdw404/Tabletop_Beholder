@@ -26,13 +26,15 @@ import javax.inject.Singleton;
 public class TemplateSpellDao {
     private static final String URI_PATH = "https://api.open5e.com/spells/";
     ObjectMapper objectMapper;
+    private final Open5EClient open5EClient;
 
     /**
      * Constructor.
      */
     @Inject
-    public TemplateSpellDao() {
+    public TemplateSpellDao(Open5EClient open5EClient) {
         objectMapper = new ObjectMapper();
+        this.open5EClient = open5EClient;
     }
 
     /**
@@ -45,19 +47,8 @@ public class TemplateSpellDao {
         //First, uses the 'slug'/id of the external object to build a uri
         //Then, makes a GET call with that uri
         //Then, converts the result to a model object and returns it
-        HttpClient client = HttpClient.newBuilder()
-                .followRedirects(HttpClient.Redirect.NORMAL)
-                .connectTimeout(Duration.ofSeconds(20))
-                .build();
-
-        HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create(URI_PATH + spellSlug))
-                .timeout(Duration.ofMinutes(2))
-                .header("Content-Type", "application/json")
-                .GET()
-                .build();
         try {
-            HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+            HttpResponse<String> response = open5EClient.call(URI_PATH + spellSlug);
             switch (response.statusCode()) {
                 case 404:
                     throw new MissingResourceException("5E API could not return resource: " + spellSlug);
@@ -69,8 +60,6 @@ public class TemplateSpellDao {
             }
         } catch (IOException e) {
             throw new CurlException("Error making call to 5E API: ", e);
-        } catch (InterruptedException e) {
-            throw new CurlException("Call to 5E API interrupted: ", e);
         }
     }
 
@@ -85,19 +74,8 @@ public class TemplateSpellDao {
         //Then, makes a GET call with that url
         //Then, converts the result to a list of model objects and returns it
         String cleanedTerms = searchTerms.replace(" ", "%20");
-        HttpClient client = HttpClient.newBuilder()
-                .followRedirects(HttpClient.Redirect.NORMAL)
-                .connectTimeout(Duration.ofSeconds(20))
-                .build();
-
-        HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create(URI_PATH + "?" + cleanedTerms))
-                .timeout(Duration.ofMinutes(2))
-                .header("Content-Type", "application/json")
-                .GET()
-                .build();
         try {
-            HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+            HttpResponse<String> response = open5EClient.call(URI_PATH + "?" + cleanedTerms);
             switch (response.statusCode()) {
                 case 404:
                     throw new MissingResourceException("5E API could not return resource with parameters: " +
@@ -117,8 +95,6 @@ public class TemplateSpellDao {
             }
         } catch (IOException e) {
             throw new CurlException("Error making call to 5E API: ", e);
-        } catch (InterruptedException e) {
-            throw new CurlException("Call to 5E API interrupted: ", e);
         }
     }
 }

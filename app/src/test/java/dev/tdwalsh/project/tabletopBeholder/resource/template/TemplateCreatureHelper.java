@@ -69,7 +69,7 @@ public class TemplateCreatureHelper {
         templateCreature.setImg_main("img_main" + mod);
         templateCreature.setDocument__slug("document__slug" + mod);
         templateCreature.setDocument__title("document__title" + mod);
-        templateCreature.setDocument__license_url("docuement__license_url" + mod);
+        templateCreature.setDocument__license_url("document__license_url" + mod);
         templateCreature.setDocument__url("document__url" + mod);
         templateCreature.setResourceExists(false);
         return templateCreature;
