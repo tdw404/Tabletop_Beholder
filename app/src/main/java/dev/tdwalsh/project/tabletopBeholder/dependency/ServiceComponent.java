@@ -1,7 +1,6 @@
 package dev.tdwalsh.project.tabletopBeholder.dependency;
 
 import dagger.Component;
-import dev.tdwalsh.project.tabletopBeholder.activity.action.*;
 import dev.tdwalsh.project.tabletopBeholder.activity.creature.*;
 import dev.tdwalsh.project.tabletopBeholder.activity.encounter.*;
 import dev.tdwalsh.project.tabletopBeholder.activity.externalCreature.CreateTemplateCreatureActivity;
@@ -51,36 +50,6 @@ public interface ServiceComponent {
      * @return DeleteSpellActivity
      */
     DeleteSpellActivity provideDeleteSpellActivity();
-
-    /**
-     * Provides the relevant activity.
-     * @return CreateActionActivity
-     */
-    CreateActionActivity provideCreateActionActivity();
-
-    /**
-     * Provides the relevant activity.
-     * @return DeleteActionActivity
-     */
-    DeleteActionActivity provideDeleteActionActivity();
-
-    /**
-     * Provides the relevant activity.
-     * @return GetAllActionsActivity
-     */
-    GetAllActionsActivity provideGetAllActionsActivity();
-
-    /**
-     * Provides the relevant activity.
-     * @return GetActionActivity
-     */
-    GetActionActivity provideGetActionActivity();
-
-    /**
-     * Provides the relevant activity.
-     * @return UpdateActionActivity
-     */
-    UpdateActionActivity provideUpdateActionActivity();
 
     /**
      * Provides the relevant activity.
