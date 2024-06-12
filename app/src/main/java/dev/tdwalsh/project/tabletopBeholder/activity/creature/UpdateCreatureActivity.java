@@ -1,15 +1,15 @@
 package dev.tdwalsh.project.tabletopBeholder.activity.creature;
 
-import dev.tdwalsh.project.tabletopBeholder.activity.helpers.NameHelper;
 import dev.tdwalsh.project.tabletopBeholder.activity.creature.request.UpdateCreatureRequest;
 import dev.tdwalsh.project.tabletopBeholder.activity.creature.result.UpdateCreatureResult;
+import dev.tdwalsh.project.tabletopBeholder.activity.helpers.NameHelper;
 import dev.tdwalsh.project.tabletopBeholder.dynamodb.dao.CreatureDao;
 import dev.tdwalsh.project.tabletopBeholder.dynamodb.models.Creature;
 import dev.tdwalsh.project.tabletopBeholder.exceptions.MissingResourceException;
 
-import javax.inject.Inject;
 import java.time.ZonedDateTime;
 import java.util.Optional;
+import javax.inject.Inject;
 
 /**
  * GetCreatureActivity handles negotiation with {@link CreatureDao} to create a {@link Creature}.
@@ -46,7 +46,8 @@ public class UpdateCreatureActivity {
         //Finally, returns the updated version
         Creature newCreature  = updateCreatureRequest.getCreature();
         newCreature.setUserEmail(updateCreatureRequest.getUserEmail());
-        Creature oldCreature = Optional.ofNullable(creatureDao.getSingle(newCreature.getUserEmail(), newCreature.getObjectId())).orElseThrow(() -> new MissingResourceException(String.format("Resource with id [%s] could not be retrieved from database", newCreature.getObjectId())));
+        Creature oldCreature = Optional.ofNullable(creatureDao.getSingle(newCreature.getUserEmail(), newCreature.getObjectId())).orElseThrow(()
+            -> new MissingResourceException(String.format("Resource with id [%s] could not be retrieved from database", newCreature.getObjectId())));
         if (!newCreature.getObjectName().equals(oldCreature.getObjectName())) {
             NameHelper.objectNameUniqueness(creatureDao, newCreature);
         }

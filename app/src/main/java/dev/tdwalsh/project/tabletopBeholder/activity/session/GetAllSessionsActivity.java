@@ -5,8 +5,8 @@ import dev.tdwalsh.project.tabletopBeholder.activity.session.result.GetAllSessio
 import dev.tdwalsh.project.tabletopBeholder.dynamodb.dao.SessionDao;
 import dev.tdwalsh.project.tabletopBeholder.dynamodb.models.Session;
 
-import javax.inject.Inject;
 import java.util.List;
+import javax.inject.Inject;
 
 /**
  * GetSessionActivity handles negotiation with {@link SessionDao} to retrieve a list of {@link Session}.

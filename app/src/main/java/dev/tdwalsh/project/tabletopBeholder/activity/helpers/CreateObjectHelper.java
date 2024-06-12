@@ -1,10 +1,8 @@
 package dev.tdwalsh.project.tabletopBeholder.activity.helpers;
 
 import dev.tdwalsh.project.tabletopBeholder.dynamodb.dao.BeholderDao;
-import dev.tdwalsh.project.tabletopBeholder.dynamodb.dao.SpellDao;
 import dev.tdwalsh.project.tabletopBeholder.dynamodb.models.BeholderObject;
 import dev.tdwalsh.project.tabletopBeholder.dynamodb.models.Spell;
-import dev.tdwalsh.project.tabletopBeholder.exceptions.DuplicateResourceException;
 
 import java.time.ZonedDateTime;
 import java.util.UUID;

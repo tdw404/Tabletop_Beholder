@@ -2,18 +2,15 @@ package dev.tdwalsh.project.tabletopBeholder.activity.externalSpell;
 
 import dev.tdwalsh.project.tabletopBeholder.activity.externalSpell.request.GetTemplateSpellRequest;
 import dev.tdwalsh.project.tabletopBeholder.activity.externalSpell.result.GetTemplateSpellResult;
-import dev.tdwalsh.project.tabletopBeholder.activity.externalTemplateSpell.GetTemplateSpellActivity;
 import dev.tdwalsh.project.tabletopBeholder.dynamodb.dao.SpellDao;
 import dev.tdwalsh.project.tabletopBeholder.resource.template.TemplateSpellHelper;
 import dev.tdwalsh.project.tabletopBeholder.templateApi.TemplateSpellDao;
 import dev.tdwalsh.project.tabletopBeholder.templateApi.model.TemplateSpell;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-
-import java.util.ArrayList;
-import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.doReturn;

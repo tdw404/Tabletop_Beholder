@@ -17,6 +17,10 @@ public class DeleteEncounterRequest {
         return this.objectId;
     }
 
+    /**
+     * Builder.
+     * @return builder
+     */
     public static Builder builder() {
         return new Builder();
     }
@@ -24,16 +28,30 @@ public class DeleteEncounterRequest {
         private String userEmail;
         private String objectId;
 
+        /**
+         * Builder setter.
+         * @param userEmail - variable to set
+         * @return - builder
+         */
         public Builder withUserEmail(String userEmail) {
             this.userEmail = userEmail;
             return this;
         }
 
+        /**
+         * Builder setter.
+         * @param objectId - variable to set.
+         * @return Builder
+         */
         public Builder withObjectId(String objectId) {
             this.objectId = objectId;
             return this;
         }
 
+        /**
+         * Builder.
+         * @return Builder
+         */
         public DeleteEncounterRequest build() {
             return new DeleteEncounterRequest(userEmail, objectId);
         }

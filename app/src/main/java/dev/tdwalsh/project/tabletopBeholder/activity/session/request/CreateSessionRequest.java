@@ -1,7 +1,8 @@
 package dev.tdwalsh.project.tabletopBeholder.activity.session.request;
 
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import dev.tdwalsh.project.tabletopBeholder.dynamodb.models.Session;
+
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
 @JsonDeserialize(builder = CreateSessionRequest.Builder.class)
 public class CreateSessionRequest {
@@ -18,8 +19,13 @@ public class CreateSessionRequest {
         return this.session;
     }
 
-    public String getUserEmail() { return this.userEmail; }
+    public String getUserEmail() {
+        return this.userEmail; }
 
+    /**
+     * Builder.
+     * @return builder
+     */
     public static Builder builder() {
         return new Builder();
     }
@@ -28,16 +34,30 @@ public class CreateSessionRequest {
         private Session session;
         private String userEmail;
 
+        /**
+         * Builder setter.
+         * @param session  variable to set
+         * @return builder
+         */
         public Builder withSession(Session session) {
             this.session = session;
             return this;
         }
 
+        /**
+         * Builder setter.
+         * @param userEmail variable to set
+         * @return builder
+         */
         public Builder withUserEmail(String userEmail) {
             this.userEmail = userEmail;
             return this;
         }
 
+        /**
+         * Builder.
+         * @return builder
+         */
         public CreateSessionRequest build() {
             return new CreateSessionRequest(session, userEmail);
         }

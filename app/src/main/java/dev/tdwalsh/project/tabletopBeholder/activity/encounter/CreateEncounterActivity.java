@@ -1,8 +1,8 @@
 package dev.tdwalsh.project.tabletopBeholder.activity.encounter;
 
-import dev.tdwalsh.project.tabletopBeholder.activity.helpers.CreateObjectHelper;
 import dev.tdwalsh.project.tabletopBeholder.activity.encounter.request.CreateEncounterRequest;
 import dev.tdwalsh.project.tabletopBeholder.activity.encounter.result.CreateEncounterResult;
+import dev.tdwalsh.project.tabletopBeholder.activity.helpers.CreateObjectHelper;
 import dev.tdwalsh.project.tabletopBeholder.dynamodb.dao.EncounterDao;
 import dev.tdwalsh.project.tabletopBeholder.dynamodb.models.Encounter;
 
@@ -43,7 +43,7 @@ public class CreateEncounterActivity {
         encounter.setUserEmail(createEncounterRequest.getUserEmail());
 
         return CreateEncounterResult.builder()
-                .withEncounter((Encounter)CreateObjectHelper.createObject(encounterDao, encounter))
+                .withEncounter((Encounter) CreateObjectHelper.createObject(encounterDao, encounter))
                 .build();
     }
 }

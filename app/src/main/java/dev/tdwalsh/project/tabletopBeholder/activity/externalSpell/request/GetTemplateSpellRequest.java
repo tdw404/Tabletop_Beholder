@@ -17,6 +17,10 @@ public class GetTemplateSpellRequest {
         return this.slug;
     }
 
+    /**
+     * Builder.
+     * @return builder
+     */
     public static Builder builder() {
         return new Builder();
     }
@@ -24,16 +28,30 @@ public class GetTemplateSpellRequest {
         private String userEmail;
         private String slug;
 
+        /**
+         * Builder setter.
+         * @param userEmail variable to set
+         * @return builder
+         */
         public Builder withUserEmail(String userEmail) {
             this.userEmail = userEmail;
             return this;
         }
 
+        /**
+         * Builder setter.
+         * @param slug - object to set.
+         * @return Builder
+         */
         public Builder withSlug(String slug) {
             this.slug = slug;
             return this;
         }
 
+        /**
+         * Builder.
+         * @return builder
+         */
         public GetTemplateSpellRequest build() {
             return new GetTemplateSpellRequest(userEmail, slug);
         }

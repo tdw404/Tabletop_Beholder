@@ -7,8 +7,8 @@ import dev.tdwalsh.project.tabletopBeholder.dynamodb.dao.SpellDao;
 import dev.tdwalsh.project.tabletopBeholder.templateApi.TemplateSpellDao;
 import dev.tdwalsh.project.tabletopBeholder.templateApi.model.TemplateSpell;
 
-import javax.inject.Inject;
 import java.util.List;
+import javax.inject.Inject;
 
 /**
  * GetSpellActivity handles negotiation with {@link TemplateSpellDao} to retrieve a list of {@link TemplateSpell}.

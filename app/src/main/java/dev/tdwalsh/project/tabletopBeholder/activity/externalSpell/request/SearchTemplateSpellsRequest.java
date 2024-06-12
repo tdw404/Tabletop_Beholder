@@ -18,6 +18,10 @@ public class SearchTemplateSpellsRequest {
         return this.searchTerms;
     }
 
+    /**
+     * Builder.
+     * @return builder
+     */
     public static Builder builder() {
         return new Builder();
     }
@@ -25,16 +29,30 @@ public class SearchTemplateSpellsRequest {
         private String userEmail;
         private String searchTerms;
 
+        /**
+         * Builder setter.
+         * @param userEmail builder
+         * @return builder
+         */
         public Builder withUserEmail(String userEmail) {
             this.userEmail = userEmail;
             return this;
         }
 
+        /**
+         * Builder setter.
+         * @param searchTerms variable to set
+         * @return builder
+         */
         public Builder withSearchTerms(String searchTerms) {
             this.searchTerms = searchTerms;
             return this;
         }
 
+        /**
+         * Builder.
+         * @return builder
+         */
         public SearchTemplateSpellsRequest build() {
             return new SearchTemplateSpellsRequest(userEmail, searchTerms);
         }

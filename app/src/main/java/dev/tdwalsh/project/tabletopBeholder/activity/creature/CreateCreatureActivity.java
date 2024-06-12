@@ -1,9 +1,9 @@
 package dev.tdwalsh.project.tabletopBeholder.activity.creature;
 
-import dev.tdwalsh.project.tabletopBeholder.activity.helpers.CreateObjectHelper;
-import dev.tdwalsh.project.tabletopBeholder.activity.helpers.NameHelper;
 import dev.tdwalsh.project.tabletopBeholder.activity.creature.request.CreateCreatureRequest;
 import dev.tdwalsh.project.tabletopBeholder.activity.creature.result.CreateCreatureResult;
+import dev.tdwalsh.project.tabletopBeholder.activity.helpers.CreateObjectHelper;
+import dev.tdwalsh.project.tabletopBeholder.activity.helpers.NameHelper;
 import dev.tdwalsh.project.tabletopBeholder.dynamodb.dao.CreatureDao;
 import dev.tdwalsh.project.tabletopBeholder.dynamodb.models.Creature;
 
@@ -46,7 +46,7 @@ public class CreateCreatureActivity {
         NameHelper.objectNameUniqueness(creatureDao, creature);
 
         return CreateCreatureResult.builder()
-                .withCreature((Creature)CreateObjectHelper.createObject(creatureDao, creature))
+                .withCreature((Creature) CreateObjectHelper.createObject(creatureDao, creature))
                 .build();
     }
 }

@@ -14,8 +14,8 @@ import dev.tdwalsh.project.tabletopBeholder.activity.externalCreature.CreateTemp
 import dev.tdwalsh.project.tabletopBeholder.activity.externalCreature.GetTemplateCreatureActivity;
 import dev.tdwalsh.project.tabletopBeholder.activity.externalCreature.SearchTemplateCreaturesActivity;
 import dev.tdwalsh.project.tabletopBeholder.activity.externalSpell.CreateTemplateSpellActivity;
+import dev.tdwalsh.project.tabletopBeholder.activity.externalSpell.GetTemplateSpellActivity;
 import dev.tdwalsh.project.tabletopBeholder.activity.externalSpell.SearchTemplateSpellsActivity;
-import dev.tdwalsh.project.tabletopBeholder.activity.externalTemplateSpell.GetTemplateSpellActivity;
 import dev.tdwalsh.project.tabletopBeholder.activity.session.CreateSessionActivity;
 import dev.tdwalsh.project.tabletopBeholder.activity.session.DeleteSessionActivity;
 import dev.tdwalsh.project.tabletopBeholder.activity.session.GetAllSessionsActivity;

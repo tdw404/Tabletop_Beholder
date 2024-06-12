@@ -16,23 +16,33 @@ public class GetAllSessionsResult {
     }
 
     /**
-     * Builder
+     * Builder.
+     * @return builder.
      */
     public static Builder builder() {
         return new Builder();
     }
 
     /**
-     * Builder
+     * Builder.
      */
     public static class Builder {
         private List<Session> sessionList;
 
+        /**
+         * Builder setter.
+         * @param sessionList - Builder.
+         * @return - Builder.
+         */
         public Builder withSessionList(List<Session> sessionList) {
             this.sessionList = sessionList;
             return this;
         }
 
+        /**
+         * Builder.
+         * @return - Builder.
+         */
         public GetAllSessionsResult build() {
             return new GetAllSessionsResult(sessionList);
         }

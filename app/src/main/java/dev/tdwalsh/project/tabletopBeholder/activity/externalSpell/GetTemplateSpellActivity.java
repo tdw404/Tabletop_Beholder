@@ -1,5 +1,4 @@
-package dev.tdwalsh.project.tabletopBeholder.activity.externalTemplateSpell;
-
+package dev.tdwalsh.project.tabletopBeholder.activity.externalSpell;
 
 import dev.tdwalsh.project.tabletopBeholder.activity.externalSpell.request.GetTemplateSpellRequest;
 import dev.tdwalsh.project.tabletopBeholder.activity.externalSpell.result.GetTemplateSpellResult;
@@ -8,8 +7,8 @@ import dev.tdwalsh.project.tabletopBeholder.exceptions.resourceNotFoundException
 import dev.tdwalsh.project.tabletopBeholder.templateApi.TemplateSpellDao;
 import dev.tdwalsh.project.tabletopBeholder.templateApi.model.TemplateSpell;
 
-import javax.inject.Inject;
 import java.util.Optional;
+import javax.inject.Inject;
 
 /**
  * GetTemplateSpellActivity handles negotiation with {@link TemplateSpellDao} to retrieve a single {@link TemplateSpell}.
@@ -22,6 +21,7 @@ public class GetTemplateSpellActivity {
      * Instantiates a new activity object.
      *
      * @param templateSpellDao DAO object necessary for this activity object to carry out its function.
+     * @param spellDao DAO object necessary for this activity object to carry out its function.
      */
 
     @Inject
@@ -41,8 +41,9 @@ public class GetTemplateSpellActivity {
 
     public GetTemplateSpellResult handleRequest(GetTemplateSpellRequest getTemplateSpellRequest) {
         TemplateSpell templateSpell = Optional.ofNullable(templateSpellDao.getSingle(getTemplateSpellRequest.getSlug()))
-                .orElseThrow(() -> new TemplateSpellNotFoundException(String.format("Could not find a templateSpell for [%s] with slug [%s]", getTemplateSpellRequest.getUserEmail(), getTemplateSpellRequest.getSlug())));
-        if(spellDao.objectNameExists(getTemplateSpellRequest.getUserEmail(), templateSpell.getName())) {
+                .orElseThrow(() -> new TemplateSpellNotFoundException(String.format("Could not find a templateSpell for [%s] with slug [%s]",
+                        getTemplateSpellRequest.getUserEmail(), getTemplateSpellRequest.getSlug())));
+        if (spellDao.objectNameExists(getTemplateSpellRequest.getUserEmail(), templateSpell.getName())) {
             templateSpell.setResourceExists(true);
         }
         return GetTemplateSpellResult.builder()

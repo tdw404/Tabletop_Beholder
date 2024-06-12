@@ -1,10 +1,8 @@
 package dev.tdwalsh.project.tabletopBeholder.activity.spell.request;
 
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import dev.tdwalsh.project.tabletopBeholder.dynamodb.models.Effect;
 import dev.tdwalsh.project.tabletopBeholder.dynamodb.models.Spell;
 
-import java.util.List;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
 @JsonDeserialize(builder = CreateSpellRequest.Builder.class)
 public class CreateSpellRequest {
@@ -21,8 +19,13 @@ public class CreateSpellRequest {
         return this.spell;
     }
 
-    public String getUserEmail() { return this.userEmail; }
+    public String getUserEmail() {
+        return this.userEmail; }
 
+    /**
+     * Builder.
+     * @return Builder.
+     */
     public static Builder builder() {
         return new Builder();
     }
@@ -31,16 +34,30 @@ public class CreateSpellRequest {
         private Spell spell;
         private String userEmail;
 
+        /**
+         * Builder setter.
+         * @param spell - variable to set
+         * @return - builder
+         */
         public Builder withSpell(Spell spell) {
             this.spell = spell;
             return this;
         }
 
+        /**
+         * Builder setter.
+         * @param userEmail - variable to set.
+         * @return builder
+         */
         public Builder withUserEmail(String userEmail) {
             this.userEmail = userEmail;
             return this;
         }
 
+        /**
+         * Builder.
+         * @return - Builder
+         */
         public CreateSpellRequest build() {
             return new CreateSpellRequest(spell, userEmail);
         }

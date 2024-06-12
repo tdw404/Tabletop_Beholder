@@ -13,6 +13,10 @@ public class GetSessionResult {
         return session;
     }
 
+    /**
+     * Builder.
+     * @return - Builder.
+     */
     public static Builder builder() {
         return new Builder();
     }
@@ -20,11 +24,20 @@ public class GetSessionResult {
     public static class Builder {
         private Session session;
 
+        /**
+         * Builder setter.
+         * @param session - variable to set.
+         * @return - Builder.
+         */
         public Builder withSession(Session session) {
             this.session = session;
             return this;
         }
 
+        /**
+         * Builder.
+         * @return - Builder.
+         */
         public GetSessionResult build() {
             return new GetSessionResult(session);
         }

@@ -1,19 +1,15 @@
 package dev.tdwalsh.project.tabletopBeholder.activity.spell;
 
 import dev.tdwalsh.project.tabletopBeholder.activity.helpers.NameHelper;
-import dev.tdwalsh.project.tabletopBeholder.activity.spell.request.CreateSpellRequest;
 import dev.tdwalsh.project.tabletopBeholder.activity.spell.request.UpdateSpellRequest;
-import dev.tdwalsh.project.tabletopBeholder.activity.spell.result.CreateSpellResult;
 import dev.tdwalsh.project.tabletopBeholder.activity.spell.result.UpdateSpellResult;
 import dev.tdwalsh.project.tabletopBeholder.dynamodb.dao.SpellDao;
 import dev.tdwalsh.project.tabletopBeholder.dynamodb.models.Spell;
-import dev.tdwalsh.project.tabletopBeholder.exceptions.DuplicateResourceException;
 import dev.tdwalsh.project.tabletopBeholder.exceptions.MissingResourceException;
 
-import javax.inject.Inject;
 import java.time.ZonedDateTime;
 import java.util.Optional;
-import java.util.UUID;
+import javax.inject.Inject;
 
 /**
  * GetSpellActivity handles negotiation with {@link SpellDao} to create a {@link Spell}.
@@ -50,7 +46,8 @@ public class UpdateSpellActivity {
         //Finally, returns the updated version
         Spell newSpell  = updateSpellRequest.getSpell();
         newSpell.setUserEmail(updateSpellRequest.getUserEmail());
-        Spell oldSpell = Optional.ofNullable(spellDao.getSingle(newSpell.getUserEmail(), newSpell.getObjectId())).orElseThrow(() -> new MissingResourceException(String.format("Resource with id [%s] could not be retrieved from database", newSpell.getObjectId())));
+        Spell oldSpell = Optional.ofNullable(spellDao.getSingle(newSpell.getUserEmail(), newSpell.getObjectId())).orElseThrow(() ->
+                new MissingResourceException(String.format("Resource with id [%s] could not be retrieved from database", newSpell.getObjectId())));
         if (!newSpell.getObjectName().equals(oldSpell.getObjectName())) {
             NameHelper.objectNameUniqueness(spellDao, newSpell);
         }

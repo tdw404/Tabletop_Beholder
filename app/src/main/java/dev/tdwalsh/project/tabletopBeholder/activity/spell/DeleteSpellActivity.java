@@ -1,12 +1,9 @@
 package dev.tdwalsh.project.tabletopBeholder.activity.spell;
 
 import dev.tdwalsh.project.tabletopBeholder.activity.spell.request.DeleteSpellRequest;
-import dev.tdwalsh.project.tabletopBeholder.activity.spell.request.GetSpellRequest;
 import dev.tdwalsh.project.tabletopBeholder.activity.spell.result.DeleteSpellResult;
-import dev.tdwalsh.project.tabletopBeholder.activity.spell.result.GetSpellResult;
 import dev.tdwalsh.project.tabletopBeholder.dynamodb.dao.SpellDao;
 import dev.tdwalsh.project.tabletopBeholder.dynamodb.models.Spell;
-import dev.tdwalsh.project.tabletopBeholder.exceptions.resourceNotFoundExceptions.SpellNotFoundException;
 
 import javax.inject.Inject;
 

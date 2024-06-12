@@ -5,8 +5,8 @@ import dev.tdwalsh.project.tabletopBeholder.activity.creature.result.GetAllCreat
 import dev.tdwalsh.project.tabletopBeholder.dynamodb.dao.CreatureDao;
 import dev.tdwalsh.project.tabletopBeholder.dynamodb.models.Creature;
 
-import javax.inject.Inject;
 import java.util.List;
+import javax.inject.Inject;
 
 /**
  * GetCreatureActivity handles negotiation with {@link CreatureDao} to retrieve a list of {@link Creature}.

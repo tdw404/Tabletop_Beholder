@@ -37,7 +37,8 @@ public class GetCreatureActivity {
     public GetCreatureResult handleRequest(GetCreatureRequest getCreatureRequest) {
         Creature creature = creatureDao.getSingle(getCreatureRequest.getUserEmail(), getCreatureRequest.getObjectId());
         if (creature == null) {
-            throw new CreatureNotFoundException(String.format("Could not find a creature for [%s] with id [%s]", getCreatureRequest.getUserEmail(), getCreatureRequest.getObjectId()));
+            throw new CreatureNotFoundException(String.format("Could not find a creature for [%s] with id [%s]",
+                getCreatureRequest.getUserEmail(), getCreatureRequest.getObjectId()));
         }
         return GetCreatureResult.builder()
                 .withCreature(creature)

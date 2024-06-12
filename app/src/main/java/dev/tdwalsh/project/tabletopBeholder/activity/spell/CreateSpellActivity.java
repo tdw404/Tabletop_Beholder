@@ -46,7 +46,7 @@ public class CreateSpellActivity {
         NameHelper.objectNameUniqueness(spellDao, spell);
 
         return CreateSpellResult.builder()
-                .withSpell((Spell)CreateObjectHelper.createObject(spellDao, spell))
+                .withSpell((Spell) CreateObjectHelper.createObject(spellDao, spell))
                 .build();
     }
 }
