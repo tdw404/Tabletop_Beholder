@@ -1,15 +1,14 @@
 package dev.tdwalsh.project.tabletopBeholder.activity.encounter;
 
-import dev.tdwalsh.project.tabletopBeholder.activity.helpers.NameHelper;
 import dev.tdwalsh.project.tabletopBeholder.activity.encounter.request.UpdateEncounterRequest;
 import dev.tdwalsh.project.tabletopBeholder.activity.encounter.result.UpdateEncounterResult;
 import dev.tdwalsh.project.tabletopBeholder.dynamodb.dao.EncounterDao;
 import dev.tdwalsh.project.tabletopBeholder.dynamodb.models.Encounter;
 import dev.tdwalsh.project.tabletopBeholder.exceptions.MissingResourceException;
 
-import javax.inject.Inject;
 import java.time.ZonedDateTime;
 import java.util.Optional;
+import javax.inject.Inject;
 
 /**
  * GetEncounterActivity handles negotiation with {@link EncounterDao} to create a {@link Encounter}.
@@ -46,7 +45,8 @@ public class UpdateEncounterActivity {
         //Finally, returns the updated version
         Encounter newEncounter  = updateEncounterRequest.getEncounter();
         newEncounter.setUserEmail(updateEncounterRequest.getUserEmail());
-        Encounter oldEncounter = Optional.ofNullable(encounterDao.getSingle(newEncounter.getUserEmail(), newEncounter.getObjectId())).orElseThrow(() -> new MissingResourceException(String.format("Resource with id [%s] could not be retrieved from database", newEncounter.getObjectId())));
+        Encounter oldEncounter = Optional.ofNullable(encounterDao.getSingle(newEncounter.getUserEmail(), newEncounter.getObjectId())).orElseThrow(()
+                -> new MissingResourceException(String.format("Resource with id [%s] could not be retrieved from database", newEncounter.getObjectId())));
         newEncounter.setCreateDateTime(oldEncounter.getCreateDateTime());
         newEncounter.setEditDateTime(ZonedDateTime.now());
         encounterDao.writeObject(newEncounter);

@@ -30,6 +30,7 @@ public class TemplateCreatureDao {
 
     /**
      * Constructor.
+     * @param open5EClient - HTTP call client.
      */
     @Inject
     public TemplateCreatureDao(Open5EClient open5EClient) {

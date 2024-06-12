@@ -2,20 +2,27 @@ package dev.tdwalsh.project.tabletopBeholder.templateApi;
 
 import dev.tdwalsh.project.tabletopBeholder.exceptions.CurlException;
 
-import javax.inject.Singleton;
 import java.io.IOException;
 import java.net.URI;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.time.Duration;
+import javax.inject.Singleton;
 
 @Singleton
 public class Open5EClient {
 
+    /**
+     * Constructor.
+     */
     public Open5EClient() {
-
     }
 
+    /**
+     * Performs a GET call to an external API.
+     * @param uri - Call URI
+     * @return - HTTPResponse object.
+     */
     public HttpResponse<String> call(String uri) {
         java.net.http.HttpClient client = java.net.http.HttpClient.newBuilder()
                 .followRedirects(java.net.http.HttpClient.Redirect.NORMAL)

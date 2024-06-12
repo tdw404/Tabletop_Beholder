@@ -37,7 +37,8 @@ public class GetEncounterActivity {
     public GetEncounterResult handleRequest(GetEncounterRequest getEncounterRequest) {
         Encounter encounter = encounterDao.getSingle(getEncounterRequest.getUserEmail(), getEncounterRequest.getObjectId());
         if (encounter == null) {
-            throw new EncounterNotFoundException(String.format("Could not find a encounter for [%s] with id [%s]", getEncounterRequest.getUserEmail(), getEncounterRequest.getObjectId()));
+            throw new EncounterNotFoundException(String.format("Could not find a encounter for [%s] with id [%s]",
+                    getEncounterRequest.getUserEmail(), getEncounterRequest.getObjectId()));
         }
         return GetEncounterResult.builder()
                 .withEncounter(encounter)

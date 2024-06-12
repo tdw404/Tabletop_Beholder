@@ -37,7 +37,8 @@ public class GetSessionActivity {
     public GetSessionResult handleRequest(GetSessionRequest getSessionRequest) {
         Session session = sessionDao.getSingle(getSessionRequest.getUserEmail(), getSessionRequest.getObjectId());
         if (session == null) {
-            throw new SessionNotFoundException(String.format("Could not find a session for [%s] with id [%s]", getSessionRequest.getUserEmail(), getSessionRequest.getObjectId()));
+            throw new SessionNotFoundException(String.format("Could not find a session for [%s] with id [%s]",
+                    getSessionRequest.getUserEmail(), getSessionRequest.getObjectId()));
         }
         return GetSessionResult.builder()
                 .withSession(session)

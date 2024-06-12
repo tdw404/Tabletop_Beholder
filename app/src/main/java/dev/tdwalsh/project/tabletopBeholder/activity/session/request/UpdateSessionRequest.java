@@ -1,7 +1,8 @@
 package dev.tdwalsh.project.tabletopBeholder.activity.session.request;
 
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import dev.tdwalsh.project.tabletopBeholder.dynamodb.models.Session;
+
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
 @JsonDeserialize(builder = UpdateSessionRequest.Builder.class)
 public class UpdateSessionRequest {
@@ -17,29 +18,47 @@ public class UpdateSessionRequest {
         return this.session;
     }
 
-    public String getUserEmail() { return this.userEmail; }
+    public String getUserEmail() {
+        return this.userEmail; }
 
+    /**
+     * Builder.
+     * @return builder
+     */
     public static Builder builder() {
         return new Builder();
     }
 
-public static class Builder {
+    public static class Builder {
         private Session session;
         private String userEmail;
 
+        /**
+         * Builder setter.
+         * @param session variable to set
+         * @return builder
+         */
         public Builder withSession(Session session) {
             this.session = session;
             return this;
         }
 
-    public Builder withUserEmail(String userEmail) {
-        this.userEmail = userEmail;
-        return this;
-    }
+        /**
+         * Builder setter.
+         * @param userEmail variable to set
+         * @return builder
+         */
+        public Builder withUserEmail(String userEmail) {
+            this.userEmail = userEmail;
+            return this;
+        }
 
+        /**
+         * Builder.
+         * @return builder
+         */
         public UpdateSessionRequest build() {
             return new UpdateSessionRequest(session, userEmail);
         }
-}
-
+    }
 }

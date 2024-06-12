@@ -13,6 +13,10 @@ public class GetSpellResult {
         return spell;
     }
 
+    /**
+     * Builder.
+     * @return - Builder.
+     */
     public static Builder builder() {
         return new Builder();
     }
@@ -30,6 +34,10 @@ public class GetSpellResult {
             return this;
         }
 
+        /**
+         * Builder.
+         * @return - Builder
+         */
         public GetSpellResult build() {
             return new GetSpellResult(spell);
         }

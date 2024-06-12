@@ -7,9 +7,9 @@ import dev.tdwalsh.project.tabletopBeholder.dynamodb.dao.SessionDao;
 import dev.tdwalsh.project.tabletopBeholder.dynamodb.models.Session;
 import dev.tdwalsh.project.tabletopBeholder.exceptions.MissingResourceException;
 
-import javax.inject.Inject;
 import java.time.ZonedDateTime;
 import java.util.Optional;
+import javax.inject.Inject;
 
 /**
  * GetSessionActivity handles negotiation with {@link SessionDao} to create a {@link Session}.
@@ -46,7 +46,8 @@ public class UpdateSessionActivity {
         //Finally, returns the updated version
         Session newSession  = updateSessionRequest.getSession();
         newSession.setUserEmail(updateSessionRequest.getUserEmail());
-        Session oldSession = Optional.ofNullable(sessionDao.getSingle(newSession.getUserEmail(), newSession.getObjectId())).orElseThrow(() -> new MissingResourceException(String.format("Resource with id [%s] could not be retrieved from database", newSession.getObjectId())));
+        Session oldSession = Optional.ofNullable(sessionDao.getSingle(newSession.getUserEmail(), newSession.getObjectId())).orElseThrow(()
+            -> new MissingResourceException(String.format("Resource with id [%s] could not be retrieved from database", newSession.getObjectId())));
         if (!newSession.getObjectName().equals(oldSession.getObjectName())) {
             NameHelper.objectNameUniqueness(sessionDao, newSession);
         }

@@ -21,6 +21,10 @@ public class SearchTemplateSpellsResult {
         return this.templateSpellList;
     }
 
+    /**
+     * Builder.
+     * @return builder
+     */
     public static Builder builder() {
         return new Builder();
     }
@@ -28,11 +32,20 @@ public class SearchTemplateSpellsResult {
     public static class Builder {
         private List<TemplateSpell> templateSpellList;
 
+        /**
+         * Builder setter.
+         * @param templateSpellList variable to set
+         * @return builder
+         */
         public Builder withTemplateSpellList(List<TemplateSpell> templateSpellList) {
             this.templateSpellList = templateSpellList;
             return this;
         }
 
+        /**
+         * Builder.
+         * @return builder
+         */
         public SearchTemplateSpellsResult build() {
             return new SearchTemplateSpellsResult(templateSpellList.size(), templateSpellList);
         }

@@ -17,6 +17,10 @@ public class DeleteSpellRequest {
         return this.objectId;
     }
 
+    /**
+     * Builder.
+     * @return Builder
+     */
     public static Builder builder() {
         return new Builder();
     }
@@ -24,16 +28,30 @@ public class DeleteSpellRequest {
         private String userEmail;
         private String objectId;
 
+        /**
+         * Builder setter.
+         * @param userEmail - variable to set.
+         * @return - Builder
+         */
         public Builder withUserEmail(String userEmail) {
             this.userEmail = userEmail;
             return this;
         }
 
+        /**
+         * Builder setter.
+         * @param objectId - variable to set.
+         * @return - builder
+         */
         public Builder withObjectId(String objectId) {
             this.objectId = objectId;
             return this;
         }
 
+        /**
+         * Builder.
+         * @return Builder
+         */
         public DeleteSpellRequest build() {
             return new DeleteSpellRequest(userEmail, objectId);
         }

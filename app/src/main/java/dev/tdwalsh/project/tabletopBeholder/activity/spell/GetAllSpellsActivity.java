@@ -5,8 +5,8 @@ import dev.tdwalsh.project.tabletopBeholder.activity.spell.result.GetAllSpellsRe
 import dev.tdwalsh.project.tabletopBeholder.dynamodb.dao.SpellDao;
 import dev.tdwalsh.project.tabletopBeholder.dynamodb.models.Spell;
 
-import javax.inject.Inject;
 import java.util.List;
+import javax.inject.Inject;
 
 /**
  * GetSpellActivity handles negotiation with {@link SpellDao} to retrieve a list of {@link Spell}.

@@ -1,7 +1,8 @@
 package dev.tdwalsh.project.tabletopBeholder.activity.encounter.request;
 
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import dev.tdwalsh.project.tabletopBeholder.dynamodb.models.Encounter;
+
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
 @JsonDeserialize(builder = UpdateEncounterRequest.Builder.class)
 public class UpdateEncounterRequest {
@@ -17,29 +18,41 @@ public class UpdateEncounterRequest {
         return this.encounter;
     }
 
-    public String getUserEmail() { return this.userEmail; }
-
+    public String getUserEmail() {
+        return this.userEmail; }
     public static Builder builder() {
         return new Builder();
     }
-
-public static class Builder {
+    public static class Builder {
         private Encounter encounter;
         private String userEmail;
 
+        /**
+         * Builder setter.
+         * @param encounter variable to set
+         * @return builder
+         */
         public Builder withEncounter(Encounter encounter) {
             this.encounter = encounter;
             return this;
         }
 
-    public Builder withUserEmail(String userEmail) {
-        this.userEmail = userEmail;
-        return this;
-    }
+        /**
+         * Builder setter.
+         * @param userEmail variable to set
+         * @return builder
+         */
+        public Builder withUserEmail(String userEmail) {
+            this.userEmail = userEmail;
+            return this;
+        }
 
+        /**
+         * Builder.
+         * @return builder
+         */
         public UpdateEncounterRequest build() {
             return new UpdateEncounterRequest(encounter, userEmail);
         }
-}
-
+    }
 }

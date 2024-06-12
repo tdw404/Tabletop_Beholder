@@ -1,6 +1,5 @@
 package dev.tdwalsh.project.tabletopBeholder.activity.spell.result;
 
-import com.amazonaws.services.dynamodbv2.xspec.S;
 import dev.tdwalsh.project.tabletopBeholder.dynamodb.models.Spell;
 
 import java.util.List;
@@ -16,6 +15,10 @@ public class GetAllSpellsResult {
         return this.spellList;
     }
 
+    /**
+     * Builder.
+     * @return - Builder
+     */
     public static Builder builder() {
         return new Builder();
     }

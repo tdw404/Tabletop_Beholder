@@ -13,6 +13,10 @@ public class CreateTemplateSpellResult {
         return spell;
     }
 
+    /**
+     * Builder.
+     * @return builder
+     */
     public static Builder builder() {
         return new Builder();
     }
@@ -20,11 +24,20 @@ public class CreateTemplateSpellResult {
     public static class Builder {
         private Spell spell;
 
+        /**
+         * Builder setter.
+         * @param spell variable to set
+         * @return builder
+         */
         public Builder withSpell(Spell spell) {
             this.spell = spell;
             return this;
         }
 
+        /**
+         * Builder.
+         * @return builder
+         */
         public CreateTemplateSpellResult build() {
             return new CreateTemplateSpellResult(spell);
         }

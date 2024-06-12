@@ -46,7 +46,7 @@ public class CreateSessionActivity {
         NameHelper.objectNameUniqueness(sessionDao, session);
 
         return CreateSessionResult.builder()
-                .withSession((Session)CreateObjectHelper.createObject(sessionDao, session))
+                .withSession((Session) CreateObjectHelper.createObject(sessionDao, session))
                 .build();
     }
 }

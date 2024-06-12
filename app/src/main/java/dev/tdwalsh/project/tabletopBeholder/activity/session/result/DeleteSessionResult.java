@@ -1,23 +1,25 @@
 package dev.tdwalsh.project.tabletopBeholder.activity.session.result;
 
 public class DeleteSessionResult {
-
-    private DeleteSessionResult() {
-    }
+    private DeleteSessionResult() { }
 
     /**
-     * Builder
+     * Builder.
+     * @return builder
      */
     public static Builder builder() {
         return new Builder();
     }
 
     /**
-     * Builder
+     * Builder.
      */
     public static class Builder {
 
-
+        /**
+         * Builder.
+         * @return - Builder.
+         */
         public DeleteSessionResult build() {
             return new DeleteSessionResult();
         }

@@ -1,11 +1,9 @@
 package dev.tdwalsh.project.tabletopBeholder.dependency;
 
-import com.amazonaws.regions.Regions;
-import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
+import dev.tdwalsh.project.tabletopBeholder.templateApi.Open5EClient;
+
 import dagger.Module;
 import dagger.Provides;
-import dev.tdwalsh.project.tabletopBeholder.dynamodb.DynamoDbClientProvider;
-import dev.tdwalsh.project.tabletopBeholder.templateApi.Open5EClient;
 
 import javax.inject.Singleton;
 

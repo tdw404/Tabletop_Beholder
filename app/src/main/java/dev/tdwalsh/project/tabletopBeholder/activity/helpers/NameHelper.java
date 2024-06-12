@@ -2,14 +2,15 @@ package dev.tdwalsh.project.tabletopBeholder.activity.helpers;
 
 
 import dev.tdwalsh.project.tabletopBeholder.dynamodb.dao.BeholderDao;
-import dev.tdwalsh.project.tabletopBeholder.dynamodb.dao.SpellDao;
+
 import dev.tdwalsh.project.tabletopBeholder.dynamodb.models.BeholderObject;
-import dev.tdwalsh.project.tabletopBeholder.dynamodb.models.Spell;
 import dev.tdwalsh.project.tabletopBeholder.exceptions.DuplicateResourceException;
+
 import org.apache.commons.text.WordUtils;
 
 /**
- * This is a helper class to allow multiple activities to create a {@link dev.tdwalsh.project.tabletopBeholder.dynamodb.models.BeholderObject} using the same method.
+ * This is a helper class to allow multiple activities to create a
+ * {@link dev.tdwalsh.project.tabletopBeholder.dynamodb.models.BeholderObject} using the same method.
  */
 public class NameHelper {
 
