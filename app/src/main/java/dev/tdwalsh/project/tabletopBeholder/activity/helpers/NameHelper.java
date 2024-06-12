@@ -23,7 +23,7 @@ public class NameHelper {
      */
     public static void objectNameUniqueness(BeholderDao dao, BeholderObject beholderObject) {
         if (dao.objectNameExists(beholderObject.getUserEmail(), WordUtils.capitalizeFully(beholderObject.getObjectName()))) {
-            throw new DuplicateResourceException(String.format("ERR_DUP: Resource with name [%s] already exists", beholderObject.getObjectName()));
+            throw new DuplicateResourceException(String.format("Resource with name [%s] already exists", beholderObject.getObjectName()));
         }
     }
 }
