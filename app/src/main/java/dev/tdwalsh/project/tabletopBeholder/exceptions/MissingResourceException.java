@@ -1,9 +1,12 @@
 package dev.tdwalsh.project.tabletopBeholder.exceptions;
 
-public class MissingResourceException extends RuntimeException{
+public class MissingResourceException extends RuntimeException {
 
     private static final long serialVersionUID = -8247334877320501035L;
 
+    /**
+     * Constructor.
+     */
     public MissingResourceException() {
         super();
     }

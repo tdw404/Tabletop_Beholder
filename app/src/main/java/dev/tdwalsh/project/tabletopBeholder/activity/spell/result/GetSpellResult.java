@@ -20,6 +20,11 @@ public class GetSpellResult {
     public static class Builder {
         private Spell spell;
 
+        /**
+         * Builder setter.
+         * @param spell - To set.
+         * @return - Return builder.
+         */
         public Builder withSpell(Spell spell) {
             this.spell = spell;
             return this;

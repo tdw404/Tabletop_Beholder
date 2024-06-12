@@ -1,16 +1,33 @@
 package dev.tdwalsh.project.tabletopBeholder.dependency;
 
-import dagger.Component;
-import dev.tdwalsh.project.tabletopBeholder.activity.creature.*;
-import dev.tdwalsh.project.tabletopBeholder.activity.encounter.*;
+import dev.tdwalsh.project.tabletopBeholder.activity.creature.CreateCreatureActivity;
+import dev.tdwalsh.project.tabletopBeholder.activity.creature.DeleteCreatureActivity;
+import dev.tdwalsh.project.tabletopBeholder.activity.creature.GetAllCreaturesActivity;
+import dev.tdwalsh.project.tabletopBeholder.activity.creature.GetCreatureActivity;
+import dev.tdwalsh.project.tabletopBeholder.activity.creature.UpdateCreatureActivity;
+import dev.tdwalsh.project.tabletopBeholder.activity.encounter.CreateEncounterActivity;
+import dev.tdwalsh.project.tabletopBeholder.activity.encounter.DeleteEncounterActivity;
+import dev.tdwalsh.project.tabletopBeholder.activity.encounter.GetAllEncountersActivity;
+import dev.tdwalsh.project.tabletopBeholder.activity.encounter.GetEncounterActivity;
+import dev.tdwalsh.project.tabletopBeholder.activity.encounter.UpdateEncounterActivity;
 import dev.tdwalsh.project.tabletopBeholder.activity.externalCreature.CreateTemplateCreatureActivity;
 import dev.tdwalsh.project.tabletopBeholder.activity.externalCreature.GetTemplateCreatureActivity;
 import dev.tdwalsh.project.tabletopBeholder.activity.externalCreature.SearchTemplateCreaturesActivity;
 import dev.tdwalsh.project.tabletopBeholder.activity.externalSpell.CreateTemplateSpellActivity;
 import dev.tdwalsh.project.tabletopBeholder.activity.externalSpell.SearchTemplateSpellsActivity;
 import dev.tdwalsh.project.tabletopBeholder.activity.externalTemplateSpell.GetTemplateSpellActivity;
-import dev.tdwalsh.project.tabletopBeholder.activity.session.*;
-import dev.tdwalsh.project.tabletopBeholder.activity.spell.*;
+import dev.tdwalsh.project.tabletopBeholder.activity.session.CreateSessionActivity;
+import dev.tdwalsh.project.tabletopBeholder.activity.session.DeleteSessionActivity;
+import dev.tdwalsh.project.tabletopBeholder.activity.session.GetAllSessionsActivity;
+import dev.tdwalsh.project.tabletopBeholder.activity.session.GetSessionActivity;
+import dev.tdwalsh.project.tabletopBeholder.activity.session.UpdateSessionActivity;
+import dev.tdwalsh.project.tabletopBeholder.activity.spell.CreateSpellActivity;
+import dev.tdwalsh.project.tabletopBeholder.activity.spell.DeleteSpellActivity;
+import dev.tdwalsh.project.tabletopBeholder.activity.spell.GetAllSpellsActivity;
+import dev.tdwalsh.project.tabletopBeholder.activity.spell.GetSpellActivity;
+import dev.tdwalsh.project.tabletopBeholder.activity.spell.UpdateSpellActivity;
+
+import dagger.Component;
 
 import javax.inject.Singleton;
 
@@ -18,7 +35,7 @@ import javax.inject.Singleton;
  * Dagger component for providing dependency injection in the Tabletop Beholder App.
  */
 @Singleton
-@Component(modules = {DaoModule.class})
+@Component(modules = {DaoModule.class, HTPPClientModule.class})
 public interface ServiceComponent {
 
     /**

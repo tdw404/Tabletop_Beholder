@@ -1,14 +1,26 @@
 package dev.tdwalsh.project.tabletopBeholder.dynamodb.models;
 
-import com.amazonaws.services.dynamodbv2.datamodeling.*;
-import dev.tdwalsh.project.tabletopBeholder.converters.*;
+import dev.tdwalsh.project.tabletopBeholder.converters.ActionConverter;
+import dev.tdwalsh.project.tabletopBeholder.converters.EffectConverter;
+import dev.tdwalsh.project.tabletopBeholder.converters.IntIntMapConverter;
+import dev.tdwalsh.project.tabletopBeholder.converters.SpellConverter;
+import dev.tdwalsh.project.tabletopBeholder.converters.StringIntMapConverter;
+import dev.tdwalsh.project.tabletopBeholder.converters.ZonedDateTimeConverter;
+
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBAttribute;
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBHashKey;
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBIndexHashKey;
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBIndexRangeKey;
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapperFieldModel;
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBRangeKey;
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBTable;
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBTypeConverted;
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBTyped;
 import org.apache.commons.text.WordUtils;
 
 import java.time.ZonedDateTime;
 import java.util.Map;
 import java.util.Objects;
-
-import static com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapperFieldModel.*;
 
 @DynamoDBTable(tableName = "TabletopBeholder_CreatureTable")
 public class Creature implements BeholderObject {
@@ -109,7 +121,7 @@ public class Creature implements BeholderObject {
     }
 
     @DynamoDBAttribute(attributeName = "draftStatus")
-    @DynamoDBTyped(DynamoDBAttributeType.BOOL)
+    @DynamoDBTyped(DynamoDBMapperFieldModel.DynamoDBAttributeType.BOOL)
     public Boolean getDraftStatus() {
         return draftStatus;
     }
@@ -119,13 +131,13 @@ public class Creature implements BeholderObject {
     }
 
     @DynamoDBAttribute(attributeName = "isPC")
-    @DynamoDBTyped(DynamoDBAttributeType.BOOL)
+    @DynamoDBTyped(DynamoDBMapperFieldModel.DynamoDBAttributeType.BOOL)
     public Boolean getIsPC() {
         return isPC;
     }
 
-    public void setIsPC(Boolean PC) {
-        isPC = PC;
+    public void setIsPC(Boolean isPC) {
+        this.isPC = isPC;
     }
 
     @DynamoDBAttribute(attributeName = "pcLevel")
@@ -229,7 +241,7 @@ public class Creature implements BeholderObject {
     }
 
     @DynamoDBAttribute(attributeName = "knockedOut")
-    @DynamoDBTyped(DynamoDBAttributeType.BOOL)
+    @DynamoDBTyped(DynamoDBMapperFieldModel.DynamoDBAttributeType.BOOL)
     public Boolean getKnockedOut() {
         return knockedOut;
     }
@@ -239,7 +251,7 @@ public class Creature implements BeholderObject {
     }
 
     @DynamoDBAttribute(attributeName = "dead")
-    @DynamoDBTyped(DynamoDBAttributeType.BOOL)
+    @DynamoDBTyped(DynamoDBMapperFieldModel.DynamoDBAttributeType.BOOL)
     public Boolean getDead() {
         return dead;
     }
@@ -470,7 +482,7 @@ public class Creature implements BeholderObject {
     public void setSpellAttackModifier(String spellAttackModifier) {
         this.spellAttackModifier = spellAttackModifier;
     }
-    @DynamoDBAttribute(attributeName= "createDateTime")
+    @DynamoDBAttribute(attributeName = "createDateTime")
     @DynamoDBTypeConverted(converter = ZonedDateTimeConverter.class)
     public ZonedDateTime getCreateDateTime() {
         return createDateTime;
@@ -499,13 +511,13 @@ public class Creature implements BeholderObject {
 
     @Override
     public boolean equals(Object o) {
-        if(o == null) {
+        if (o == null) {
             return false;
         }
-        if(this == o) {
+        if (this == o) {
             return true;
         }
-        if(this.getClass() != o.getClass()) {
+        if (this.getClass() != o.getClass()) {
             return false;
         }
         Creature other = (Creature) o;

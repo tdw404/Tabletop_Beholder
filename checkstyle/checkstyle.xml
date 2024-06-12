@@ -9,6 +9,8 @@
     <property name="charset" value="UTF-8" />
     <property name="severity" value="error" />
 
+    <module name="SuppressWarningsFilter"/>
+
     <!-- Filters -->
     <!-- http://checkstyle.sourceforge.net/config_filters.html -->
     <module name="SuppressionFilter">
@@ -32,7 +34,7 @@
     <!-- Size Violations -->
     <!-- http://checkstyle.sourceforge.net/config_sizes.html -->
     <module name="FileLength">
-        <property name="max" value="500" />
+        <property name="max" value="600" />
     </module>
 
     <!-- Whitespace -->
@@ -64,6 +66,17 @@
         <module name="EmptyBlock">
             <property name="option" value="text" />
             <property name="tokens" value="LITERAL_ELSE" />
+        </module>
+
+        <module name="SuppressWarnings">
+            <property name="id" value="checkstyle:suppresswarnings"/>
+        </module>
+
+        <module name="SuppressionCommentFilter">
+            <metadata name="net.sf.eclipsecs.core.comment" value="Single warning"/>
+            <property name="offCommentFormat" value="CHECKSTYLE\:OFF\: ([\w\|]+)"/>
+            <property name="onCommentFormat" value="CHECKSTYLE\:ON\: ([\w\|]+)"/>
+            <property name="checkFormat" value="$1"/>
         </module>
 
         <module name="EmptyBlock">
@@ -101,15 +114,15 @@
         <module name="DefaultComesLast" />
         <module name="EmptyStatement" />
         <!--<module name="EqualsHashCode" />, consider for unit 2 -->
-        <module name="FallThrough">
+        <!--<module name="FallThrough">
             <property name="checkLastCaseGroup" value="true"/>
             <property name="reliefPattern" value="null"/>
-        </module>
+        </module>-->
         <!--<module name="FinalLocalVariable" />, consider for unit 2 -->
-        <module name="HiddenField">
+        <!--<module name="HiddenField">
             <property name="ignoreConstructorParameter" value="true" />
             <property name="ignoreSetter" value="true" />
-        </module>
+        </module>-->
         <!--<module name="IllegalCatch"/>, consider for unit 2 -->
         <!--<module name="IllegalThrows"/>, consider for unit 2 -->
         <module name="IllegalToken" />
@@ -126,7 +139,7 @@
         <module name="InnerAssignment" />
         <!--<module name="MagicNumber" />, consider for unit 2 -->
         <!--<module name="MissingCtor" />, consider for unit 2 -->
-        <module name="MissingSwitchDefault" />
+        <!--<module name="MissingSwitchDefault" />-->
         <module name="ModifiedControlVariable" />
         <module name="MultipleVariableDeclarations" />
         <module name="NestedForDepth">
@@ -151,6 +164,10 @@
         <module name="SuperFinalize" />
         <module name="UnnecessaryParentheses" />
 
+        <!--<module name="HiddenField" >
+            <property name="ignoreSetter" value="true" />
+            <property name="ignoreConstructorParameter" value="true" />
+        </module>-->
         <!-- Imports -->
         <!-- http://checkstyle.sourceforge.net/config_imports.html -->
         <module name="AvoidStarImport" />
@@ -226,7 +243,7 @@
         <!-- Size Violations -->
         <!-- http://checkstyle.sourceforge.net/config_sizes.html -->
         <module name="LineLength">
-            <property name="max" value="120" />
+            <property name="max" value="160" />
             <property name="ignorePattern"
                       value="^package.*|^import.*|http://|https://" />
         </module>

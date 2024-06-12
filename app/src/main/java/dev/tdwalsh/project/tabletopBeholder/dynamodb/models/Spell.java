@@ -1,10 +1,18 @@
 package dev.tdwalsh.project.tabletopBeholder.dynamodb.models;
 
-import com.amazonaws.services.dynamodbv2.datamodeling.*;
 import dev.tdwalsh.project.tabletopBeholder.converters.EffectConverter;
 import dev.tdwalsh.project.tabletopBeholder.converters.ZonedDateTimeConverter;
-import org.apache.commons.text.WordUtils;
 
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBAttribute;
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBHashKey;
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBIndexHashKey;
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBIndexRangeKey;
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapperFieldModel;
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBRangeKey;
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBTable;
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBTypeConverted;
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBTyped;
+import org.apache.commons.text.WordUtils;
 
 import java.time.ZonedDateTime;
 import java.util.Map;
@@ -180,7 +188,7 @@ public class Spell implements BeholderObject {
     public void setAppliesEffects(Map<String, Effect> appliesEffects) {
         this.appliesEffects = appliesEffects;
     }
-    @DynamoDBAttribute(attributeName= "createDateTime")
+    @DynamoDBAttribute(attributeName = "createDateTime")
     @DynamoDBTypeConverted(converter = ZonedDateTimeConverter.class)
     public ZonedDateTime getCreateDateTime() {
         return createDateTime;

@@ -5,7 +5,7 @@ import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBTypeConverter;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 
-public class ZonedDateTimeConverter implements DynamoDBTypeConverter<String, ZonedDateTime>{
+public class ZonedDateTimeConverter implements DynamoDBTypeConverter<String, ZonedDateTime> {
 
     @Override
     public String convert(ZonedDateTime zonedDateTime) {

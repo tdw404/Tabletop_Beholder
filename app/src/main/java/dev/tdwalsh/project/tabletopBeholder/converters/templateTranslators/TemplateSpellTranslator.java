@@ -1,16 +1,22 @@
 package dev.tdwalsh.project.tabletopBeholder.converters.templateTranslators;
 
-import dev.tdwalsh.project.tabletopBeholder.dynamodb.models.Effect;
 import dev.tdwalsh.project.tabletopBeholder.dynamodb.models.Spell;
 import dev.tdwalsh.project.tabletopBeholder.templateApi.model.TemplateSpell;
 
-import javax.inject.Singleton;
 import java.time.ZonedDateTime;
-import java.util.*;
+import java.util.Arrays;
+import java.util.List;
+import java.util.ListIterator;
+import javax.inject.Singleton;
 
 @Singleton
 public class TemplateSpellTranslator {
 
+    /**
+     * Translates between the Spell model used by Open5E and the Spell model used by Beholder.
+     * @param templateSpell - Template to be translated.
+     * @return Beholder Spell
+     */
     public static Spell translate(TemplateSpell templateSpell) {
         Spell spell = new Spell();
 
@@ -35,6 +41,7 @@ public class TemplateSpellTranslator {
                     if (spell.getCastingTurns() == 0) {
                         spell.setCastingTurns(1);
                     }
+
                 case "action":
                 case "actions":
                     if (spell.getCastingTurns() == 0) {
@@ -92,12 +99,11 @@ public class TemplateSpellTranslator {
         if (spell.getReaction() == null) {
             spell.setReaction("no");
         }
-            spell.setSpellLevel(templateSpell.getSpell_level());
-            spell.setSpellSchool(templateSpell.getSchool());
-            spell.setInnateCasts(0);
-            spell.setCreateDateTime(ZonedDateTime.now());
-            spell.setEditDateTime(ZonedDateTime.now());
-            return spell;
+        spell.setSpellLevel(templateSpell.getSpell_level());
+        spell.setSpellSchool(templateSpell.getSchool());
+        spell.setInnateCasts(0);
+        spell.setCreateDateTime(ZonedDateTime.now());
+        spell.setEditDateTime(ZonedDateTime.now());
+        return spell;
     }
 }
-

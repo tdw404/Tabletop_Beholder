@@ -1,17 +1,23 @@
 package dev.tdwalsh.project.tabletopBeholder.dynamodb.models;
 
-import com.amazonaws.services.dynamodbv2.datamodeling.*;
-import com.amazonaws.services.dynamodbv2.xspec.M;
-import dev.tdwalsh.project.tabletopBeholder.converters.CreatureConverter;
 import dev.tdwalsh.project.tabletopBeholder.converters.StringCreaturesMapConverter;
 import dev.tdwalsh.project.tabletopBeholder.converters.ZonedDateTimeConverter;
+
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBAttribute;
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBHashKey;
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBIndexHashKey;
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBIndexRangeKey;
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapperFieldModel;
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBRangeKey;
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBTable;
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBTypeConverted;
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBTyped;
 import org.apache.commons.text.WordUtils;
 
 import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.PriorityQueue;
 
 @DynamoDBTable(tableName = "TabletopBeholder_EncounterTable")
 public class Encounter implements BeholderObject {

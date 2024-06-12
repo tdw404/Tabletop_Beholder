@@ -15,10 +15,16 @@ public class GetAllSessionsResult {
         return this.sessionList;
     }
 
+    /**
+     * Builder
+     */
     public static Builder builder() {
         return new Builder();
     }
 
+    /**
+     * Builder
+     */
     public static class Builder {
         private List<Session> sessionList;
 

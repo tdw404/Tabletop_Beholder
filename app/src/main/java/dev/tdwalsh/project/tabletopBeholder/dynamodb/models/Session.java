@@ -1,13 +1,17 @@
 package dev.tdwalsh.project.tabletopBeholder.dynamodb.models;
 
-import com.amazonaws.services.dynamodbv2.datamodeling.*;
-import dev.tdwalsh.project.tabletopBeholder.converters.EncounterConverter;
 import dev.tdwalsh.project.tabletopBeholder.converters.ZonedDateTimeConverter;
+
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBAttribute;
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBHashKey;
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBIndexHashKey;
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBIndexRangeKey;
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBRangeKey;
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBTable;
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBTypeConverted;
 import org.apache.commons.text.WordUtils;
 
-import java.net.http.HttpResponse;
 import java.time.ZonedDateTime;
-import java.util.List;
 import java.util.Objects;
 
 @DynamoDBTable(tableName = "TabletopBeholder_SessionTable")
@@ -49,7 +53,7 @@ public class Session implements BeholderObject {
         this.objectName = WordUtils.capitalizeFully(objectName);
     }
 
-    @DynamoDBAttribute(attributeName= "createDateTime")
+    @DynamoDBAttribute(attributeName = "createDateTime")
     @DynamoDBTypeConverted(converter = ZonedDateTimeConverter.class)
     public ZonedDateTime getCreateDateTime() {
         return createDateTime;
@@ -86,7 +90,7 @@ public class Session implements BeholderObject {
             return true;
         }
 
-        if(this.getClass() != o.getClass()) {
+        if (this.getClass() != o.getClass()) {
             return false;
         }
 

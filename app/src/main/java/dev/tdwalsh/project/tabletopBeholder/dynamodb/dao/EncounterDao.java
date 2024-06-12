@@ -1,16 +1,17 @@
 package dev.tdwalsh.project.tabletopBeholder.dynamodb.dao;
 
-import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
-import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBQueryExpression;
-import com.amazonaws.services.dynamodbv2.model.AttributeValue;
 import dev.tdwalsh.project.tabletopBeholder.dynamodb.models.BeholderObject;
 import dev.tdwalsh.project.tabletopBeholder.dynamodb.models.Encounter;
 
-import javax.inject.Inject;
-import javax.inject.Singleton;
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBQueryExpression;
+import com.amazonaws.services.dynamodbv2.model.AttributeValue;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import javax.inject.Inject;
+import javax.inject.Singleton;
 
 /**
  * Stores, reads, updates, or deletes Encounter models in DynamoDB using {@link Encounter}.
@@ -27,7 +28,9 @@ public class EncounterDao implements BeholderDao {
      */
 
     @Inject
-    public EncounterDao(DynamoDBMapper mapper) { this.mapper = mapper; }
+    public EncounterDao(DynamoDBMapper mapper) {
+        this.mapper = mapper;
+    }
 
     /**
      * Retrieves a encounter by objectId and userEmail.
@@ -94,7 +97,7 @@ public class EncounterDao implements BeholderDao {
     public Boolean objectNameExists(String userEmail, String objectName) {
         Map<String, AttributeValue> valueMap = new HashMap<>();
         valueMap.put(":userEmail", new AttributeValue(userEmail));
-        valueMap.put((":objectName"), new AttributeValue(objectName));
+        valueMap.put(":objectName", new AttributeValue(objectName));
         DynamoDBQueryExpression<Encounter> queryExpression = new DynamoDBQueryExpression<Encounter>()
                 .withIndexName("EncountersSortByNameIndex")
                 .withConsistentRead(false)
@@ -107,7 +110,8 @@ public class EncounterDao implements BeholderDao {
      * Searches for all encounters belonging to a session.
      *
      * @param userEmail The userEmail to search
-     * @param session The session to search
+     * @param sessionId The session to search
+     * @return List of encounters.
      */
     public List<Encounter> getEncounterBySession(String userEmail, String sessionId) {
         Map<String, AttributeValue> valueMap = new HashMap<>();

@@ -1,8 +1,11 @@
 package dev.tdwalsh.project.tabletopBeholder.exceptions.resourceNotFoundExceptions;
 
-public class TemplateSpellNotFoundException extends DBResourceNotFoundException{
+public class TemplateSpellNotFoundException extends DBResourceNotFoundException {
     private static final long serialVersionUID = 7708501017167524741L;
 
+    /**
+     * Constructor.
+     */
     public TemplateSpellNotFoundException() {
         super();
     }

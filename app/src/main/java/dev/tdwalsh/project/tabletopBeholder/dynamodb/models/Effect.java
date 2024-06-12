@@ -1,6 +1,5 @@
 package dev.tdwalsh.project.tabletopBeholder.dynamodb.models;
 
-import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
@@ -23,9 +22,13 @@ public class Effect {
         return damageAmount;
     }
 
-    public String getObjectId() { return objectId; }
+    public String getObjectId() {
+        return objectId;
+    }
 
-    public void setObjectId(String objectId) { this.objectId = objectId; }
+    public void setObjectId(String objectId) {
+        this.objectId = objectId;
+    }
 
     public String getEffectName() {
         return effectName;
@@ -126,13 +129,13 @@ public class Effect {
 
     @Override
     public boolean equals(Object o) {
-        if(o == null) {
+        if (o == null) {
             return false;
         }
-        if(this == o) {
+        if (this == o) {
             return true;
         }
-        if(this.getClass() != o.getClass()) {
+        if (this.getClass() != o.getClass()) {
             return false;
         }
         Effect other = (Effect) o;

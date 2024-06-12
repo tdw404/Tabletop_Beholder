@@ -1,9 +1,12 @@
 package dev.tdwalsh.project.tabletopBeholder.exceptions.resourceNotFoundExceptions;
 
-public class ActionNotFoundException extends DBResourceNotFoundException{
+public class ActionNotFoundException extends DBResourceNotFoundException {
 
     private static final long serialVersionUID = -1493451373893866881L;
 
+    /**
+     * Constructor.
+     */
     public ActionNotFoundException() {
         super();
     }

@@ -13,18 +13,33 @@ public class UpdateSpellResult {
         return spell;
     }
 
+    /**
+     * Builder constructor.
+     * @return Builder.
+     */
     public static Builder builder() {
         return new Builder();
     }
-
+    /**
+     * Builder constructor.
+     */
     public static class Builder {
         private Spell spell;
 
+        /**
+         * Builder setter.
+         * @param spell - Set value.
+         * @return - Builder.
+         */
         public Builder withSpell(Spell spell) {
             this.spell = spell;
             return this;
         }
 
+        /**
+         * Builder.
+         * @return UpdateSpellResult
+         */
         public UpdateSpellResult build() {
             return new UpdateSpellResult(spell);
         }

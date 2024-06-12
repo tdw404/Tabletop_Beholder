@@ -1,9 +1,12 @@
 package dev.tdwalsh.project.tabletopBeholder.exceptions;
 
-public class CurlException extends RuntimeException{
+public class CurlException extends RuntimeException {
 
     private static final long serialVersionUID = 6960459999917103220L;
 
+    /**
+     * Constructor.
+     */
     public CurlException() {
         super();
     }

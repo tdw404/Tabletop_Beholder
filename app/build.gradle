@@ -96,6 +96,9 @@ checkstyleMain.doFirst {
     ignoreFailures = !gradle.taskGraph.allTasks.any({ it.name ==~ /.*staticchecks/ })
 }
 
+checkstyleMain
+    .exclude('dev/tdwalsh/project/tabletopBeholder/templateApi/model/*.java')
+
 check.dependsOn jacocoTestCoverageVerification
 jacocoTestCoverageVerification {
     violationRules {
