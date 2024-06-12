@@ -36,7 +36,6 @@ public class CreateTemplateCreatureActivity {
         //Then, checks for name uniqueness and throws error if not unique
         //Then, iterates over all spells - if spell does not exist, creates spell. Otherwise, adds a link to that spell.
         // Finally, writes the new object to DynamoDB and returns the result
-
         Creature creature = templateCreatureTranslator.translate(templateCreatureDao.getSingle(createTemplateCreatureRequest.getSlug()), createTemplateCreatureRequest.getUserEmail());
         creature.setUserEmail(createTemplateCreatureRequest.getUserEmail());
         NameHelper.objectNameUniqueness(creatureDao,creature);
