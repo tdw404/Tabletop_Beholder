@@ -175,17 +175,16 @@ const EMPTY_DATASTORE_STATE = {
         spell.spellLevel = document.getElementById('spellLevel').value;
         spell.spellSchool = document.getElementById('spellSchool').value;
         spell.innateCasts = document.getElementById('innateCasts').value;
-
-        try {
-            await this.spellClient.updateSpell(spell);
-            location.reload();
-        } catch (error) {
-            this.showElements();
-            document.getElementById('offcanvas-warn-body').innerText = "You already have a spell with the name " + document.getElementById('objectName').value + " in your library."
-            var myOffcanvas = document.getElementById('offcanvasWarn');
-            var bsOffcanvas = new bootstrap.Offcanvas(myOffcanvas);
-            bsOffcanvas.show();
-        }
+        var warned = false;
+            await this.spellClient.updateSpell(spell, (error) => {
+                document.getElementById('offcanvas-warn-body').innerText = error.message;
+                var myOffcanvas = document.getElementById('offcanvasWarn');
+                var bsOffcanvas = new bootstrap.Offcanvas(myOffcanvas);
+                bsOffcanvas.show();
+                this.showElements();
+                warned = true;
+            });
+        if(!warned) { location.reload(); };
 
     }
 
@@ -211,10 +210,18 @@ const EMPTY_DATASTORE_STATE = {
             spell.spellLevel = document.getElementById('newLevel').value;
             spell.spellSchool = document.getElementById('newSchool').value;
 
-            try {
-                this.hideElements();
-                document.getElementById('close-btn').click()
-                var newSpell = await this.spellClient.createSpell(spell);
+            var warned = false;
+            this.hideElements();
+            document.getElementById('close-btn').click()
+            var newSpell = await this.spellClient.createSpell(spell, (error) => {
+                document.getElementById('offcanvas-warn-body').innerText = error.message;
+                var myOffcanvas = document.getElementById('offcanvasWarn');
+                var bsOffcanvas = new bootstrap.Offcanvas(myOffcanvas);
+                bsOffcanvas.show();
+                this.showElements();
+                warned = true;
+            });
+            if (!warned) {
                 document.getElementById('newName').value = '';
                 document.getElementById('newDesc').value = '';
                 document.getElementById('newLevel').value = '';
@@ -225,13 +232,7 @@ const EMPTY_DATASTORE_STATE = {
                 await this.populateTable();
                 this.showElements();
                 this.spellRowClick(newSpell.objectId);
-            } catch (error) {
-                this.showElements();
-                document.getElementById('offcanvas-warn-body').innerText = "You already have a spell with the name " + document.getElementById('objectName').value + " in your library."
-                var myOffcanvas = document.getElementById('offcanvasWarn');
-                var bsOffcanvas = new bootstrap.Offcanvas(myOffcanvas);
-                bsOffcanvas.show();
-            }
+            };
         }
     }
 
@@ -244,22 +245,24 @@ const EMPTY_DATASTORE_STATE = {
     async importFinishButton() {
         var slug = this.dataStore.get(SELECTED_TEMPLATE_KEY);
         if(!slug=='') {
-            try {
-                this.hideElements();
-                document.getElementById('close-import-btn').click()
-                var newSpell = await this.spellClient.createTemplate(slug);
+            var warned = false;
+            this.hideElements();
+            document.getElementById('close-import-btn').click()
+            var newSpell = await this.spellClient.createTemplate(slug, (error) => {
+                document.getElementById('offcanvas-warn-body').innerText = error.message;
+                var myOffcanvas = document.getElementById('offcanvasWarn');
+                var bsOffcanvas = new bootstrap.Offcanvas(myOffcanvas);
+                bsOffcanvas.show();
+                this.showElements();
+                warned = true;
+            });
+            if (!warned) {
                 this.dataStore.set([SPELL_LIST_KEY], await this.spellClient.getMultipleSpells());
                 var spellMap = new Map(this.dataStore.get([SPELL_LIST_KEY]).map((obj) => [obj.objectId, obj]));
                 this.dataStore.set([SPELL_MAP_KEY], spellMap);
                 this.populateTable();
                 this.showElements();
                 this.spellRowClick(newSpell.objectId);
-            } catch (error) {
-                this.showElements();
-                document.getElementById('offcanvas-warn-body').innerText = "You already have a spell with the name " + document.getElementById('objectName').value + " in your library."
-                var myOffcanvas = document.getElementById('offcanvasWarn');
-                var bsOffcanvas = new bootstrap.Offcanvas(myOffcanvas);
-                bsOffcanvas.show();
             }
         }
     }
