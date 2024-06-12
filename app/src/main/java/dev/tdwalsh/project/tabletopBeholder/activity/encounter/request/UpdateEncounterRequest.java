@@ -20,6 +20,11 @@ public class UpdateEncounterRequest {
 
     public String getUserEmail() {
         return this.userEmail; }
+
+    /**
+     * Builder.
+     * @return builder
+     */
     public static Builder builder() {
         return new Builder();
     }

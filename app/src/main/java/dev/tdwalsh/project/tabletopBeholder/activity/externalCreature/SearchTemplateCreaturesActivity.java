@@ -1,14 +1,14 @@
 package dev.tdwalsh.project.tabletopBeholder.activity.externalCreature;
 
+import dev.tdwalsh.project.tabletopBeholder.activity.creature.result.GetAllCreaturesResult;
 import dev.tdwalsh.project.tabletopBeholder.activity.externalCreature.request.SearchTemplateCreaturesRequest;
 import dev.tdwalsh.project.tabletopBeholder.activity.externalCreature.result.SearchTemplateCreaturesResult;
-import dev.tdwalsh.project.tabletopBeholder.activity.creature.result.GetAllCreaturesResult;
 import dev.tdwalsh.project.tabletopBeholder.dynamodb.dao.CreatureDao;
 import dev.tdwalsh.project.tabletopBeholder.templateApi.TemplateCreatureDao;
 import dev.tdwalsh.project.tabletopBeholder.templateApi.model.TemplateCreature;
 
-import javax.inject.Inject;
 import java.util.List;
+import javax.inject.Inject;
 
 /**
  * GetCreatureActivity handles negotiation with {@link TemplateCreatureDao} to retrieve a list of {@link TemplateCreature}.

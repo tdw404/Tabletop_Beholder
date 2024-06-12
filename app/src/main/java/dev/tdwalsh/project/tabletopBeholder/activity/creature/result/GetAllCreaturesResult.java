@@ -15,6 +15,10 @@ public class GetAllCreaturesResult {
         return this.creatureList;
     }
 
+    /**
+     * Builder.
+     * @return builder
+     */
     public static Builder builder() {
         return new Builder();
     }
@@ -22,11 +26,20 @@ public class GetAllCreaturesResult {
     public static class Builder {
         private List<Creature> creatureList;
 
+        /**
+         * Builder setter.
+         * @param creatureList variable to set
+         * @return builder
+         */
         public Builder withCreatureList(List<Creature> creatureList) {
             this.creatureList = creatureList;
             return this;
         }
 
+        /**
+         * Builder.
+         * @return builder
+         */
         public GetAllCreaturesResult build() {
             return new GetAllCreaturesResult(creatureList);
         }

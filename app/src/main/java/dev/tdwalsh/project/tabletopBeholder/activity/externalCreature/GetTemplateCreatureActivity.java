@@ -1,6 +1,5 @@
 package dev.tdwalsh.project.tabletopBeholder.activity.externalCreature;
 
-
 import dev.tdwalsh.project.tabletopBeholder.activity.externalCreature.request.GetTemplateCreatureRequest;
 import dev.tdwalsh.project.tabletopBeholder.activity.externalCreature.result.GetTemplateCreatureResult;
 import dev.tdwalsh.project.tabletopBeholder.dynamodb.dao.CreatureDao;
@@ -8,8 +7,8 @@ import dev.tdwalsh.project.tabletopBeholder.exceptions.resourceNotFoundException
 import dev.tdwalsh.project.tabletopBeholder.templateApi.TemplateCreatureDao;
 import dev.tdwalsh.project.tabletopBeholder.templateApi.model.TemplateCreature;
 
-import javax.inject.Inject;
 import java.util.Optional;
+import javax.inject.Inject;
 
 /**
  * GetTemplateCreatureActivity handles negotiation with {@link TemplateCreatureDao} to retrieve a single {@link TemplateCreature}.
@@ -22,6 +21,7 @@ public class GetTemplateCreatureActivity {
      * Instantiates a new activity object.
      *
      * @param templateCreatureDao DAO object necessary for this activity object to carry out its function.
+     * @param creatureDao  DAO object necessary for this activity object to carry out its function.
      */
 
     @Inject
@@ -41,8 +41,9 @@ public class GetTemplateCreatureActivity {
 
     public GetTemplateCreatureResult handleRequest(GetTemplateCreatureRequest getTemplateCreatureRequest) {
         TemplateCreature templateCreature = Optional.ofNullable(templateCreatureDao.getSingle(getTemplateCreatureRequest.getSlug()))
-                .orElseThrow(() -> new TemplateCreatureNotFoundException(String.format("Could not find a templateCreature for [%s] with slug [%s]", getTemplateCreatureRequest.getUserEmail(), getTemplateCreatureRequest.getSlug())));
-        if(creatureDao.objectNameExists(getTemplateCreatureRequest.getUserEmail(), templateCreature.getName())) {
+                .orElseThrow(() -> new TemplateCreatureNotFoundException(String.format("Could not find a templateCreature for [%s] with slug [%s]",
+                        getTemplateCreatureRequest.getUserEmail(), getTemplateCreatureRequest.getSlug())));
+        if (creatureDao.objectNameExists(getTemplateCreatureRequest.getUserEmail(), templateCreature.getName())) {
             templateCreature.setResourceExists(true);
         }
         return GetTemplateCreatureResult.builder()

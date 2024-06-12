@@ -21,6 +21,10 @@ public class SearchTemplateCreaturesResult {
         return this.templateCreatureList;
     }
 
+    /**
+     * Builder.
+     * @return builder
+     */
     public static Builder builder() {
         return new Builder();
     }
@@ -28,11 +32,20 @@ public class SearchTemplateCreaturesResult {
     public static class Builder {
         private List<TemplateCreature> templateCreatureList;
 
+        /**
+         * Builder setter.
+         * @param templateCreatureList variable to set
+         * @return builder
+         */
         public Builder withTemplateCreatureList(List<TemplateCreature> templateCreatureList) {
             this.templateCreatureList = templateCreatureList;
             return this;
         }
 
+        /**
+         * Builder.
+         * @return builder
+         */
         public SearchTemplateCreaturesResult build() {
             return new SearchTemplateCreaturesResult(templateCreatureList.size(), templateCreatureList);
         }

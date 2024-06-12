@@ -46,7 +46,7 @@ public class UpdateEncounterActivity {
         Encounter newEncounter  = updateEncounterRequest.getEncounter();
         newEncounter.setUserEmail(updateEncounterRequest.getUserEmail());
         Encounter oldEncounter = Optional.ofNullable(encounterDao.getSingle(newEncounter.getUserEmail(), newEncounter.getObjectId())).orElseThrow(()
-                -> new MissingResourceException(String.format("Resource with id [%s] could not be retrieved from database", newEncounter.getObjectId())));
+            -> new MissingResourceException(String.format("Resource with id [%s] could not be retrieved from database", newEncounter.getObjectId())));
         newEncounter.setCreateDateTime(oldEncounter.getCreateDateTime());
         newEncounter.setEditDateTime(ZonedDateTime.now());
         encounterDao.writeObject(newEncounter);

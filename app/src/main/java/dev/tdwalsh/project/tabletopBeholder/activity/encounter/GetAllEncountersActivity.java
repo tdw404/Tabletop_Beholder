@@ -5,8 +5,8 @@ import dev.tdwalsh.project.tabletopBeholder.activity.encounter.result.GetAllEnco
 import dev.tdwalsh.project.tabletopBeholder.dynamodb.dao.EncounterDao;
 import dev.tdwalsh.project.tabletopBeholder.dynamodb.models.Encounter;
 
-import javax.inject.Inject;
 import java.util.List;
+import javax.inject.Inject;
 
 /**
  * GetEncounterActivity handles negotiation with {@link EncounterDao} to retrieve a list of {@link Encounter}.

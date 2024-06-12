@@ -1,6 +1,5 @@
 package dev.tdwalsh.project.tabletopBeholder.activity.helpers;
 
-
 import dev.tdwalsh.project.tabletopBeholder.dynamodb.dao.BeholderDao;
 
 import dev.tdwalsh.project.tabletopBeholder.dynamodb.models.BeholderObject;

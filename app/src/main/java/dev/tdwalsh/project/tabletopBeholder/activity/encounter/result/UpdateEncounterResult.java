@@ -13,6 +13,10 @@ public class UpdateEncounterResult {
         return encounter;
     }
 
+    /**
+     * Builder.
+     * @return builder
+     */
     public static Builder builder() {
         return new Builder();
     }
@@ -20,11 +24,20 @@ public class UpdateEncounterResult {
     public static class Builder {
         private Encounter encounter;
 
+        /**
+         * Builder setter.
+         * @param encounter variable to set
+         * @return builder
+         */
         public Builder withEncounter(Encounter encounter) {
             this.encounter = encounter;
             return this;
         }
 
+        /**
+         * Builder.
+         * @return builder
+         */
         public UpdateEncounterResult build() {
             return new UpdateEncounterResult(encounter);
         }

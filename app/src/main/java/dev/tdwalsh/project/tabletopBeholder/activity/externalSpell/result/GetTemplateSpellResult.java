@@ -25,7 +25,7 @@ public class GetTemplateSpellResult {
         private TemplateSpell templateSpell;
 
         /**
-         * Builder
+         * Builder.
          * @param templateSpell variable to set
          * @return builder
          */

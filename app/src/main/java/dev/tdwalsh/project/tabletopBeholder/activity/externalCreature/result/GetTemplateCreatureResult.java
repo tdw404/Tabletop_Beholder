@@ -13,6 +13,10 @@ public class GetTemplateCreatureResult {
         return templateCreature;
     }
 
+    /**
+     * Builder.
+     * @return builder
+     */
     public static Builder builder() {
         return new Builder();
     }
@@ -20,11 +24,20 @@ public class GetTemplateCreatureResult {
     public static class Builder {
         private TemplateCreature templateCreature;
 
+        /**
+         * Builder setter.
+         * @param templateCreature variable to set
+         * @return builder
+         */
         public Builder withTemplateCreature(TemplateCreature templateCreature) {
             this.templateCreature = templateCreature;
             return this;
         }
 
+        /**
+         * Builder.
+         * @return builder
+         */
         public GetTemplateCreatureResult build() {
             return new GetTemplateCreatureResult(templateCreature);
         }
