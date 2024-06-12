@@ -295,7 +295,7 @@ const EMPTY_DATASTORE_STATE = {
             this.hideElements();
             document.getElementById('close-session-create-btn').click()
             await this.sessionClient.createSession(session);
-            location.reload;
+            location.reload();
         } catch (error) {
             this.showElements();
             document.getElementById('offcanvas-warn-body').innerText = "You already have a encounter with the name " + document.getElementById('objectName').value + " in your library."
