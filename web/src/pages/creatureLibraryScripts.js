@@ -18,6 +18,7 @@ const SPELL_MAP_KEY = 'spell-map-key';
 const SELECTED_SPELL_KEY = 'selected-spell-key';
 const SELECTED_NEW_SPELL_KEY = 'selected-new-spell-key';
 const NEW_SPELL_MAP_KEY = 'new-spell-map-key';
+const ERROR_DIALOGUE_KEY = 'error-dialogue-key';
 const EMPTY_DATASTORE_STATE = {
     [COGNITO_NAME_KEY]: '',
     [COGNITO_EMAIL_KEY]: '',
@@ -31,6 +32,8 @@ const EMPTY_DATASTORE_STATE = {
     [SELECTED_SPELL_KEY]: '',
     [SELECTED_NEW_SPELL_KEY]: '',
     [NEW_SPELL_MAP_KEY]: '',
+    [ERROR_DIALOGUE_KEY]: '',
+
 };
 /**
  * Adds functionality to the landing page.
@@ -416,8 +419,16 @@ const EMPTY_DATASTORE_STATE = {
     async deleteButton() {
         if(this.dataStore.get(SELECTED_CREATURE_KEY) != '') {
             this.hideElements();
-            await this.creatureClient.deleteCreature(this.dataStore.get(SELECTED_CREATURE_KEY).objectId);
-            location.reload();
+            var warned = false;
+            await this.creatureClient.deleteCreature(this.dataStore.get(SELECTED_CREATURE_KEY).objectId, (error) => {
+               document.getElementById('offcanvas-warn-body').innerText = error.message;
+               var myOffcanvas = document.getElementById('offcanvasWarn');
+               var bsOffcanvas = new bootstrap.Offcanvas(myOffcanvas);
+               bsOffcanvas.show();
+               this.showElements();
+               warned = true;
+           });
+            if (!warned) { location.reload(); };
         }
     }
 
@@ -644,18 +655,18 @@ const EMPTY_DATASTORE_STATE = {
         spellSlotMap.set(8, document.getElementById('ss8').value);
         spellSlotMap.set(9, document.getElementById('ss9').value);
         creature.spellSlots = this.mapToObj(spellSlotMap);
-
-        try {
-            await this.creatureClient.updateCreature(creature);
-            location.reload();
-        } catch (error) {
-            this.showElements();
-            document.getElementById('offcanvas-warn-body').innerText = "You already have a creature with the name " + document.getElementById('objectName').value + " in your library."
+        var warned = false;
+        await this.creatureClient.updateCreature(creature, (error) => {
+            document.getElementById('offcanvas-warn-body').innerText = error.message;
             var myOffcanvas = document.getElementById('offcanvasWarn');
             var bsOffcanvas = new bootstrap.Offcanvas(myOffcanvas);
             bsOffcanvas.show();
-        }
+            this.showElements();
+            warned = true;
+        });
+        if (!warned) { location.reload(); };
     }
+
 
     async cloneButton() {
         var creature = this.dataStore.get(SELECTED_CREATURE_KEY);
@@ -694,10 +705,18 @@ const EMPTY_DATASTORE_STATE = {
                 creature.creatureDescription = document.getElementById('newDesc').value;
                 creature.size = document.getElementById('sizeCreate').value;
             }
-            try {
-                this.hideElements();
-                document.getElementById('close-btn').click()
-                var newCreature = await this.creatureClient.createCreature(creature);
+            this.hideElements();
+            document.getElementById('close-btn').click()
+            var warned = false;
+            var newCreature = await this.creatureClient.createCreature(creature, (error) => {
+               document.getElementById('offcanvas-warn-body').innerText = error.message;
+               var myOffcanvas = document.getElementById('offcanvasWarn');
+               var bsOffcanvas = new bootstrap.Offcanvas(myOffcanvas);
+                bsOffcanvas.show();
+                this.showElements();
+                warned = true;
+            });
+            if(!warned) {
                 document.getElementById('newName').value = '';
                 document.getElementById('newDesc').value = '';
                 document.getElementById('sizeCreate').value = '';
@@ -708,13 +727,7 @@ const EMPTY_DATASTORE_STATE = {
                 await this.populateTable();
                 this.showElements();
                 this.creatureRowClick(newCreature.objectId);
-            } catch (error) {
-                this.showElements();
-                document.getElementById('offcanvas-warn-body').innerText = "You already have a creature with the name " + document.getElementById('objectName').value + " in your library."
-                var myOffcanvas = document.getElementById('offcanvasWarn');
-                var bsOffcanvas = new bootstrap.Offcanvas(myOffcanvas);
-                bsOffcanvas.show();
-            }
+            };
         }
     }
 
@@ -727,23 +740,25 @@ const EMPTY_DATASTORE_STATE = {
     async importFinishButton() {
         var slug = this.dataStore.get(SELECTED_TEMPLATE_KEY);
         if(!slug=='') {
-            try {
                 this.hideElements();
                 document.getElementById('close-import-btn').click()
-                var newCreature = await this.creatureClient.createTemplate(slug);
-                this.dataStore.set([CREATURE_LIST_KEY], await this.creatureClient.getMultipleCreatures());
-                var creatureMap = new Map(this.dataStore.get([CREATURE_LIST_KEY]).map((obj) => [obj.objectId, obj]));
-                this.dataStore.set([CREATURE_MAP_KEY], creatureMap);
-                await this.populateTable();
-                this.showElements();
-                this.creatureRowClick(newCreature.objectId);
-            } catch (error) {
-                this.showElements();
-                document.getElementById('offcanvas-warn-body').innerText = "You already have a creature with the name " + document.getElementById('objectName').value + " in your library."
-                var myOffcanvas = document.getElementById('offcanvasWarn');
-                var bsOffcanvas = new bootstrap.Offcanvas(myOffcanvas);
-                bsOffcanvas.show();
-            }
+                var warned = false;
+                var newCreature = await this.creatureClient.createTemplate(slug, (error) => {
+                    document.getElementById('offcanvas-warn-body').innerText = error.message;
+                    var myOffcanvas = document.getElementById('offcanvasWarn');
+                    var bsOffcanvas = new bootstrap.Offcanvas(myOffcanvas);
+                    bsOffcanvas.show();
+                    this.showElements();
+                    warned = true;
+                });
+                if (!warned) {
+                    this.dataStore.set([CREATURE_LIST_KEY], await this.creatureClient.getMultipleCreatures());
+                    var creatureMap = new Map(this.dataStore.get([CREATURE_LIST_KEY]).map((obj) => [obj.objectId, obj]));
+                    this.dataStore.set([CREATURE_MAP_KEY], creatureMap);
+                    await this.populateTable();
+                    this.showElements();
+                    this.creatureRowClick(newCreature.objectId);
+                };
         }
     }
 

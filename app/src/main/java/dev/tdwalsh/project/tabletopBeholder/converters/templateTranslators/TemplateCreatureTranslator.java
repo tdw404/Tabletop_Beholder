@@ -5,6 +5,7 @@ import dev.tdwalsh.project.tabletopBeholder.dynamodb.dao.SpellDao;
 import dev.tdwalsh.project.tabletopBeholder.dynamodb.models.Action;
 import dev.tdwalsh.project.tabletopBeholder.dynamodb.models.Creature;
 import dev.tdwalsh.project.tabletopBeholder.dynamodb.models.Spell;
+import dev.tdwalsh.project.tabletopBeholder.exceptions.TemplateConverterException;
 import dev.tdwalsh.project.tabletopBeholder.templateApi.TemplateSpellDao;
 import dev.tdwalsh.project.tabletopBeholder.templateApi.model.TemplateCreature;
 import dev.tdwalsh.project.tabletopBeholder.templateApi.model.TemplateSpell;
@@ -140,72 +141,77 @@ public class TemplateCreatureTranslator {
         if (castAction != null) {
             sentenceTokens = Arrays.asList(castAction
                     .getActionDescription()
-                    .split("\\n\\n|\\. "));
+                    .split("\\n\\n|\\."));
         }
 
 
         sentenceTokens.forEach(sentenceToken -> {
-            if (sentenceToken.contains("spellcasting ability")) {
-                //Retrieves spellcasting stats
-                creature.setSpellcastingAbility(Arrays.asList(sentenceToken.split("ability is | \\(")).get(1));
-                String protoSpellSave = Arrays.asList(sentenceToken.split("save DC |\\)")).get(1);
-                creature.setSpellSaveDC(Arrays.asList(protoSpellSave.split(",")).get(0));
-                if (sentenceToken.contains("to hit with spell attacks")) {
-                    List<String> splitTokens = Arrays.asList(
-                            Arrays.asList(sentenceToken.split(" to hit with spell attacks"))
-                                    .get(0).split(", | "));
-                    creature.setSpellAttackModifier(splitTokens.get(splitTokens.size() - 1));
-                }
-            }
-
-            if (sentenceToken.contains("at will") || sentenceToken.contains("/day")) {
-                //Extract number of innate casts for this set of spells
-                int casts = 0;
-                if (sentenceToken.contains("at will")) {
-                    casts = -1;
-                } else {
-                    List<String> innateSplit = Arrays.asList(sentenceToken.split("/day"));
-                    try {
-                        casts = Integer.parseInt(innateSplit.get(0));
-                    } catch (Exception e) {
-                        casts = 1;
+            try {
+                if (sentenceToken.contains("spellcasting ability")) {
+                    //Retrieves spellcasting stats
+                    creature.setSpellcastingAbility(Arrays.asList(sentenceToken.split("ability is | \\(")).get(1));
+                    String protoSpellSave = Arrays.asList(sentenceToken.split("save DC |\\)")).get(1);
+                    creature.setSpellSaveDC(Arrays.asList(protoSpellSave.split(",")).get(0));
+                    if (sentenceToken.contains("to hit with spell attacks")) {
+                        List<String> splitTokens = Arrays.asList(
+                                Arrays.asList(sentenceToken.split(" to hit with spell attacks"))
+                                        .get(0).split(", | "));
+                        creature.setSpellAttackModifier(splitTokens.get(splitTokens.size() - 1));
                     }
                 }
-                final int innateCasts = casts;
-                Arrays.stream(Arrays.asList(sentenceToken.split(": ")).get(1).split(", "))
-                        .map(WordUtils::capitalizeFully)
-                        .forEach(spellName -> {
-                            //First, check to see if spell already exists in library
-                            //Else, check remote and retrieve the spell if possible
-                            //Else, create a blank spell with this name
-                            Spell spell = spellDao.getSpellByName(userEmail, spellName);
-                            if (spell != null) {
-                                spell.setInnateCasts(innateCasts);
-                                spellMap.put(spell.getObjectId(), spell);
-                            } else {
-                                //Since the external api does not appear to allow searches by name
-                                //It looks like we're forced to get a list of partial matches
-                                //Then filter through and find the matching name manually
-                                List<TemplateSpell> templateSpellList = templateSpellDao.getMultiple("search=" + spellName.replace(" ", "%20"));
-                                TemplateSpell templateSpell = templateSpellList.stream()
-                                        .filter(template -> template.getName().equals(spellName))
-                                        .findFirst().orElse(null);
-                                if (templateSpell != null) {
-                                    spell = TemplateSpellTranslator.translate(templateSpell);
-                                    spell.setUserEmail(userEmail);
-                                    spell = (Spell) CreateObjectHelper.createObject(spellDao, spell);
+
+                if (sentenceToken.contains("at will") || sentenceToken.contains("/day")) {
+                    //Extract number of innate casts for this set of spells
+                    int casts = 0;
+                    if (sentenceToken.contains("at will")) {
+                        casts = -1;
+                    } else {
+                        List<String> innateSplit = Arrays.asList(sentenceToken.split("/day"));
+                        try {
+                            casts = Integer.parseInt(innateSplit.get(0));
+                        } catch (Exception e) {
+                            casts = 1;
+                        }
+                    }
+                    final int innateCasts = casts;
+                    Arrays.stream(Arrays.asList(sentenceToken.split(":")).get(1).split(", "))
+                            .map(WordUtils::capitalizeFully)
+                            .forEach(spellName -> {
+                                //First, check to see if spell already exists in library
+                                //Else, check remote and retrieve the spell if possible
+                                //Else, create a blank spell with this name
+                                Spell spell = spellDao.getSpellByName(userEmail, spellName);
+                                if (spell != null) {
                                     spell.setInnateCasts(innateCasts);
                                     spellMap.put(spell.getObjectId(), spell);
                                 } else {
-                                    spell = new Spell();
-                                    spell.setUserEmail(userEmail);
-                                    spell.setObjectName(spellName);
-                                    spell = (Spell) CreateObjectHelper.createObject(spellDao, spell);
-                                    spell.setInnateCasts(innateCasts);
-                                    spellMap.put(spell.getObjectId(), spell);
+                                    //Since the external api does not appear to allow searches by name
+                                    //It looks like we're forced to get a list of partial matches
+                                    //Then filter through and find the matching name manually
+                                    List<TemplateSpell> templateSpellList = templateSpellDao.getMultiple("search=" + spellName.replace(" ", "%20"));
+                                    TemplateSpell templateSpell = templateSpellList.stream()
+                                            .filter(template -> template.getName().equals(spellName))
+                                            .findFirst().orElse(null);
+                                    if (templateSpell != null) {
+                                        spell = TemplateSpellTranslator.translate(templateSpell);
+                                        spell.setUserEmail(userEmail);
+                                        spell = (Spell) CreateObjectHelper.createObject(spellDao, spell);
+                                        spell.setInnateCasts(innateCasts);
+                                        spellMap.put(spell.getObjectId(), spell);
+                                    } else {
+                                        spell = new Spell();
+                                        spell.setUserEmail(userEmail);
+                                        spell.setObjectName(spellName);
+                                        spell = (Spell) CreateObjectHelper.createObject(spellDao, spell);
+                                        spell.setInnateCasts(innateCasts);
+                                        spellMap.put(spell.getObjectId(), spell);
+                                    }
                                 }
-                            }
-                        });
+                            });
+                }
+            } catch (Exception e) {
+                throw new TemplateConverterException(String.format("Error processing spells for [%s].\\n" +
+                        "Offending line was [%s]", templateCreature.getName(), sentenceToken));
             }
         });
 
@@ -229,72 +235,78 @@ public class TemplateCreatureTranslator {
         }
 
         sentenceTokens.forEach(sentenceToken -> {
-            if (sentenceToken.contains("spellcasting ability")) {
-                //Retrieves spellcasting stats
-                creature.setSpellcastingAbility(Arrays.asList(sentenceToken.split("ability is | \\(")).get(1));
-                String protoSpellSave = Arrays.asList(sentenceToken.split("save DC |\\)")).get(1);
-                creature.setSpellSaveDC(Arrays.asList(protoSpellSave.split(",")).get(0));
-                if (sentenceToken.contains("to hit with spell attacks")) {
-                    List<String> splitTokens = Arrays.asList(
-                            Arrays.asList(sentenceToken.split(" to hit with spell attacks"))
-                                    .get(0).split(", | "));
-                    creature.setSpellAttackModifier(splitTokens.get(splitTokens.size() - 1));
-                }
-            }
-
-            if (sentenceToken.contains("at will") || sentenceToken.contains("slots")) {
-                //Extract number of innate casts for this set of spells
-                int casts = 0;
-                int level = 0;
-                if (sentenceToken.contains("at will")) {
-                    level = -1;
-                    casts = -1;
-                } else {
-                    List<String> slotsSplit = Arrays.asList(sentenceToken.split("\\(| slots"));
-                    try {
-                        casts = Integer.parseInt(slotsSplit.get(1));
-                    } catch (Exception e) {
-                        casts = 1;
-                    }
-                    try {
-                        level = Integer.parseInt(sentenceToken.substring(0, 1));
-                    } catch (Exception e) {
-                        level = 1;
+            try {
+                if (sentenceToken.contains("spellcasting ability")) {
+                    //Retrieves spellcasting stats
+                    System.out.println(sentenceToken);
+                    creature.setSpellcastingAbility(Arrays.asList(sentenceToken.split("ability is | \\(")).get(1));
+                    String protoSpellSave = Arrays.asList(sentenceToken.split("save DC |\\)")).get(1);
+                    creature.setSpellSaveDC(Arrays.asList(protoSpellSave.split(",")).get(0));
+                    if (sentenceToken.contains("to hit with spell attacks")) {
+                        List<String> splitTokens = Arrays.asList(
+                                Arrays.asList(sentenceToken.split(" to hit with spell attacks"))
+                                        .get(0).split(", | "));
+                        creature.setSpellAttackModifier(splitTokens.get(splitTokens.size() - 1));
                     }
                 }
-                spellSlots.put(level, casts);
 
-                Arrays.stream(Arrays.asList(sentenceToken.split(": ")).get(1).split(", "))
-                        .map(WordUtils::capitalizeFully)
-                        .forEach(spellName -> {
-                            //First, check to see if spell already exists in library
-                            //Else, check remote and retrieve the spell if possible
-                            //Else, create a blank spell with this name
-                            Spell spell = spellDao.getSpellByName(userEmail, spellName);
-                            if (spell != null) {
-                                spellMap.put(spell.getObjectId(), spell);
-                            } else {
-                                //Since the external api does not appear to allow searches by name
-                                //It looks like we're forced to get a list of partial matches
-                                //Then filter through and find the matching name manually
-                                List<TemplateSpell> templateSpellList = templateSpellDao.getMultiple("search=" + spellName.replace(" ", "%20"));
-                                TemplateSpell templateSpell = templateSpellList.stream()
-                                        .filter(template -> template.getName().equals(spellName))
-                                        .findFirst().orElse(null);
-                                if (templateSpell != null) {
-                                    spell = TemplateSpellTranslator.translate(templateSpell);
-                                    spell.setUserEmail(userEmail);
-                                    spell = (Spell) CreateObjectHelper.createObject(spellDao, spell);
+                if (sentenceToken.contains("at will") || sentenceToken.contains("slots")) {
+                    //Extract number of innate casts for this set of spells
+                    int casts = 0;
+                    int level = 0;
+                    if (sentenceToken.contains("at will")) {
+                        level = -1;
+                        casts = -1;
+                    } else {
+                        List<String> slotsSplit = Arrays.asList(sentenceToken.split("\\(| slots"));
+                        try {
+                            casts = Integer.parseInt(slotsSplit.get(1));
+                        } catch (Exception e) {
+                            casts = 1;
+                        }
+                        try {
+                            level = Integer.parseInt(sentenceToken.substring(0, 1));
+                        } catch (Exception e) {
+                            level = 1;
+                        }
+                    }
+                    spellSlots.put(level, casts);
+
+                    Arrays.stream(Arrays.asList(sentenceToken.split(": ")).get(1).split(", "))
+                            .map(WordUtils::capitalizeFully)
+                            .forEach(spellName -> {
+                                //First, check to see if spell already exists in library
+                                //Else, check remote and retrieve the spell if possible
+                                //Else, create a blank spell with this name
+                                Spell spell = spellDao.getSpellByName(userEmail, spellName);
+                                if (spell != null) {
                                     spellMap.put(spell.getObjectId(), spell);
                                 } else {
-                                    spell = new Spell();
-                                    spell.setUserEmail(userEmail);
-                                    spell.setObjectName(spellName);
-                                    spell = (Spell) CreateObjectHelper.createObject(spellDao, spell);
-                                    spellMap.put(spell.getObjectId(), spell);
+                                    //Since the external api does not appear to allow searches by name
+                                    //It looks like we're forced to get a list of partial matches
+                                    //Then filter through and find the matching name manually
+                                    List<TemplateSpell> templateSpellList = templateSpellDao.getMultiple("search=" + spellName.replace(" ", "%20"));
+                                    TemplateSpell templateSpell = templateSpellList.stream()
+                                            .filter(template -> template.getName().equals(spellName))
+                                            .findFirst().orElse(null);
+                                    if (templateSpell != null) {
+                                        spell = TemplateSpellTranslator.translate(templateSpell);
+                                        spell.setUserEmail(userEmail);
+                                        spell = (Spell) CreateObjectHelper.createObject(spellDao, spell);
+                                        spellMap.put(spell.getObjectId(), spell);
+                                    } else {
+                                        spell = new Spell();
+                                        spell.setUserEmail(userEmail);
+                                        spell.setObjectName(spellName);
+                                        spell = (Spell) CreateObjectHelper.createObject(spellDao, spell);
+                                        spellMap.put(spell.getObjectId(), spell);
+                                    }
                                 }
-                            }
-                        });
+                            });
+                }
+            } catch (Exception e) {
+                throw new TemplateConverterException(String.format("Error processing spells for [%s].\\n" +
+                        "Offending line was [%s]", templateCreature.getName(), sentenceToken));
             }
         });
         creature.setSpellMap(spellMap);
