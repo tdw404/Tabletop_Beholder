@@ -1,10 +1,10 @@
 package dev.tdwalsh.project.tabletopBeholder.activity.runEncounter.request;
 
-public class GetEncounterNameListRequest {
+public class GetEncounterListRequest {
     private final String userEmail;
     private final String sessionId;
 
-    private GetEncounterNameListRequest(String userEmail, String sessionId) {
+    private GetEncounterListRequest(String userEmail, String sessionId) {
         this.userEmail = userEmail;
         this.sessionId = sessionId;
     }
@@ -13,7 +13,7 @@ public class GetEncounterNameListRequest {
         return this.userEmail;
     }
 
-    public String getObjectId() {
+    public String getSessionId() {
         return this.sessionId;
     }
 
@@ -43,7 +43,7 @@ public class GetEncounterNameListRequest {
          * @param sessionId  - Variable to set.
          * @return - Builder.
          */
-        public Builder withObjectId(String sessionId) {
+        public Builder withSessionId(String sessionId) {
             this.sessionId = sessionId;
             return this;
         }
@@ -52,8 +52,8 @@ public class GetEncounterNameListRequest {
          * Builder.
          * @return - Builder
          */
-        public GetEncounterNameListRequest build() {
-            return new GetEncounterNameListRequest(userEmail, sessionId);
+        public GetEncounterListRequest build() {
+            return new GetEncounterListRequest(userEmail, sessionId);
         }
     }
 }
