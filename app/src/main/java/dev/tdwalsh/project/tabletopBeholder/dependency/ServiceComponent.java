@@ -16,6 +16,7 @@ import dev.tdwalsh.project.tabletopBeholder.activity.externalCreature.SearchTemp
 import dev.tdwalsh.project.tabletopBeholder.activity.externalSpell.CreateTemplateSpellActivity;
 import dev.tdwalsh.project.tabletopBeholder.activity.externalSpell.GetTemplateSpellActivity;
 import dev.tdwalsh.project.tabletopBeholder.activity.externalSpell.SearchTemplateSpellsActivity;
+import dev.tdwalsh.project.tabletopBeholder.activity.runEncounter.GetEncounterListActivity;
 import dev.tdwalsh.project.tabletopBeholder.activity.session.CreateSessionActivity;
 import dev.tdwalsh.project.tabletopBeholder.activity.session.DeleteSessionActivity;
 import dev.tdwalsh.project.tabletopBeholder.activity.session.GetAllSessionsActivity;
@@ -193,4 +194,10 @@ public interface ServiceComponent {
      * @return CreateTemplateCreatureActivity
      */
     CreateTemplateCreatureActivity provideCreateTemplateCreatureActivity();
+
+    /**
+     * Provides the relevant activity.
+     * @return GetEncounterListActivity
+     */
+    GetEncounterListActivity provideGetEncounterListActivity();
 }

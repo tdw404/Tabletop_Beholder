@@ -7,6 +7,12 @@ public class EncounterName {
     private String objectId;
     private String objectName;
 
+    /**
+     * Constructor
+     * @param userEmail - email to assign
+     * @param objectId - objectId to assign
+     * @param objectName - objectName to assign
+     */
     public EncounterName(String userEmail, String objectId, String objectName) {
         this.userEmail = userEmail;
         this.objectId = objectId;
