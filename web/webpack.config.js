@@ -27,6 +27,7 @@ module.exports = {
     spellLibraryScripts: path.resolve(__dirname, 'src', 'pages', 'spellLibraryScripts.js'),
     creatureLibraryScripts: path.resolve(__dirname, 'src', 'pages', 'creatureLibraryScripts.js'),
     encounterLibraryScripts: path.resolve(__dirname, 'src', 'pages', 'encounterLibraryScripts.js'),
+    runEncounterScripts: path.resolve(__dirname, 'src', 'pages', 'runEncounterScripts.js'),
   },
   output: {
     path: path.resolve(__dirname, 'build', 'assets'),
