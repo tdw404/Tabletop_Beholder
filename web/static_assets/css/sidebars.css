@@ -16,6 +16,10 @@ main {
   overflow-x: auto;
   overflow-y: hidden;
 }
+.vr {
+    currentColor: blue;
+    opacity: 1;
+}
 
 .pad-up {
     padding-top: 3em;
@@ -114,11 +118,6 @@ main {
 
 .table-responsive {
     max-height:80%;
-    border: 2;
-}
-
-.table-responsive {
-    max-height:60%;
     border: 2;
 }
 

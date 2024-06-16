@@ -58,7 +58,7 @@ const EMPTY_DATASTORE_STATE = {
     };
 
      mount() {
-        this.navbarProvider.addNavbarToPage();
+        this.navbarProvider.provideBars();
         this.startupActivities();
      };
 
@@ -203,12 +203,12 @@ const EMPTY_DATASTORE_STATE = {
                 cell4.innerHTML = value.size;
                 cell5.innerHTML = value.type;
                 cell6.innerHTML = value.alignment;
-            } else (
-                creatureMap = '';
-            )
+            }
             this.dataStore.set([CREATURE_MAP_KEY], creatureMap);
             this.sortCreatureTable(creatureTable);
-        }
+        } else {
+                         creatureMap = '';
+                     }
     }
 
        sortCreatureTable(table) {

@@ -16,31 +16,36 @@
     <div id = "navbar">
 
     </div>
-    <div class="vert-divider"></div>
-    <div class="container align-items-center pad-up">
-        <h1 class="text-center align-self-center">Beholder</h1>
-        <h3 class="text-center align-self-center">An Encounter Management Tool for DMs</h3>
+    <div class="vert-divider" id = "navbar-divider"></div>
+    <div class="container">
+        <div id = "header-bar">
+
+        </div>
         <div class="container align-items-center pad-up">
-            <div class="card" id="welcomeText" hidden>
-                <div class="card-body">
-                    <ul>
-                        <li>Welcome! You can get started by adding a few creatures to your library</li>
-                        <li>Beholder is using <a href="https://open5e.com/">Open 5E</a>'s API to import creatures and spells.</li>
+            <h1 class="text-center align-self-center">Beholder</h1>
+            <h3 class="text-center align-self-center">An Encounter Management Tool for DMs</h3>
+            <div class="container align-items-center pad-up">
+                <div class="card" id="welcomeText" hidden>
+                    <div class="card-body">
                         <ul>
-                            <li>If you can't find the resource you're looking for, you can always create it yourself.</li>
+                            <li>Welcome! You can get started by adding a few creatures to your library</li>
+                            <li>Beholder is using <a href="https://open5e.com/">Open 5E</a>'s API to import creatures and spells.</li>
+                            <ul>
+                                <li>If you can't find the resource you're looking for, you can always create it yourself.</li>
+                            </ul>
+                            <li>When you import a creature, Beholder will do its best to import its actions and spells.</li>
+                            <ul>
+                                <li>Beholder is trying its best, but it's far from perfect!</li>
+                                <li>You'll want to double check creatures/spells after import and possibly clean them up.</li>
+                            </ul>
+                            <li>You can also create Player Characters - really just placeholders for encounter turn order.</li>
+                            <li>After you've created a few creatures, you're ready to create an encounter and add creatures to it!</li>
                         </ul>
-                        <li>When you import a creature, Beholder will do its best to import its actions and spells.</li>
-                        <ul>
-                            <li>Beholder is trying its best, but it's far from perfect!</li>
-                            <li>You'll want to double check creatures/spells after import and possibly clean them up.</li>
-                        </ul>
-                        <li>You can also create Player Characters - really just placeholders for encounter turn order.</li>
-                        <li>After you've created a few creatures, you're ready to create an encounter and add creatures to it!</li>
-                    </ul>
+                    </div>
                 </div>
             </div>
-        </div>
 
+        </div>
     </div>
 </main>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>

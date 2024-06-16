@@ -8,10 +8,38 @@ import BindingClass from "../util/bindingClass";
  export default class Header extends BindingClass {
     constructor() {
         super();
-        const methodsToBind = ['addNavbarToPage', 'createLoginButton', 'createLogoutButton', 'createButton'];
+        const methodsToBind = ['addNavbarToPage', 'createLoginButton',
+                                'createLogoutButton', 'createButton',
+                                'addHeaderToPage', 'align',
+                                'getHeight', 'getWidth',
+                                'provideBars'];
         this.bindClassMethods(methodsToBind, this);
         this.client = new AuthClient();
     };
+
+    async provideBars() {
+        this.addHeaderToPage();
+        this.addNavbarToPage();
+        window.addEventListener('resize', await this.align, true);
+        this.align();
+    }
+
+    async addHeaderToPage() {
+        const currentUser = await this.client.getIdentity();
+        const header = `<header class="d-flex flex-wrap justify-content-left py-3 px-3 shadow" id = 'header-buttons'>
+                                        <a href="index.html" class="btn btn-flat align-items-center rounded">Beholder</a>
+                                        <a href="encounterLibrary.html" class="btn btn-flat align-items-center rounded preload disabled">Encounters</a>
+                                        <a href="creatureLibrary.html" class="btn btn-flat align-items-center rounded preload disabled">Creatures</a>
+                                        <a href="spellLibrary.html" class="btn btn-flat align-items-center rounded preload disabled">Spells</a>
+                                        <a href="runEncounter.html" class="btn btn-flat align-items-center rounded preload disabled">Run Encounter</a>
+                                    </header>`;
+        document.getElementById('header-bar').insertAdjacentHTML('afterbegin', header);
+        const button = currentUser
+           ? this.createLogoutButton(currentUser)
+           : this.createLoginButton();
+        var headerList = document.getElementById('header-buttons');
+        headerList.appendChild(button);
+    }
 
     async addNavbarToPage() {
         const currentUser = await this.client.getIdentity();
@@ -40,7 +68,7 @@ import BindingClass from "../util/bindingClass";
 
                                         <li class="border-top my-3"></li>
                                         <li class="mb-1">
-                                            <a class="btn btn-flat align-items-center rounded preload disabled">
+                                            <a href="runEncounter.html" class="btn btn-flat align-items-center rounded preload disabled">
                                                 Run Encounter
                                             </a>
                                         <li class="border-top my-3"></li>
@@ -89,4 +117,37 @@ import BindingClass from "../util/bindingClass";
             inputs[i].classList.remove("disabled");
         }
     }
+
+    align() {
+            if(this.getHeight() > this.getWidth()) {
+                document.getElementById('navbar').hidden = true;
+                document.getElementById('navbar-divider').hidden = true;
+                document.getElementById('header-bar').hidden = false;
+            } else {
+                document.getElementById('navbar').hidden = false;
+                document.getElementById('navbar-divider').hidden = false;
+                document.getElementById('header-bar').hidden = true;
+            }
+    };
+
+    getWidth() {
+      return Math.max(
+        document.body.scrollWidth,
+        document.documentElement.scrollWidth,
+        document.body.offsetWidth,
+        document.documentElement.offsetWidth,
+        document.documentElement.clientWidth
+      );
+    };
+
+    getHeight() {
+      return Math.max(
+        document.body.scrollHeight,
+        document.documentElement.scrollHeight,
+        document.body.offsetHeight,
+        document.documentElement.offsetHeight,
+        document.documentElement.clientHeight
+      )
+    };
+
   };

@@ -66,7 +66,7 @@ const EMPTY_DATASTORE_STATE = {
     };
 
      mount() {
-        this.navbarProvider.addNavbarToPage();
+        this.navbarProvider.provideBars();
         this.startupActivities();
      };
 
