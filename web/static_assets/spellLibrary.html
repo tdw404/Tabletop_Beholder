@@ -17,7 +17,7 @@
 
     </div>
     <div class="vert-divider" id = "navbar-divider"></div>
-    <div class="container-fluid p-3 align-items-center">
+    <div class="container-fluid p-3 align-items-center overflow-auto">
         <div id = "header-bar">
         </div>
         <div class="row">
@@ -67,123 +67,123 @@
                         </div>
                     </div>
                 </form>
-            <button type="button" class="btn btn-outline-dark hide-while-loading" id="filter-btn" hidden>Filter</button>
-            <button type="button" class="btn btn-outline-dark hide-while-loading" id="clear-btn" hidden>Clear</button>
-            <div class="table-responsive">
-                <table id = "spell-table"  class="table table-striped hide-while-loading" hidden>
-                    <thead>
-                    <tr>
-                        <th>Name</th>
-                        <th>Level</th>
-                        <th>Ritual Cast</th>
-                        <th>School</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    </tbody>
-                </table>
+                <button type="button" class="btn btn-outline-dark hide-while-loading" id="filter-btn" hidden>Filter</button>
+                <button type="button" class="btn btn-outline-dark hide-while-loading" id="clear-btn" hidden>Clear</button>
+                <div class="table-responsive">
+                    <table id = "spell-table"  class="table table-striped hide-while-loading" hidden>
+                        <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Level</th>
+                            <th>Ritual Cast</th>
+                            <th>School</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="col-lg gx-5 align-items-center pad-up overflow-auto">
+                <h2 class="text-center align-self-center" id="spellNameBig">Spell</h2>
+                <button type="button" class="btn btn-outline-dark" id="update-btn">Save Changes</button>
+                <button type="button" class="btn btn-outline-dark" id="delete-btn">Delete Spell</button>
+                <button type="button" class="btn btn-outline-dark" id="create-btn">New Spell</button>
+                <button type="button" class="btn btn-outline-dark" id="import-btn">Import Spell</button>
+                <hr/>
+                <form>
+                    <div class="mb-3">
+                        <label for="objectName" class="form-label">Spell Name</label>
+                        <input class="form-control" id="objectName">
+                    </div>
+                    <div class="mb-3">
+                        <label for="spellDescription" class="form-label">Description</label>
+                        <textarea class="form-control" id="spellDescription" rows="3"></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label for="spellHigherLevel" class="form-label">At Higher Levels</label>
+                        <textarea class="form-control" id="spellHigherLevel" rows="3"></textarea>
+                    </div>
+                    <div class="row">
+                        <div class="mb-3 col">
+                            <label for="spellComponents" class="form-label">Spell Components</label>
+                            <input class="form-control" id="spellComponents">
+                        </div>
+                        <div class="mb-3 col">
+                            <label for="spellMaterial" class="form-label">Spell Material</label>
+                            <input class="form-control" id="spellMaterial">
+                        </div>
+                        <div class="mb-3 col">
+                            <label for="spellRange" class="form-label">Spell Range (ft.)</label>
+                            <input class="form-control" id="spellRange">
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="mb-3 col">
+                            <label for="reaction" class="form-label">Reaction</label>
+                            <select class="form-select" id="reaction">
+                                <option selected></option>
+                                <option value="yes">Yes</option>
+                                <option value="only">Only</option>
+                                <option value="no">No</option>
+                            </select>
+                        </div>
+                        <div class="mb-3 col">
+                            <label for="ritualCast" class="form-label">Ritual Cast</label>
+                            <select class="form-select" id="ritualCast">
+                                <option selected></option>
+                                <option value="yes">Yes</option>
+                                <option value="no">No</option>
+                            </select>
+                        </div>
+                        <div class="mb-3 col">
+                            <label for="castingTime" class="form-label">Casting Time</label>
+                            <input class="form-control" id="castingTime">
+                        </div>
+                        <div class="mb-3 col">
+                            <label for="castingTurns" class="form-label">Casting Turns</label>
+                            <input class="form-control" id="castingTurns" type="number" min="-1" data-bind="value:replyNumber">
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="mb-3 col">
+                            <label for="spellLevel" class="form-label">Spell Level</label>
+                            <select class="form-select" id="spellLevel">
+                                <option selected></option>
+                                <option value="0">Cantrip</option>
+                                <option value="1">1st</option>
+                                <option value="2">2nd</option>
+                                <option value="3">3rd</option>
+                                <option value="4">4th</option>
+                                <option value="5">5th</option>
+                                <option value="6">6th</option>
+                                <option value="7">7th</option>
+                                <option value="8">8th</option>
+                                <option value="9">9th</option>
+                            </select>
+                        </div>
+                        <div class="mb-3 col">
+                            <label for="spellSchool" class="form-label">Spell School</label>
+                            <select class="form-select" id="spellSchool">
+                                <option selected></option>
+                                <option value="Abjuration">Abjuration</option>
+                                <option value="Conjuration">Conjuration</option>
+                                <option value="Divination">Divination</option>
+                                <option value="Enchantment">Enchantment</option>
+                                <option value="Evocation">Evocation</option>
+                                <option value="Illusion">Illusion</option>
+                                <option value="Necromancy">Necromancy</option>
+                                <option value="Transmutation">Transmutation</option>
+                            </select>
+                        </div>
+                        <div class="mb-3 col">
+                            <label for="innateCasts" class="form-label">Innate Casts</label>
+                            <input class="form-control" id="innateCasts" type="number" min="-1" data-bind="value:replyNumber">
+                        </div>
+                    </div>
+                </form>
             </div>
         </div>
-        <div class="col-lg gx-5 align-items-center pad-up overflow-auto">
-            <h2 class="text-center align-self-center" id="spellNameBig" pad-up>Spell</h2>
-            <button type="button" class="btn btn-outline-dark" id="update-btn">Save Changes</button>
-            <button type="button" class="btn btn-outline-dark" id="delete-btn">Delete Spell</button>
-            <button type="button" class="btn btn-outline-dark" id="create-btn">New Spell</button>
-            <button type="button" class="btn btn-outline-dark" id="import-btn">Import Spell</button>
-            <hr/>
-            <form>
-                <div class="mb-3">
-                    <label for="objectName" class="form-label">Spell Name</label>
-                    <input class="form-control" id="objectName">
-                </div>
-                <div class="mb-3">
-                    <label for="spellDescription" class="form-label">Description</label>
-                    <textarea class="form-control" id="spellDescription" rows="3"></textarea>
-                </div>
-                <div class="mb-3">
-                    <label for="spellHigherLevel" class="form-label">At Higher Levels</label>
-                    <textarea class="form-control" id="spellHigherLevel" rows="3"></textarea>
-                </div>
-                <div class="row">
-                    <div class="mb-3 col">
-                        <label for="spellComponents" class="form-label">Spell Components</label>
-                        <input class="form-control" id="spellComponents">
-                    </div>
-                    <div class="mb-3 col">
-                        <label for="spellMaterial" class="form-label">Spell Material</label>
-                        <input class="form-control" id="spellMaterial">
-                    </div>
-                    <div class="mb-3 col">
-                        <label for="spellRange" class="form-label">Spell Range (ft.)</label>
-                        <input class="form-control" id="spellRange">
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="mb-3 col">
-                        <label for="reaction" class="form-label">Reaction</label>
-                        <select class="form-select" id="reaction">
-                            <option selected></option>
-                            <option value="yes">Yes</option>
-                            <option value="only">Only</option>
-                            <option value="no">No</option>
-                        </select>
-                    </div>
-                    <div class="mb-3 col">
-                        <label for="ritualCast" class="form-label">Ritual Cast</label>
-                        <select class="form-select" id="ritualCast">
-                            <option selected></option>
-                            <option value="yes">Yes</option>
-                            <option value="no">No</option>
-                        </select>
-                    </div>
-                    <div class="mb-3 col">
-                        <label for="castingTime" class="form-label">Casting Time</label>
-                        <input class="form-control" id="castingTime">
-                    </div>
-                    <div class="mb-3 col">
-                        <label for="castingTurns" class="form-label">Casting Turns</label>
-                        <input class="form-control" id="castingTurns" type="number" min="-1" data-bind="value:replyNumber">
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="mb-3 col">
-                        <label for="spellLevel" class="form-label">Spell Level</label>
-                        <select class="form-select" id="spellLevel">
-                            <option selected></option>
-                            <option value="0">Cantrip</option>
-                            <option value="1">1st</option>
-                            <option value="2">2nd</option>
-                            <option value="3">3rd</option>
-                            <option value="4">4th</option>
-                            <option value="5">5th</option>
-                            <option value="6">6th</option>
-                            <option value="7">7th</option>
-                            <option value="8">8th</option>
-                            <option value="9">9th</option>
-                        </select>
-                    </div>
-                    <div class="mb-3 col">
-                        <label for="spellSchool" class="form-label">Spell School</label>
-                        <select class="form-select" id="spellSchool">
-                            <option selected></option>
-                            <option value="Abjuration">Abjuration</option>
-                            <option value="Conjuration">Conjuration</option>
-                            <option value="Divination">Divination</option>
-                            <option value="Enchantment">Enchantment</option>
-                            <option value="Evocation">Evocation</option>
-                            <option value="Illusion">Illusion</option>
-                            <option value="Necromancy">Necromancy</option>
-                            <option value="Transmutation">Transmutation</option>
-                        </select>
-                    </div>
-                    <div class="mb-3 col">
-                        <label for="innateCasts" class="form-label">Innate Casts</label>
-                        <input class="form-control" id="innateCasts" type="number" min="-1" data-bind="value:replyNumber">
-                    </div>
-                </div>
-            </form>
-        </div>
-    </div>
     </div>
     <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasWarn" aria-labelledby="offcanvasWarnLabel">
         <div class="offcanvas-header">
