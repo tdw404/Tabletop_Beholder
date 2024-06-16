@@ -121,11 +121,6 @@ main {
     border: 2;
 }
 
-.table-responsive {
-    max-height:60%;
-    border: 2;
-}
-
 .selectedRow {
     background-color: rgb(156, 251, 204);
 }

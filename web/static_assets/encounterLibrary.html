@@ -16,8 +16,12 @@
     <div id = "navbar">
 
     </div>
-    <div class="vert-divider"></div>
-    <div class="container align-items-center pad-up">
+    <div class="vert-divider" id = "navbar-divider"></div>
+    <div class="container-fluid p-3 align-items-center">
+        <div id = "header-bar">
+        </div>
+        <div class="row">
+    <div class="col-lg gx-5 align-items-center pad-up">
         <h2 class="text-center align-self-center">Encounter Library</h2>
         <div class="d-flex justify-content-center pad-up">
             <div class="spinner-border show-while-loading" role="status" id = "spinner">
@@ -51,7 +55,7 @@
             </table>
         </div>
     </div>
-    <div class="container align-items-center pad-up overflow-auto">
+    <div class="col-lg gx-5 align-items-center pad-up overflow-auto">
         <h2 class="text-center align-self-center" id="encounterNameBig" pad-up>Encounter</h2>
         <button type="button" class="btn btn-outline-dark" id="update-btn">Save Changes</button>
         <button type="button" class="btn btn-outline-dark" id="delete-btn">Delete Encounter</button>
@@ -94,6 +98,8 @@
                 <tbody>
                 </tbody>
             </table>
+        </div>
+    </div>
         </div>
     </div>
     <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasWarn" aria-labelledby="offcanvasWarnLabel">
