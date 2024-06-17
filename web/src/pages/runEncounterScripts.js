@@ -177,7 +177,7 @@ const EMPTY_DATASTORE_STATE = {
         var creature = this.dataStore.get(CREATURE_MAP_KEY).get(creatureId);
         var target = 'roll_' + creatureId;
         var modifier = 0;
-        if (creature.statMap.dexterity) {
+        if (creature?.statMap?.dexterity) {
             modifier = Math.floor((creature.statMap.dexterity - 10)/2)
         }
         document.getElementById(target).value = Math.floor(Math.random() * (20) + 1) + modifier;
