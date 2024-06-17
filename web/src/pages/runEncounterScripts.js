@@ -128,6 +128,8 @@ const EMPTY_DATASTORE_STATE = {
                     var initBody = document.getElementById('offcanvas-init-body');
                     initBody.innerHTML = '';
                     for(var [key, value] of new Map(Object.entries(encounter.creatureMap))) {
+                        var pcStatus = '';
+                        if (value.isPC) { pcStatus = 'PC'}
                         const initRow = `
                         <div class = "row">
                                         <div class="col-sm-4 mb-3">
@@ -146,7 +148,7 @@ const EMPTY_DATASTORE_STATE = {
                                             <label for="pc_${value.encounterCreatureId}" class="form-label">PC</label>
                                             <div class = "row">
                                                 <div class = "col">
-                                                    <input class="form-control" id="pc_${value.encounterCreatureId}" readonly>
+                                                    <input class="form-control" id="pc_${value.encounterCreatureId}" readonly value = "${pcStatus}">
                                                 </div>
                                                 <div class = "col">
                                                     <button type="button" class="btn btn-outline-dark align-bottom" data-id = "${value.encounterCreatureId}" id="roll-btn-_${value.encounterCreatureId}">Roll</button>
@@ -174,7 +176,10 @@ const EMPTY_DATASTORE_STATE = {
     rollInitiative(creatureId) {
         var creature = this.dataStore.get(CREATURE_MAP_KEY).get(creatureId);
         var target = 'roll_' + creatureId;
-        var modifier = creature?.statMap?.dexterity || 0
+        var modifier = 0;
+        if (creature.statMap.dexterity) {
+            modifier = Math.floor((creature.statMap.dexterity - 10)/2)
+        }
         document.getElementById(target).value = Math.floor(Math.random() * (20) + 1) + modifier;
     }
 
