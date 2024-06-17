@@ -54,7 +54,7 @@
             ...
         </div>
     </div>
-    <div class="offcanvas offcanvas-bottom h-75" tabindex="-1" id="offcanvasInitiative" aria-labelledby="offcanvasInitiativeLabel">
+    <div class="offcanvas offcanvas-bottom h-100" tabindex="-1" id="offcanvasInitiative" aria-labelledby="offcanvasInitiativeLabel">
         <div class="offcanvas-header">
             <h5 >Roll For Initiative</h5>
             <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close" id="offcanvas-init-close"></button>
@@ -64,7 +64,7 @@
             <div class = "row">
                 <div class="col-sm-4 mb-3">
                     <label for="name" class="form-label">Name</label>
-                    <input class="form-control" id="name">
+                    <input class="form-control" id="name" readonly>
                 </div>
                 <div class="col-sm-2 mb-3">
                     <label for="roll" class="form-label">Roll</label>
@@ -75,7 +75,15 @@
                     <input class="form-control" id="init">
                 </div>
                 <div class="col-sm-2 mb-3">
-                    PC
+                    <label for="pc" class="form-label">PC</label>
+                    <div class = "row">
+                        <div class = "col">
+                            <input class="form-control" id="pc" readonly>
+                        </div>
+                        <div class = "col">
+                            <button type="button" class="btn btn-outline-dark align-bottom" id="roll-btn">Roll</button>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>

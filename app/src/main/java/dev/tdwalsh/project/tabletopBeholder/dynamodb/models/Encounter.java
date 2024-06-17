@@ -18,6 +18,8 @@ import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.PriorityQueue;
+import java.util.Queue;
 
 @DynamoDBTable(tableName = "TabletopBeholder_EncounterTable")
 public class Encounter implements BeholderObject {
@@ -25,7 +27,7 @@ public class Encounter implements BeholderObject {
     private String objectId;
     private String objectName;
     private Map<String, Creature> creatureMap;
-    //TODO PriorityQueue
+    private Queue<Creature> turnQueue;
     private Integer encounterTurn;
     private List<String> turnOrder;
     private String topOfOrder;
@@ -94,6 +96,15 @@ public class Encounter implements BeholderObject {
     @Override
     public void setEditDateTime(ZonedDateTime editDateTime) {
         this.editDateTime = editDateTime;
+    }
+
+    @DynamoDBAttribute(attributeName = "turnQueue")
+    public Queue<Creature> getTurnQueue() {
+        return this.turnQueue;
+    }
+
+    public void setTurnQueue(Queue<Creature> turnQueue) {
+        this.turnQueue = turnQueue;
     }
 
     @DynamoDBAttribute(attributeName = "encounterTurn")
