@@ -1,5 +1,6 @@
 package dev.tdwalsh.project.tabletopBeholder.dynamodb.models;
 
+import dev.tdwalsh.project.tabletopBeholder.converters.CreatureQueueConverter;
 import dev.tdwalsh.project.tabletopBeholder.converters.StringCreaturesMapConverter;
 import dev.tdwalsh.project.tabletopBeholder.converters.ZonedDateTimeConverter;
 
@@ -99,6 +100,7 @@ public class Encounter implements BeholderObject {
     }
 
     @DynamoDBAttribute(attributeName = "turnQueue")
+    @DynamoDBTypeConverted(converter = CreatureQueueConverter.class)
     public Queue<Creature> getTurnQueue() {
         return this.turnQueue;
     }

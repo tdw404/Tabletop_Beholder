@@ -248,12 +248,14 @@ const EMPTY_DATASTORE_STATE = {
     }
 
     async updateButton() {
-        this.hideElements();
         var encounter = this.dataStore.get(SELECTED_ENCOUNTER_KEY);
-        encounter.objectName = document.getElementById('objectName').value;
-        encounter.sessionId = document.getElementById('session-list').value;
-        await this.encounterClient.updateEncounter(encounter);
-        location.reload();
+        if (encounter) {
+            this.hideElements();
+            encounter.objectName = document.getElementById('objectName').value;
+            encounter.sessionId = document.getElementById('session-list').value;
+            await this.encounterClient.updateEncounter(encounter);
+            location.reload();
+        }
     }
 
     createButton() {
@@ -380,19 +382,20 @@ const EMPTY_DATASTORE_STATE = {
     async updateCreatureButton() {
         var creatureMap = this.dataStore.get(CREATURE_MAP_KEY);
         var creature = this.dataStore.get(SELECTED_CREATURE_KEY);
-        creature.encounterCreatureName = document.getElementById('edit-creature-name').value;
-        document.getElementById('close-edit-creature-btn').click();
-        creatureMap.set(creature.encounterCreatureId, creature);
-        this.dataStore.set(CREATURE_MAP_KEY);
-        this.dataStore.get(SELECTED_ENCOUNTER_KEY).creatureMap = this.mapToObj(creatureMap);
-        this.creatureTablePopulate();
-        document.getElementById('edit-creature-name').value = '';
-        document.getElementById('edit-creature-objectName').value = '';
-        document.getElementById('edit-creature-hp').value = '';
-        document.getElementById('edit-creature-status').value = '';
-        document.getElementById('edit-creature-size').value = '';
-        document.getElementById('edit-creature-type').value = '';
-
+        if (creature) {
+            creature.encounterCreatureName = document.getElementById('edit-creature-name').value;
+            document.getElementById('close-edit-creature-btn').click();
+            creatureMap.set(creature.encounterCreatureId, creature);
+            this.dataStore.set(CREATURE_MAP_KEY);
+            this.dataStore.get(SELECTED_ENCOUNTER_KEY).creatureMap = this.mapToObj(creatureMap);
+            this.creatureTablePopulate();
+            document.getElementById('edit-creature-name').value = '';
+            document.getElementById('edit-creature-objectName').value = '';
+            document.getElementById('edit-creature-hp').value = '';
+            document.getElementById('edit-creature-status').value = '';
+            document.getElementById('edit-creature-size').value = '';
+            document.getElementById('edit-creature-type').value = '';
+        };
     }
 
     async deleteCreatureButton() {

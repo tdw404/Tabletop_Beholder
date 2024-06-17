@@ -1,17 +1,19 @@
 package dev.tdwalsh.project.tabletopBeholder.activity.runEncounter.request;
 
-public class RunEncounterListRequest {
+import org.json.JSONObject;
+
+public class RunEncounterRequest {
     private final String userEmail;
     private final String encounterId;
     private final String activity;
-    private final String initiativeList;
+    private final JSONObject body;
 
-    private RunEncounterListRequest(String userEmail, String encounterId,
-                                    String activity, String initiativeList) {
+    private RunEncounterRequest(String userEmail, String encounterId,
+                                String activity, JSONObject body) {
         this.userEmail = userEmail;
         this.encounterId = encounterId;
         this.activity = activity;
-        this.initiativeList = initiativeList;
+        this.body = body;
     }
 
     public String getUserEmail() {
@@ -26,8 +28,8 @@ public class RunEncounterListRequest {
         return this.activity;
     }
 
-    public String getInitiativeList() {
-        return this.initiativeList;
+    public JSONObject getBody() {
+        return this.body;
     }
 
     /**
@@ -41,7 +43,7 @@ public class RunEncounterListRequest {
         private String userEmail;
         private String encounterId;
         private String activity;
-        private String initiativeList;
+        private JSONObject body;
 
         /**
          * Builder setter.
@@ -75,11 +77,11 @@ public class RunEncounterListRequest {
 
         /**
          * Builder setter.
-         * @param initiativeList  - Variable to set.
+         * @param body  - Variable to set.
          * @return - Builder.
          */
-        public Builder withInitiativeList(String initiativeList) {
-            this.initiativeList = initiativeList;
+        public Builder withBody(JSONObject body) {
+            this.body = body;
             return this;
         }
 
@@ -87,8 +89,8 @@ public class RunEncounterListRequest {
          * Builder.
          * @return - Builder
          */
-        public RunEncounterListRequest build() {
-            return new RunEncounterListRequest(userEmail, encounterId, activity, initiativeList);
+        public RunEncounterRequest build() {
+            return new RunEncounterRequest(userEmail, encounterId, activity, body);
         }
     }
 }
