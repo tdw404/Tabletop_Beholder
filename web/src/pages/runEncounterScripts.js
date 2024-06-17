@@ -39,7 +39,7 @@ const EMPTY_DATASTORE_STATE = {
                                 'mapToObj', 'attachEventListeners',
                                 'populateEncounters', 'launchEncounter',
                                 'hideElementsPlay', 'showElementsPlay',
-                                'rollInitiative'
+                                'rollInitiative', 'assignInitiative'
                                 ], this);
         this.dataStore = new DataStore(EMPTY_DATASTORE_STATE);
         this.navbarProvider = new NavbarProvider();
@@ -62,6 +62,7 @@ const EMPTY_DATASTORE_STATE = {
 
     attachEventListeners() {
     document.getElementById('launch-session-btn').addEventListener('click', this.launchEncounter);
+    document.getElementById('initiative-btn').addEventListener('click', this.assignInitiative);
     document.getElementById('session-list').addEventListener('change', (event) => {
                                                 if (event.target.closest('select')) {this.populateEncounters(event.target.value)}});
     document.getElementById('offcanvas-init-body').addEventListener('click', (event) => {
@@ -135,11 +136,11 @@ const EMPTY_DATASTORE_STATE = {
                                         </div>
                                         <div class="col-sm-2 mb-3">
                                             <label for="roll_${value.encounterCreatureId}" class="form-label">Roll</label>
-                                            <input class="form-control" id="roll_${value.encounterCreatureId}" type="number" data-bind="value:replyNumber">
+                                            <input class="form-control initiative-roll" id="roll_${value.encounterCreatureId}" data-id = "${value.encounterCreatureId}" type="number" data-bind="value:replyNumber">
                                         </div>
                                         <div class="col-sm-2 mb-3">
                                             <label for="init_${value.encounterCreatureId}" class="form-label">Initiative</label>
-                                            <input class="form-control" id="init_${value.encounterCreatureId}" type="number" min="1" data-bind="value:replyNumber">
+                                            <input class="form-control" id="init_${value.encounterCreatureId}" data-id = "${value.encounterCreatureId}" type="number" min="1" data-bind="value:replyNumber">
                                         </div>
                                         <div class="col-sm-2 mb-3">
                                             <label for="pc_${value.encounterCreatureId}" class="form-label">PC</label>
@@ -158,17 +159,45 @@ const EMPTY_DATASTORE_STATE = {
                     }
                     var bsOffcanvas = new bootstrap.Offcanvas(myOffcanvas);
                     bsOffcanvas.show();
+                } else {
+                    this.showElements();
+                    document.getElementById('offcanvas-warn-body').innerText = "This encounter has no creatures. Please add some before trying to launch it.";
+                   var myOffcanvas = document.getElementById('offcanvasWarn');
+                   var bsOffcanvas = new bootstrap.Offcanvas(myOffcanvas);
+                   bsOffcanvas.show();
                 }
+
             }
         }
     }
 
     rollInitiative(creatureId) {
-    console.log(creatureId)
         var creature = this.dataStore.get(CREATURE_MAP_KEY).get(creatureId);
         var target = 'roll_' + creatureId;
         var modifier = creature?.statMap?.dexterity || 0
         document.getElementById(target).value = Math.floor(Math.random() * (20) + 1) + modifier;
+    }
+
+    assignInitiative() {
+        var initList = [];
+        for(var result of document.getElementsByClassName('initiative-roll')) {
+            var entry = {};
+            entry.roll = result.value;
+            entry.objectId = result.dataset.id;
+            initList.push(entry);
+        }
+        initList = initList.sort(function(a,b) {
+            return b.roll - a.roll
+        });
+        var rollMap = new Map();
+        var i = 1;
+        for(var entry of initList) {
+            rollMap.set(entry.objectId, i);
+            i ++;
+        }
+        for(var [key, value] of rollMap) {
+            document.getElementById('init_' + key).value = value;
+        }
     }
 
     showElements() {
