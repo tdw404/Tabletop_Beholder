@@ -1,40 +1,56 @@
 package dev.tdwalsh.project.tabletopBeholder.activity.runEncounter;
 
+import dev.tdwalsh.project.tabletopBeholder.activity.runEncounter.activities.RunActivities;
+import dev.tdwalsh.project.tabletopBeholder.activity.runEncounter.request.RunEncounterRequest;
+import dev.tdwalsh.project.tabletopBeholder.activity.runEncounter.result.RunEncounterResult;
+import dev.tdwalsh.project.tabletopBeholder.dynamodb.dao.EncounterDao;
+import dev.tdwalsh.project.tabletopBeholder.dynamodb.models.Encounter;
+import dev.tdwalsh.project.tabletopBeholder.exceptions.MissingResourceException;
+
 import javax.inject.Inject;
+import java.util.Optional;
 
 /**
- * GetSpellActivity handles negotiation with multiple different DAOs to perform encounter actions.
+ * RunEncounterActivity performs a wide range of activities related to running and encounter.
  */
 public class RunEncounterActivity {
-//
-//    /**
-//     * Instantiates a new activity object.
-//     *
-//     *
-//     */
-//
-//    @Inject
-//    public RunEncounterActivity(SpellDao spellDao) {
-//        this.spellDao = spellDao;
-//    };
-//
-//    /**
-//     * This method handles the incoming request by retrieving a {@link Spell} from the database, if it exists.
-//     * <p>
-//     * It then returns the retrieved object, or throws a {@link SpellNotFoundException} if none is found.
-//     *
-//     * @param getSpellRequest request object containing DAO search parameters
-//     * @return {@link GetSpellResult} result object containing the retrieved {@link Spell}
-//     */
-//
-//    public GetSpellResult handleRequest(GetSpellRequest getSpellRequest) {
-//        Spell spell = spellDao.getSingle(getSpellRequest.getUserEmail(), getSpellRequest.getObjectId());
-//        if (spell == null) {
-//            throw new SpellNotFoundException(String.format("Could not find a spell for [%s] with id [%s]",
-//                    getSpellRequest.getUserEmail(), getSpellRequest.getObjectId()));
-//        }
-//        return GetSpellResult.builder()
-//                .withSpell(spell)
-//                .build();
-//    }
+    private final EncounterDao encounterDao;
+    private final RunActivities runActivities = new RunActivities();
+
+    /**
+     * Instantiates a new activity object.
+     *
+     *
+     */
+
+    @Inject
+    public RunEncounterActivity(EncounterDao encounterDao) {
+        this.encounterDao = encounterDao;
+    };
+
+    /**
+     * This method handles the incoming request by running an encounter activity.
+     * <p>
+     * It then returns an {@link Encounter} with updated state.
+     *
+     * @param runEncounterRequest request object containing activity parameters
+     * @return {@link RunEncounterResult} result object containing the updated {@link Encounter}
+     */
+
+    public RunEncounterResult handleRequest(RunEncounterRequest runEncounterRequest) {
+        Encounter encounter = Optional.ofNullable(encounterDao.getSingle(
+                runEncounterRequest.getUserEmail(), runEncounterRequest.getEncounterId()))
+                .orElseThrow(() -> new MissingResourceException(
+                        String.format("Could not find encounter with id %s", runEncounterRequest.getEncounterId())));
+        if (runEncounterRequest.getActivity().equals("setInitiative")) {
+            encounter = this.runActivities.setInitiative(encounter, runEncounterRequest.getBody());
+        }
+        if (runEncounterRequest.getActivity().equals("nextTurn")) {
+            encounter = this.runActivities.nextTurn(encounter);
+        }
+        encounterDao.writeObject(encounter);
+        return RunEncounterResult.builder()
+                .withEncounter(encounter)
+                .build();
+    }
 }

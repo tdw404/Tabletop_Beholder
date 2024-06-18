@@ -124,3 +124,10 @@ main {
 .selectedRow {
     background-color: rgb(156, 251, 204);
 }
+
+
+.accordion-button {
+    color: rgb(33, 37, 41) !important;
+    background-color: rgba(179, 179, 179, 0.3) !important;
+    font-weight: bold;
+}

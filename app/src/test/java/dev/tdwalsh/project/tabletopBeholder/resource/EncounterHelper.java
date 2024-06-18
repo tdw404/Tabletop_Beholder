@@ -20,7 +20,7 @@ public class EncounterHelper {
         Creature creature2 = CreatureHelper.provideCreature(2);
         creatureMap.put(creature1.getObjectId(), creature1);
         creatureMap.put(creature2.getObjectId(), creature2);
-        encounter.setEncounterTurn(mod);
+        encounter.setEncounterRound(mod);
         List<String> stringList = new ArrayList<>();
         stringList.add("test1");
         stringList.add("test2");

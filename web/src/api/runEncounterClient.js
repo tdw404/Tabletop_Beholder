@@ -8,7 +8,7 @@ export default class EncounterClient extends BindingClass {
         super();
 
         const methodsToBind = ['clientLoaded', 'getTokenOrThrow',
-                                'getEncounterList'];
+                                'getEncounterList', 'setInitiative'];
         this.bindClassMethods(methodsToBind, this);
 
         this.authenticator = new Authenticator();;
@@ -45,6 +45,34 @@ export default class EncounterClient extends BindingClass {
                     Authorization: `Bearer ${token}`
                 }});
             return response.data.encounterNameList;
+        } catch (error) {
+            this.handleError(error, errorCallback)
+        }
+    }
+
+    async setInitiative(encounterId, queueList, errorCallback) {
+        try {
+            const token = await this.getTokenOrThrow("Encountered token error trying to call RunEncounter endpoint.");
+            const response = await this.axiosClient.post(`runEncounter/${encounterId}?activity=setInitiative`, {
+                queueList: queueList
+            }, {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }});
+            return response.data.encounter;
+        } catch (error) {
+            this.handleError(error, errorCallback)
+        }
+    }
+
+    async nextTurn(encounterId, errorCallback) {
+        try {
+            const token = await this.getTokenOrThrow("Encountered token error trying to call RunEncounter endpoint.");
+            const response = await this.axiosClient.post(`runEncounter/${encounterId}?activity=nextTurn`, {}, {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }});
+            return response.data.encounter;
         } catch (error) {
             this.handleError(error, errorCallback)
         }

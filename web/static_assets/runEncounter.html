@@ -22,11 +22,15 @@
 
         </div>
         <h2 class="text-center align-self-center pt-3" id="encounterNameBig">Run Encounter</h2>
-        <div class = "show-while-loading">
+        <h5 class="text-center align-self-center" id="roundNumber"></h5>
+        <div class="text-center  pt-3">
+            <button type="button" class="btn btn-outline-dark show-while-playing" id="next-turn-btn" hidden>Next Turn</button>
+        </div>
+        <div class = "show-while-loading hide-while-playing" id="spinner-set">
             <div class="d-flex justify-content-center pad-up">
-                <div class="spinner-border show-while-loading" role="status" id = "spinner"></div>
+                <div class="spinner-border show-while-loading hide-while-playing" role="status" id = "spinner"></div>
             </div>
-            <span class="d-flex justify-content-center show-while-loading" id = "spinner-label">Loading...</span>
+            <span class="d-flex justify-content-center show-while-loading hide-while-playing" id = "spinner-label">Loading...</span>
         </div>
         <div class="row hide-while-loading hide-while-playing pad-up" id="list-fields" hidden>
             <div class="mb-3 col">
@@ -43,6 +47,8 @@
             </div>
         </div>
         <button type="button" class="btn btn-outline-dark hide-while-loading hide-while-playing" id="launch-session-btn" hidden>Launch Encounter</button>
+        <div class="accordion show-while-playing pad-up" id="creatureAccordion">
+        </div>
     </div>
     <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasWarn" aria-labelledby="offcanvasWarnLabel">
         <div class="offcanvas-header">
