@@ -252,12 +252,19 @@ const EMPTY_DATASTORE_STATE = {
         for(var i = turnQueue.length; i > 0; i --) {
             var encounterCreatureId = turnQueue[i - 1];
             var creature = creatureMap.get(encounterCreatureId);
+            var creatureName = creature.encounterCreatureName;
+            if (creature.isPC) {
+                 creatureName = "(PC)      " + creatureName
+            }
+            if (creature.encounterCreatureId === encounter.topOfOrder) {
+                 creatureName = creatureName + "     (Top of Order)"
+            }
             console.log(creature.encounterCreatureName)
             var accordionItem = `
                <div class="accordion-item">
                    <h2 class="accordion-header" id="heading_${encounterCreatureId}">
                        <button id="acc_button_${encounterCreatureId}" class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse_${encounterCreatureId}" aria-expanded="false" aria-controls="collapse_${encounterCreatureId}">
-                           ${creature.encounterCreatureName}
+                           ${creatureName}
                        </button>
                    </h2>
                    <div id="collapse_${encounterCreatureId}" class="accordion-collapse collapse" aria-labelledby="heading_${encounterCreatureId}" data-bs-parent="#creatureAccordion">
