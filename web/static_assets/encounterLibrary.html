@@ -64,16 +64,16 @@
     <form>
         <div class="mb-3">
             <label for="objectName" class="form-label">Encounter Name</label>
-            <input class="form-control" id="objectName">
+            <input class="form-control lockable" id="objectName">
         </div>
         <div class="row">
             <div class="mb-3 col">
-                <label for="currentTurn" class="form-label">Current Turn</label>
-                <input class="form-control" id="currentTurn" disabled>
+                <label for="currentRound" class="form-label">Current Round</label>
+                <input class="form-control" id="currentRound" disabled>
             </div>
             <div class="mb-3 col">
                 <label for="session-list" class="form-label">Session</label>
-                <select class="form-select" id="session-list">
+                <select class="form-select lockable" id="session-list">
                     <option class = "session-dropdown" selected value = '0'></option>
                     <option class = "session-dropdown"  value = 'none'>(None)</option>
                 </select>

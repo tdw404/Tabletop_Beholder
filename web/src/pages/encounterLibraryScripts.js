@@ -52,7 +52,8 @@ const EMPTY_DATASTORE_STATE = {
                                 'addCreatureButton', 'attachEventListeners',
                                 'sortCreatureTable', 'creatureTablePopulate',
                                 'mapToObj', 'creatureRowClick',
-                                'updateCreatureButton', 'deleteCreatureButton'], this);
+                                'updateCreatureButton', 'deleteCreatureButton',
+                                'lockElements', 'unlockElements'], this);
         this.dataStore = new DataStore(EMPTY_DATASTORE_STATE);
         this.navbarProvider = new NavbarProvider();
     };
@@ -151,7 +152,7 @@ const EMPTY_DATASTORE_STATE = {
         document.getElementById(encounterId).setAttribute('class','selectedRow');
         document.getElementById('encounterNameBig').innerText = encounter.objectName;
         document.getElementById('objectName').value = encounter.objectName;
-        document.getElementById('currentTurn').value = encounter.encounterTurn;
+        document.getElementById('currentRound').value = encounter.encounterRound;
         document.getElementById('session-list').value = encounter.sessionId;
         this.creatureTablePopulate();
     }
@@ -434,6 +435,20 @@ const EMPTY_DATASTORE_STATE = {
                             for(var i = 0; i < hide.length; i++) {
                                 hide[i].hidden = true;
                             }
+    }
+
+    lockElements() {
+        var lock = document.getElementsByClassName('lockable');
+                for(var i = 0; i < lock.length; i++) {
+                    lock[i].disabled = true;
+                }
+    }
+
+    unlockElements() {
+        var lock = document.getElementsByClassName('lockable');
+                for(var i = 0; i < lock.length; i++) {
+                    lock[i].disabled = false;
+                }
     }
 
     mapToObj(map){

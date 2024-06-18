@@ -19,7 +19,6 @@ import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.PriorityQueue;
 import java.util.Queue;
 
 @DynamoDBTable(tableName = "TabletopBeholder_EncounterTable")
@@ -28,8 +27,8 @@ public class Encounter implements BeholderObject {
     private String objectId;
     private String objectName;
     private Map<String, Creature> creatureMap;
-    private Queue<Creature> turnQueue;
-    private Integer encounterTurn;
+    private Queue<String> turnQueue;
+    private Integer encounterRound;
     private List<String> turnOrder;
     private String topOfOrder;
     private String sessionId;
@@ -101,21 +100,21 @@ public class Encounter implements BeholderObject {
 
     @DynamoDBAttribute(attributeName = "turnQueue")
     @DynamoDBTypeConverted(converter = CreatureQueueConverter.class)
-    public Queue<Creature> getTurnQueue() {
+    public Queue<String> getTurnQueue() {
         return this.turnQueue;
     }
 
-    public void setTurnQueue(Queue<Creature> turnQueue) {
+    public void setTurnQueue(Queue<String> turnQueue) {
         this.turnQueue = turnQueue;
     }
 
     @DynamoDBAttribute(attributeName = "encounterTurn")
-    public Integer getEncounterTurn() {
-        return encounterTurn;
+    public Integer getEncounterRound() {
+        return encounterRound;
     }
 
-    public void setEncounterTurn(Integer encounterTurn) {
-        this.encounterTurn = encounterTurn;
+    public void setEncounterRound(Integer encounterRound) {
+        this.encounterRound = encounterRound;
     }
 
     @DynamoDBAttribute(attributeName = "topOfOrder")

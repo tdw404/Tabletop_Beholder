@@ -39,7 +39,8 @@ const EMPTY_DATASTORE_STATE = {
                                 'mapToObj', 'attachEventListeners',
                                 'populateEncounters', 'launchEncounter',
                                 'hideElementsPlay', 'showElementsPlay',
-                                'rollInitiative', 'assignInitiative'
+                                'rollInitiative', 'assignInitiative',
+                                'goEncounter', 'populateAccordions'
                                 ], this);
         this.dataStore = new DataStore(EMPTY_DATASTORE_STATE);
         this.navbarProvider = new NavbarProvider();
@@ -63,6 +64,7 @@ const EMPTY_DATASTORE_STATE = {
     attachEventListeners() {
     document.getElementById('launch-session-btn').addEventListener('click', this.launchEncounter);
     document.getElementById('initiative-btn').addEventListener('click', this.assignInitiative);
+    document.getElementById('go-btn').addEventListener('click', this.goEncounter);
     document.getElementById('session-list').addEventListener('change', (event) => {
                                                 if (event.target.closest('select')) {this.populateEncounters(event.target.value)}});
     document.getElementById('offcanvas-init-body').addEventListener('click', (event) => {
@@ -142,7 +144,7 @@ const EMPTY_DATASTORE_STATE = {
                                         </div>
                                         <div class="col-sm-2 mb-3">
                                             <label for="init_${value.encounterCreatureId}" class="form-label">Initiative</label>
-                                            <input class="form-control" id="init_${value.encounterCreatureId}" data-id = "${value.encounterCreatureId}" type="number" min="1" data-bind="value:replyNumber">
+                                            <input class="form-control initiative-rank" id="init_${value.encounterCreatureId}" data-id = "${value.encounterCreatureId}" type="number" min="1" data-bind="value:replyNumber">
                                         </div>
                                         <div class="col-sm-2 mb-3">
                                             <label for="pc_${value.encounterCreatureId}" class="form-label">PC</label>
@@ -161,6 +163,8 @@ const EMPTY_DATASTORE_STATE = {
                     }
                     var bsOffcanvas = new bootstrap.Offcanvas(myOffcanvas);
                     bsOffcanvas.show();
+                } else if(encounter.turnQueue) {
+                    this.populateAccordions();
                 } else {
                     this.showElements();
                     document.getElementById('offcanvas-warn-body').innerText = "This encounter has no creatures. Please add some before trying to launch it.";
@@ -173,9 +177,9 @@ const EMPTY_DATASTORE_STATE = {
         }
     }
 
-    rollInitiative(creatureId) {
-        var creature = this.dataStore.get(CREATURE_MAP_KEY).get(creatureId);
-        var target = 'roll_' + creatureId;
+    rollInitiative(encounterCreatureId) {
+        var creature = this.dataStore.get(CREATURE_MAP_KEY).get(encounterCreatureId);
+        var target = 'roll_' + encounterCreatureId;
         var modifier = 0;
         if (creature?.statMap?.dexterity) {
             modifier = Math.floor((creature.statMap.dexterity - 10)/2)
@@ -205,6 +209,70 @@ const EMPTY_DATASTORE_STATE = {
         }
     }
 
+    async goEncounter() {
+        var initList = [];
+        for(var result of document.getElementsByClassName('initiative-rank')) {
+            var entry = {};
+            entry.rank = result.value;
+            entry.objectId = result.dataset.id;
+            initList.push(entry);
+        }
+        initList = initList.sort(function(a,b) {
+                    return a.rank - b.rank
+                });
+        console.log(initList)
+        var queueList = [];
+        for(var element of initList) {
+            queueList.push(element.objectId);
+        }
+        var warned = false;
+        var encounter = this.runClient.setInitiative(this.dataStore.get(ENCOUNTER_KEY).objectId,
+                                                     queueList, (error) => {
+                           document.getElementById('offcanvas-warn-body').innerText = error.message;
+                           var myOffcanvas = document.getElementById('offcanvasWarn');
+                           var bsOffcanvas = new bootstrap.Offcanvas(myOffcanvas);
+                           bsOffcanvas.show();
+                           this.showElements();
+                           warned = true;
+        });
+        this.dataStore.set([ENCOUNTER_KEY], encounter);
+        this.populateAccordions();
+    }
+
+    populateAccordions() {
+        var encounter = this.dataStore.get([ENCOUNTER_KEY]);
+        var creatureMap = new Map(Object.entries(encounter.creatureMap));
+        this.dataStore.set([CREATURE_MAP_KEY], creatureMap);
+        var accordion = document.getElementById('creatureAccordion');
+        accordion.innerHTML = '';
+        var encounter = this.dataStore.get(ENCOUNTER_KEY);
+        var turnQueue = encounter.turnQueue;
+        for(var i = turnQueue.length; i > 0; i --) {
+            var encounterCreatureId = turnQueue[i - 1];
+            var creature = creatureMap.get(encounterCreatureId);
+            console.log(creature.encounterCreatureName)
+            var accordionItem = `
+               <div class="accordion-item">
+                   <h2 class="accordion-header" id="heading_${encounterCreatureId}">
+                       <button id="acc_button_${encounterCreatureId}" class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse_${encounterCreatureId}" aria-expanded="false" aria-controls="collapse_${encounterCreatureId}">
+                           ${creature.encounterCreatureName}
+                       </button>
+                   </h2>
+                   <div id="collapse_${encounterCreatureId}" class="accordion-collapse collapse" aria-labelledby="heading_${encounterCreatureId}" data-bs-parent="#creatureAccordion">
+                       <div class="accordion-body">
+                            ${creature.creatureDescription}
+                       </div>
+                   </div>
+               </div>`
+               accordion.insertAdjacentHTML('afterbegin', accordionItem);
+        }
+        accordion.hidden = false;
+        document.getElementById('collapse_' + turnQueue[0]).classList.add('show');
+        document.getElementById('acc_button_' + turnQueue[0]).classList.remove('collapsed');
+        document.getElementById('roundNumber').innerHTML = `Round: ${encounter.encounterRound}`
+        this.hideElementsPlay();
+    }
+
     showElements() {
         var show = document.getElementsByClassName('hide-while-loading');
                 for(var i = 0; i < show.length; i++) {
@@ -232,6 +300,10 @@ const EMPTY_DATASTORE_STATE = {
                         for(var i = 0; i < hide.length; i++) {
                             hide[i].hidden = true;
                         }
+        var show = document.getElementsByClassName('show-while-playing');
+                                for(var i = 0; i < show.length; i++) {
+                                    show[i].hidden = false;
+                                }
     }
 
     showElementsPlay() {

@@ -11,11 +11,11 @@ import dev.tdwalsh.project.tabletopBeholder.exceptions.SerializationException;
 import java.util.List;
 import java.util.Queue;
 
-public class CreatureQueueConverter implements DynamoDBTypeConverter<String, Queue<Creature>> {
+public class CreatureQueueConverter implements DynamoDBTypeConverter<String, Queue<String>> {
     private JavaTimeModule javaTimeModule = new JavaTimeModule();
     private ObjectMapper objectMapper = new ObjectMapper().registerModule(javaTimeModule);
     @Override
-    public String convert(Queue<Creature> creatureQueue) {
+    public String convert(Queue<String> creatureQueue) {
         try {
             return objectMapper.writeValueAsString(creatureQueue);
         } catch (JsonProcessingException e) {
@@ -24,7 +24,7 @@ public class CreatureQueueConverter implements DynamoDBTypeConverter<String, Que
     }
 
     @Override
-    public Queue<Creature> unconvert(String creatureString) {
+    public Queue<String> unconvert(String creatureString) {
         try {
             return objectMapper.readValue(creatureString, new TypeReference<>() { });
         } catch (JsonProcessingException e) {

@@ -1,7 +1,8 @@
 import axios from "axios";
 import BindingClass from "../util/bindingClass";
 import Authenticator from "./authenticator";
-
+//TODO - adding creatures needs to add them to the end of the turn order if turnQueue exists
+//TODO - removing creatures also needs to remove them from the turnQueue
 export default class EncounterClient extends BindingClass {
 
     constructor(props = {}) {
