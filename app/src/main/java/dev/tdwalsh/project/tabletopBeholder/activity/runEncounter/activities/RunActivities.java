@@ -25,4 +25,14 @@ public class RunActivities {
         encounter.setEditDateTime(ZonedDateTime.now());
         return encounter;
     }
+
+    public Encounter nextTurn(Encounter encounter) {
+        Queue<String> turnQueue = encounter.getTurnQueue();
+        turnQueue.add(turnQueue.remove());
+        encounter.setTurnQueue(turnQueue);
+        if (encounter.getTopOfOrder().equals(turnQueue.peek())) {
+            encounter.setEncounterRound(encounter.getEncounterRound() + 1);
+        }
+        return encounter;
+    }
 }

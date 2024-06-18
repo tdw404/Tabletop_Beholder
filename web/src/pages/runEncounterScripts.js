@@ -40,7 +40,8 @@ const EMPTY_DATASTORE_STATE = {
                                 'populateEncounters', 'launchEncounter',
                                 'hideElementsPlay', 'showElementsPlay',
                                 'rollInitiative', 'assignInitiative',
-                                'goEncounter', 'populateAccordions'
+                                'goEncounter', 'populateAccordions',
+                                'nextTurn'
                                 ], this);
         this.dataStore = new DataStore(EMPTY_DATASTORE_STATE);
         this.navbarProvider = new NavbarProvider();
@@ -65,6 +66,7 @@ const EMPTY_DATASTORE_STATE = {
     document.getElementById('launch-session-btn').addEventListener('click', this.launchEncounter);
     document.getElementById('initiative-btn').addEventListener('click', this.assignInitiative);
     document.getElementById('go-btn').addEventListener('click', this.goEncounter);
+    document.getElementById('next-turn-btn').addEventListener('click', this.nextTurn);
     document.getElementById('session-list').addEventListener('change', (event) => {
                                                 if (event.target.closest('select')) {this.populateEncounters(event.target.value)}});
     document.getElementById('offcanvas-init-body').addEventListener('click', (event) => {
@@ -271,6 +273,19 @@ const EMPTY_DATASTORE_STATE = {
         document.getElementById('acc_button_' + turnQueue[0]).classList.remove('collapsed');
         document.getElementById('roundNumber').innerHTML = `Round: ${encounter.encounterRound}`
         this.hideElementsPlay();
+    }
+
+    async nextTurn() {
+        document.getElementById('spinner').hidden = false;
+        document.getElementById('spinner-label').hidden = false;
+        document.getElementById('creatureAccordion').hidden = true;
+        var encounter = this.dataStore.get(ENCOUNTER_KEY);
+        encounter = await this.runClient.nextTurn(encounter.objectId);
+        this.dataStore.set([ENCOUNTER_KEY], encounter);
+        document.getElementById('spinner').hidden = true;
+        document.getElementById('spinner-label').hidden = true;
+        document.getElementById('creatureAccordion').hidden = false;
+        this.populateAccordions();
     }
 
     showElements() {

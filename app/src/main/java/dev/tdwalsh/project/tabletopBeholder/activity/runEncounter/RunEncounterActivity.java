@@ -42,8 +42,11 @@ public class RunEncounterActivity {
                 runEncounterRequest.getUserEmail(), runEncounterRequest.getEncounterId()))
                 .orElseThrow(() -> new MissingResourceException(
                         String.format("Could not find encounter with id %s", runEncounterRequest.getEncounterId())));
-        if(runEncounterRequest.getActivity().equals("setInitiative")) {
+        if (runEncounterRequest.getActivity().equals("setInitiative")) {
             encounter = this.runActivities.setInitiative(encounter, runEncounterRequest.getBody());
+        }
+        if (runEncounterRequest.getActivity().equals("nextTurn")) {
+            encounter = this.runActivities.nextTurn(encounter);
         }
         encounterDao.writeObject(encounter);
         return RunEncounterResult.builder()
