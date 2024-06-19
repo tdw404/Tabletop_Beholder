@@ -7,8 +7,8 @@ import dev.tdwalsh.project.tabletopBeholder.dynamodb.dao.EncounterDao;
 import dev.tdwalsh.project.tabletopBeholder.dynamodb.models.Encounter;
 import dev.tdwalsh.project.tabletopBeholder.exceptions.MissingResourceException;
 
-import javax.inject.Inject;
 import java.util.Optional;
+import javax.inject.Inject;
 
 /**
  * RunEncounterActivity performs a wide range of activities related to running and encounter.
@@ -19,7 +19,7 @@ public class RunEncounterActivity {
 
     /**
      * Instantiates a new activity object.
-     *
+     * @param encounterDao Dao needed for class to perform activities.
      *
      */
 
@@ -50,6 +50,9 @@ public class RunEncounterActivity {
         }
         if (runEncounterRequest.getActivity().equals("applyDamage")) {
             encounter = this.runActivities.applyDamage(encounter, runEncounterRequest.getBody());
+        }
+        if (runEncounterRequest.getActivity().equals("heal")) {
+            encounter = this.runActivities.heal(encounter, runEncounterRequest.getBody());
         }
         encounterDao.writeObject(encounter);
         return RunEncounterResult.builder()

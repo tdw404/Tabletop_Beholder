@@ -484,6 +484,23 @@
         </div>
     </div>
 
+    <!--Apply damage overlay-->
+    <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasHeal" aria-labelledby="offcanvasHealLabel">
+        <div class="offcanvas-header">
+            <h5>Apply Damage</h5>
+            <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close" id="offcanvas-heal-close"></button>
+        </div>
+        <hr/>
+        <div class="offcanvas-body" id="offcanvas-heal-body">
+            <div class="text-center justify-content-center pt-3">
+                <label for="heal-value" class="form-label">Heal Amount</label>
+                <input class="form-control text-center" id="heal-value" type="number" min="0" data-bind="value:replyNumber">
+                <button type="button" class="btn btn-outline-dark pl-3" id="apply-heal-btn">Apply Healing</button>
+            </div>
+        </div>
+    </div>
+
+
 </main>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
 
