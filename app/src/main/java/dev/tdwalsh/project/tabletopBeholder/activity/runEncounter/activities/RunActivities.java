@@ -1,10 +1,12 @@
 package dev.tdwalsh.project.tabletopBeholder.activity.runEncounter.activities;
 
+import dev.tdwalsh.project.tabletopBeholder.dynamodb.models.Creature;
 import dev.tdwalsh.project.tabletopBeholder.dynamodb.models.Encounter;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.time.ZonedDateTime;
+import java.util.Map;
 import java.util.PriorityQueue;
 import java.util.Queue;
 
@@ -33,6 +35,26 @@ public class RunActivities {
         if (encounter.getTopOfOrder().equals(turnQueue.peek())) {
             encounter.setEncounterRound(encounter.getEncounterRound() + 1);
         }
+        return encounter;
+    }
+
+    public Encounter applyDamage(Encounter encounter, JSONObject body) {
+        Map<String, Creature> creatureMap = encounter.getCreatureMap();
+        Creature creature = creatureMap.get(body.getString("targetId"));
+        int damageValue = Integer.parseInt(body.getString("damageValue"));
+        creature.setCurrentHitPoints(creature.getCurrentHitPoints() - damageValue);
+        if (!creature.getIsPC()) {
+            if (creature.getCurrentHitPoints() + creature.getHitPoints() < 0) {
+                creature.setKnockedOut(false);
+                creature.setDead(true);
+                creature.setCurrentHitPoints(0);
+            } else if (creature.getCurrentHitPoints() <= 0) {
+                creature.setDead(true);
+                creature.setCurrentHitPoints(0);
+            };
+        };
+        creatureMap.put(creature.getEncounterCreatureId(), creature);
+        encounter.setCreatureMap(creatureMap);
         return encounter;
     }
 }

@@ -14,6 +14,8 @@ const ENCOUNTER_LIST_KEY = 'encounter-list-key';
 const SELECTED_ENCOUNTER_ID_KEY = 'selected-encounter-id-key';
 const ENCOUNTER_KEY = 'encounter-key';
 const CREATURE_MAP_KEY = 'creature-map-key';
+const SELECTED_CREATURE_ID_KEY = 'selected-creature-id-key';
+const TARGET_CREATURE_ID_KEY = 'taarget-creature-id-key';
 const EMPTY_DATASTORE_STATE = {
     [COGNITO_NAME_KEY]: '',
     [COGNITO_EMAIL_KEY]: '',
@@ -23,6 +25,8 @@ const EMPTY_DATASTORE_STATE = {
     [SELECTED_ENCOUNTER_ID_KEY]: '',
     [ENCOUNTER_KEY]: '',
     [CREATURE_MAP_KEY]: '',
+    [SELECTED_CREATURE_ID_KEY]: '',
+    [TARGET_CREATURE_ID_KEY]: '',
 };
 /**
  * Adds functionality to the landing page.
@@ -42,7 +46,8 @@ const EMPTY_DATASTORE_STATE = {
                                 'rollInitiative', 'assignInitiative',
                                 'goEncounter', 'populateAccordions',
                                 'nextTurn', 'viewStats',
-                                'modCalc'
+                                'modCalc', 'damageValue',
+                                'applyDamage'
                                 ], this);
         this.dataStore = new DataStore(EMPTY_DATASTORE_STATE);
         this.navbarProvider = new NavbarProvider();
@@ -68,6 +73,7 @@ const EMPTY_DATASTORE_STATE = {
     document.getElementById('initiative-btn').addEventListener('click', this.assignInitiative);
     document.getElementById('go-btn').addEventListener('click', this.goEncounter);
     document.getElementById('next-turn-btn').addEventListener('click', this.nextTurn);
+    document.getElementById('apply-damage-btn').addEventListener('click', this.applyDamage);
     document.getElementById('session-list').addEventListener('change', (event) => {
                                                 if (event.target.closest('select')) {this.populateEncounters(event.target.value)}});
     document.getElementById('offcanvas-init-body').addEventListener('click', (event) => {
@@ -183,10 +189,6 @@ const EMPTY_DATASTORE_STATE = {
     rollInitiative(encounterCreatureId) {
         var creature = this.dataStore.get(CREATURE_MAP_KEY).get(encounterCreatureId);
         var target = 'roll_' + encounterCreatureId;
-//        var modifier = 0;
-//        if (creature?.statMap?.dexterity) {
-//            modifier = Math.floor((creature.statMap.dexterity - 10)/2)
-//        }
         document.getElementById(target).value = Math.floor(Math.random() * (20) + 1) + this.modCalc(creature?.statMap?.dexterity);
     }
 
@@ -262,6 +264,13 @@ const EMPTY_DATASTORE_STATE = {
             if (creature.encounterCreatureId === encounter.topOfOrder) {
                  creatureName = creatureName + "     (Top of Order)"
             }
+            var status = "Okay";
+            if (creature.knockedOut) {
+                status = "Unconscious";
+            };
+            if (creature.dead) {
+                status = "Dead";
+            };
             var accordionItem = `
                <div class="accordion-item">
                    <h2 class="accordion-header" id="heading_${encounterCreatureId}">
@@ -271,20 +280,58 @@ const EMPTY_DATASTORE_STATE = {
                    </h2>
                    <div id="collapse_${encounterCreatureId}" class="accordion-collapse collapse" aria-labelledby="heading_${encounterCreatureId}" data-bs-parent="#creatureAccordion">
                        <div class="accordion-body">
-                            <button type="button" class="stats-btn btn btn-outline-dark" data-id = "${encounterCreatureId}" id="stats_${encounterCreatureId}">View Details</button>
+                            <div class = "row">
+                                <div class="mb-3 col">
+                                        <button type="button" class="stats-btn btn btn-outline-dark" data-id = "${encounterCreatureId}" id="stats_${encounterCreatureId}">View Details</button>
+                                </div>
+                                <div class="mb-3 col">
+
+                                        <button type="button" class="damage-btn btn btn-outline-dark" data-id = "${encounterCreatureId}" id="damage_${encounterCreatureId}">Damage</button>
+                                        <button type="button" class="heal-btn btn btn-outline-dark" data-id = "${encounterCreatureId}" id="heal_${encounterCreatureId}">Heal</button>
+                                        <button type="button" class="effect-btn btn btn-outline-dark" data-id = "${encounterCreatureId}" id="effect_${encounterCreatureId}">Add Effect</button>
+                                        <button type="button" class="ko-btn btn btn-outline-dark" data-id = "${encounterCreatureId}" id="ko_${encounterCreatureId}">Knock Out</button>
+                                        <button type="button" class="kill-btn btn btn-outline-dark" data-id = "${encounterCreatureId}" id="kill_${encounterCreatureId}">Kill</button>
+                                </div>
+                            </div>
+                            <div class = "row">
+                                <div class="mb-3 col">
+                                    <label for="hp_${encounterCreatureId}" class="form-label">HP</label>
+                                    <input class="form-control" id="hp_${encounterCreatureId}" readonly value = "${creature.currentHitPoints} / ${creature.hitPoints}">
+                                </div>
+                                <div class="mb-3 col">
+                                    <label for="status_${encounterCreatureId}" class="form-label">Status</label>
+                                    <input class="form-control" id="status_${encounterCreatureId}" readonly value = "${status}">
+                                </div>
+                                <div class="mb-3 col">
+                                    <label for="ac_${encounterCreatureId}" class="form-label">AC</label>
+                                    <input class="form-control" id="ac_${encounterCreatureId}" readonly value = "${creature.armorClass}">
+                                </div>
+                                <div class="mb-3 col">
+                                </div>
+                            </div>
                        </div>
                    </div>
                </div>`
                accordion.insertAdjacentHTML('afterbegin', accordionItem);
         }
         accordion.hidden = false;
-        document.getElementById('collapse_' + turnQueue[0]).classList.add('show');
-        document.getElementById('acc_button_' + turnQueue[0]).classList.remove('collapsed');
+        if(this.dataStore.get(SELECTED_CREATURE_ID_KEY)) {
+            document.getElementById('collapse_' + this.dataStore.get(SELECTED_CREATURE_ID_KEY)).classList.add('show');
+            document.getElementById('acc_button_' + this.dataStore.get(SELECTED_CREATURE_ID_KEY)).classList.remove('collapsed');
+            this.dataStore.set([SELECTED_CREATURE_ID_KEY], '');
+        } else {
+            document.getElementById('collapse_' + turnQueue[0]).classList.add('show');
+            document.getElementById('acc_button_' + turnQueue[0]).classList.remove('collapsed');
+        }
         document.getElementById('roundNumber').innerHTML = `Round: ${encounter.encounterRound}`
         for(var btn of document.getElementsByClassName('stats-btn')) {
             btn.addEventListener('click', (event) => {
                                     if (event.target.closest('button')) {this.viewStats(event.target.dataset.id)}});
         }
+        for(var btn of document.getElementsByClassName('damage-btn')) {
+                    btn.addEventListener('click', (event) => {
+                                            if (event.target.closest('button')) {this.damageValue(event.target.dataset.id)}});
+                }
         this.hideElementsPlay();
     }
 
@@ -294,6 +341,33 @@ const EMPTY_DATASTORE_STATE = {
         document.getElementById('creatureAccordion').hidden = true;
         var encounter = this.dataStore.get(ENCOUNTER_KEY);
         encounter = await this.runClient.nextTurn(encounter.objectId);
+        this.dataStore.set([ENCOUNTER_KEY], encounter);
+        document.getElementById('spinner').hidden = true;
+        document.getElementById('spinner-label').hidden = true;
+        document.getElementById('creatureAccordion').hidden = false;
+        this.populateAccordions();
+    }
+
+    async damageValue(targetID) {
+        this.dataStore.set([SELECTED_CREATURE_ID_KEY], targetID);
+        this.dataStore.set([TARGET_CREATURE_ID_KEY], targetID);
+        var myOffcanvas = document.getElementById('offcanvasDamage');
+        var bsOffcanvas = new bootstrap.Offcanvas(myOffcanvas);
+        bsOffcanvas.show();
+    }
+
+    async applyDamage() {
+        document.getElementById('spinner').hidden = false;
+        document.getElementById('spinner-label').hidden = false;
+        document.getElementById('creatureAccordion').hidden = true;
+        var encounter = this.dataStore.get(ENCOUNTER_KEY);
+        var damageValue = document.getElementById('damage-value').value;
+        if (damageValue == '' || damageValue < 0) {
+            damageValue = 0;
+        }
+        document.getElementById('offcanvas-damage-close').click();
+        encounter = await this.runClient.applyDamage(
+                encounter.objectId, this.dataStore.get(TARGET_CREATURE_ID_KEY), damageValue);
         this.dataStore.set([ENCOUNTER_KEY], encounter);
         document.getElementById('spinner').hidden = true;
         document.getElementById('spinner-label').hidden = true;

@@ -48,6 +48,9 @@ public class RunEncounterActivity {
         if (runEncounterRequest.getActivity().equals("nextTurn")) {
             encounter = this.runActivities.nextTurn(encounter);
         }
+        if (runEncounterRequest.getActivity().equals("applyDamage")) {
+            encounter = this.runActivities.applyDamage(encounter, runEncounterRequest.getBody());
+        }
         encounterDao.writeObject(encounter);
         return RunEncounterResult.builder()
                 .withEncounter(encounter)

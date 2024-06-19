@@ -136,3 +136,7 @@ main {
     background-color: rgba(179, 179, 179, 0.3) !important;
     font-weight: bold;
 }
+
+.topfield {
+   max-width: 100px;
+ }
