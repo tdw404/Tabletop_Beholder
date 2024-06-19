@@ -600,6 +600,74 @@
             </div>
         </div>
     </div>
+
+    <!--Apply Effect overlay-->
+    <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasEffect" aria-labelledby="offcanvasEffectLabel">
+        <div class="offcanvas-header">
+                <h5 id="effect-target-name">Apply Effect</h5>
+            <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close" id="offcanvas-effect-close"></button>
+        </div>
+        <hr/>
+        <div class="offcanvas-body" id="offcanvas-effect-body">
+            <div class="text-center justify-content-center pt-3">
+                <label for="effectName" class="form-label">Effect</label>
+                <select class="form-select" id="effectName">
+                    <option selected value="Blinded">Blinded</option>
+                    <option value="Charmed">Charmed</option>
+                    <option value="Deafened">Deafened</option>
+                    <option value="Frightened">Frightened</option>
+                    <option value="Grappled">Grappled</option>
+                    <option value="Incapacitated">Incapacitated</option>
+                    <option value="Invisible">Invisible</option>
+                    <option value="Paralyzed">Paralyzed</option>
+                    <option value="Petrified">Petrified</option>
+                    <option value="Poisoned">Poisoned</option>
+                    <option value="Prone">Prone</option>
+                    <option value="Restrained">Restrained</option>
+                    <option value="Stunned">Stunned</option>
+                    <option value="Unconscious">Unconscious</option>
+                    <option value="Other">Other</option>
+                </select>
+                <label for="effectBlameCreatureId" class="form-label">Source Creature</label>
+                <select class="form-select" id="effectBlameCreatureId">
+                    <option selected value="0"></option>
+                </select>
+                <div class = "row">
+                    <div class="mb-3 col">
+                        <label for="effectTurnDuration" class="form-label">Duration (Turns)</label>
+                        <input class="form-control" id="effectTurnDuration" type="number" min="0" data-bind="value:replyNumber">
+                    </div>
+                    <div class="mb-3 col">
+                        <label for="effectSaveType" class="form-label">Save Type</label>
+                        <select class="form-select" id="effectSaveType">
+                            <option selected value=""></option>
+                            <option selected value="STR">STR</option>
+                            <option value="DEX">DEX</option>
+                            <option value="CON">CON</option>
+                            <option value="INT">INT</option>
+                            <option value="WIS">WIS</option>
+                            <option value="CHA">CHA</option>
+                        </select>
+                    </div>
+                </div>
+                <div class = "row">
+                    <div class="mb-3 col">
+                        <label for="effectSaveDC" class="form-label">Save DV</label>
+                        <input class="form-control" id="effectSaveDC" type="number" min="0" data-bind="value:replyNumber">
+                    </div>
+                    <div class="mb-3 col">
+                        <label for="effectSaveOn" class="form-label">Save On</label>
+                        <select class="selectpicker" multiple id="effectSaveOn">
+                            <option value="start">Start of Turn</option>
+                            <option value="end">End of Turn</option>
+                            <option value="damage">On Damage</option>
+                        </select>
+                    </div>
+                </div>
+                <button type="button" class="btn btn-outline-dark pl-3" id="apply-effect-btn">Apply Effect</button>
+            </div>
+        </div>
+    </div>
 </main>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
 
