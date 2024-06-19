@@ -330,15 +330,15 @@ const EMPTY_DATASTORE_STATE = {
         document.getElementById('spellAttackModifier').value = creature.spellAttackModifier;
         if (creature.spellSlots !== null) {
             var spellSlotMap = new Map(Object.entries(creature.spellSlots));
-            document.getElementById('ss1').innerHTML = spellSlotMap.get(1);
-            document.getElementById('ss2').innerHTML = spellSlotMap.get(2);
-            document.getElementById('ss3').innerHTML = spellSlotMap.get(3);
-            document.getElementById('ss4').innerHTML = spellSlotMap.get(4);
-            document.getElementById('ss5').innerHTML = spellSlotMap.get(5);
-            document.getElementById('ss6').innerHTML = spellSlotMap.get(6);
-            document.getElementById('ss7').innerHTML = spellSlotMap.get(7);
-            document.getElementById('ss8').innerHTML = spellSlotMap.get(8);
-            document.getElementById('ss9').innerHTML = spellSlotMap.get(9);
+            document.getElementById('ss1').innerHTML = spellSlotMap.get(1) || '';;
+            document.getElementById('ss2').innerHTML = spellSlotMap.get(2) || '';;
+            document.getElementById('ss3').innerHTML = spellSlotMap.get(3) || '';;
+            document.getElementById('ss4').innerHTML = spellSlotMap.get(4) || '';;
+            document.getElementById('ss5').innerHTML = spellSlotMap.get(5) || '';;
+            document.getElementById('ss6').innerHTML = spellSlotMap.get(6) || '';;
+            document.getElementById('ss7').innerHTML = spellSlotMap.get(7) || '';;
+            document.getElementById('ss8').innerHTML = spellSlotMap.get(8) || '';;
+            document.getElementById('ss9').innerHTML = spellSlotMap.get(9) || '';;
         }
         document.getElementById('walkSpeed').innerHTML = creature.speedMap?.walk || '';
         document.getElementById('flySpeed').innerHTML = creature.speedMap?.fly || '';
