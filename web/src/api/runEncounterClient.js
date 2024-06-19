@@ -8,7 +8,9 @@ export default class EncounterClient extends BindingClass {
         super();
 
         const methodsToBind = ['clientLoaded', 'getTokenOrThrow',
-                                'getEncounterList', 'setInitiative'];
+                                'getEncounterList', 'setInitiative',
+                                'applyDamage', 'heal',
+                                'knockOut', 'kill'];
         this.bindClassMethods(methodsToBind, this);
 
         this.authenticator = new Authenticator();;
@@ -69,6 +71,68 @@ export default class EncounterClient extends BindingClass {
         try {
             const token = await this.getTokenOrThrow("Encountered token error trying to call RunEncounter endpoint.");
             const response = await this.axiosClient.post(`runEncounter/${encounterId}?activity=nextTurn`, {}, {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }});
+            return response.data.encounter;
+        } catch (error) {
+            this.handleError(error, errorCallback)
+        }
+    }
+
+    async applyDamage(encounterId, targetId, damageValue, errorCallback) {
+        try {
+            const token = await this.getTokenOrThrow("Encountered token error trying to call RunEncounter endpoint.");
+            const response = await this.axiosClient.post(`runEncounter/${encounterId}?activity=applyDamage`, {
+                targetId: targetId,
+                damageValue: `${damageValue}`
+            }, {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }});
+            return response.data.encounter;
+        } catch (error) {
+            this.handleError(error, errorCallback)
+        }
+    }
+
+    async heal(encounterId, targetId, damageValue, errorCallback) {
+        try {
+            const token = await this.getTokenOrThrow("Encountered token error trying to call RunEncounter endpoint.");
+            const response = await this.axiosClient.post(`runEncounter/${encounterId}?activity=heal`, {
+                targetId: targetId,
+                damageValue: `${damageValue}`
+            }, {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }});
+            return response.data.encounter;
+        } catch (error) {
+            this.handleError(error, errorCallback)
+        }
+    }
+
+    async knockOut(encounterId, targetId, errorCallback) {
+        try {
+            const token = await this.getTokenOrThrow("Encountered token error trying to call RunEncounter endpoint.");
+            const response = await this.axiosClient.post(`runEncounter/${encounterId}?activity=knockOut`, {
+                targetId: targetId
+            }, {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }});
+            return response.data.encounter;
+        } catch (error) {
+            this.handleError(error, errorCallback)
+        }
+    }
+
+    async kill(encounterId, targetId, errorCallback) {
+        try {
+            const token = await this.getTokenOrThrow("Encountered token error trying to call RunEncounter endpoint.");
+            const response = await this.axiosClient.post(`runEncounter/${encounterId}?activity=kill`, {
+                targetId: targetId
+            }, {
                 headers: {
                     Authorization: `Bearer ${token}`
                 }});

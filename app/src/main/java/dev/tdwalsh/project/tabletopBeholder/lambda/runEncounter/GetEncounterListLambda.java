@@ -1,14 +1,13 @@
 package dev.tdwalsh.project.tabletopBeholder.lambda.runEncounter;
 
-import com.amazonaws.services.lambda.runtime.Context;
-import com.amazonaws.services.lambda.runtime.RequestHandler;
 import dev.tdwalsh.project.tabletopBeholder.activity.runEncounter.request.GetEncounterListRequest;
 import dev.tdwalsh.project.tabletopBeholder.activity.runEncounter.result.GetEncounterListResult;
-import dev.tdwalsh.project.tabletopBeholder.activity.session.request.GetSessionRequest;
-import dev.tdwalsh.project.tabletopBeholder.activity.session.result.GetSessionResult;
 import dev.tdwalsh.project.tabletopBeholder.lambda.AuthenticatedLambdaRequest;
 import dev.tdwalsh.project.tabletopBeholder.lambda.LambdaActivityRunner;
 import dev.tdwalsh.project.tabletopBeholder.lambda.LambdaResponse;
+
+import com.amazonaws.services.lambda.runtime.Context;
+import com.amazonaws.services.lambda.runtime.RequestHandler;
 
 public class GetEncounterListLambda
         extends LambdaActivityRunner<GetEncounterListRequest, GetEncounterListResult>

@@ -468,6 +468,37 @@
 
         </div>
     </div>
+    <!--Apply damage overlay-->
+    <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasDamage" aria-labelledby="offcanvasDamageLabel">
+        <div class="offcanvas-header">
+            <h5>Apply Damage</h5>
+            <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close" id="offcanvas-damage-close"></button>
+        </div>
+        <hr/>
+        <div class="offcanvas-body" id="offcanvas-damage-body">
+            <div class="text-center justify-content-center pt-3">
+                <label for="damage-value" class="form-label">Damage Amount</label>
+                <input class="form-control text-center" id="damage-value" type="number" min="0" data-bind="value:replyNumber">
+                <button type="button" class="btn btn-outline-dark pl-3" id="apply-damage-btn">Apply Damage</button>
+            </div>
+        </div>
+    </div>
+
+    <!--Apply damage overlay-->
+    <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasHeal" aria-labelledby="offcanvasHealLabel">
+        <div class="offcanvas-header">
+            <h5>Apply Damage</h5>
+            <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close" id="offcanvas-heal-close"></button>
+        </div>
+        <hr/>
+        <div class="offcanvas-body" id="offcanvas-heal-body">
+            <div class="text-center justify-content-center pt-3">
+                <label for="heal-value" class="form-label">Heal Amount</label>
+                <input class="form-control text-center" id="heal-value" type="number" min="0" data-bind="value:replyNumber">
+                <button type="button" class="btn btn-outline-dark pl-3" id="apply-heal-btn">Apply Healing</button>
+            </div>
+        </div>
+    </div>
 
 
 </main>

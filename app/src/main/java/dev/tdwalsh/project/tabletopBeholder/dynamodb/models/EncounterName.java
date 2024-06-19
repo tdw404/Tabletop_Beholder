@@ -8,7 +8,7 @@ public class EncounterName {
     private String objectName;
 
     /**
-     * Constructor
+     * Constructor.
      * @param userEmail - email to assign
      * @param objectId - objectId to assign
      * @param objectName - objectName to assign

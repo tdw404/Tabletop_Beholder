@@ -1,14 +1,13 @@
 package dev.tdwalsh.project.tabletopBeholder.converters;
 
+import dev.tdwalsh.project.tabletopBeholder.exceptions.SerializationException;
+
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBTypeConverter;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import dev.tdwalsh.project.tabletopBeholder.dynamodb.models.Creature;
-import dev.tdwalsh.project.tabletopBeholder.exceptions.SerializationException;
 
-import java.util.List;
 import java.util.Queue;
 
 public class CreatureQueueConverter implements DynamoDBTypeConverter<String, Queue<String>> {
