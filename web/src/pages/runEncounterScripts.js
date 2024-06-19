@@ -379,6 +379,16 @@ const EMPTY_DATASTORE_STATE = {
                this.populateSpells(encounterCreatureId);
                this.populateActions(encounterCreatureId);
                this.populateEffects(encounterCreatureId);
+               if(encounter.messageList) {
+                    var notifications = document.getElementById('notification-list');
+                    for(var message of encounter.messageList) {
+                        var messageLine = `<li class="list-group-item">${message}</li>`
+                    }
+                    notifications.insertAdjacentHTML('afterbegin', messageLine);
+                    document.getElementById('notification-header').innerHTML = "Notifications (" + messageLine.length +")";
+               } else {
+                    document.getElementById('notification-header').innerHTML = "Notifications";
+               }
         }
         accordion.hidden = false;
         if(this.dataStore.get(SELECTED_CREATURE_ID_KEY)) {
