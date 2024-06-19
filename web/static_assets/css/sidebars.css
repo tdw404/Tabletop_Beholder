@@ -117,8 +117,13 @@ main {
 .lh-tight { line-height: 1.25; }
 
 .table-responsive {
-    max-height:80%;
+    max-height:45%;
     border: 2;
+}
+
+.unlimited {
+    max-height:100% !important;
+    max-width:70% !important;
 }
 
 .selectedRow {

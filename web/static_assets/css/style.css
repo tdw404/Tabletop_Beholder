@@ -179,3 +179,8 @@ a.disabled {
   pointer-events: none;
   cursor: default;
 }
+
+input[readonly] {
+  background-color: white;
+}
+

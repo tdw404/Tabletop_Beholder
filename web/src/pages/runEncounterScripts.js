@@ -41,7 +41,7 @@ const EMPTY_DATASTORE_STATE = {
                                 'hideElementsPlay', 'showElementsPlay',
                                 'rollInitiative', 'assignInitiative',
                                 'goEncounter', 'populateAccordions',
-                                'nextTurn'
+                                'nextTurn', 'viewStats'
                                 ], this);
         this.dataStore = new DataStore(EMPTY_DATASTORE_STATE);
         this.navbarProvider = new NavbarProvider();
@@ -228,7 +228,7 @@ const EMPTY_DATASTORE_STATE = {
             queueList.push(element.objectId);
         }
         var warned = false;
-        var encounter = this.runClient.setInitiative(this.dataStore.get(ENCOUNTER_KEY).objectId,
+        var encounter = await this.runClient.setInitiative(this.dataStore.get(ENCOUNTER_KEY).objectId,
                                                      queueList, (error) => {
                            document.getElementById('offcanvas-warn-body').innerText = error.message;
                            var myOffcanvas = document.getElementById('offcanvasWarn');
@@ -238,6 +238,8 @@ const EMPTY_DATASTORE_STATE = {
                            warned = true;
         });
         this.dataStore.set([ENCOUNTER_KEY], encounter);
+        this.hideElements();
+        document.getElementById('offcanvas-init-close').click();
         this.populateAccordions();
     }
 
@@ -259,7 +261,6 @@ const EMPTY_DATASTORE_STATE = {
             if (creature.encounterCreatureId === encounter.topOfOrder) {
                  creatureName = creatureName + "     (Top of Order)"
             }
-            console.log(creature.encounterCreatureName)
             var accordionItem = `
                <div class="accordion-item">
                    <h2 class="accordion-header" id="heading_${encounterCreatureId}">
@@ -269,6 +270,7 @@ const EMPTY_DATASTORE_STATE = {
                    </h2>
                    <div id="collapse_${encounterCreatureId}" class="accordion-collapse collapse" aria-labelledby="heading_${encounterCreatureId}" data-bs-parent="#creatureAccordion">
                        <div class="accordion-body">
+                            <button type="button" class="stats-btn btn btn-outline-dark" data-id = "${encounterCreatureId}" id="stats_${encounterCreatureId}">Launch Encounter</button>
                             ${creature.creatureDescription}
                        </div>
                    </div>
@@ -279,6 +281,10 @@ const EMPTY_DATASTORE_STATE = {
         document.getElementById('collapse_' + turnQueue[0]).classList.add('show');
         document.getElementById('acc_button_' + turnQueue[0]).classList.remove('collapsed');
         document.getElementById('roundNumber').innerHTML = `Round: ${encounter.encounterRound}`
+        for(var btn of document.getElementsByClassName('stats-btn')) {
+            btn.addEventListener('click', (event) => {
+                                    if (event.target.closest('button')) {this.viewStats(event.target.dataset.id)}});
+        }
         this.hideElementsPlay();
     }
 
@@ -293,6 +299,15 @@ const EMPTY_DATASTORE_STATE = {
         document.getElementById('spinner-label').hidden = true;
         document.getElementById('creatureAccordion').hidden = false;
         this.populateAccordions();
+    }
+
+    viewStats(encounterCreatureId) {
+        var creatureMap = this.dataStore.get(CREATURE_MAP_KEY);
+        var creature = creatureMap.get(encounterCreatureId);
+        document.getElementById('stats-name').innerText = creature.encounterCreatureName;
+        var myOffcanvas = document.getElementById('offcanvasStats');
+        var bsOffcanvas = new bootstrap.Offcanvas(myOffcanvas);
+        bsOffcanvas.show();
     }
 
     showElements() {
