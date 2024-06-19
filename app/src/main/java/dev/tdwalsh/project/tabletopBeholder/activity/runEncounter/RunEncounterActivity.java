@@ -60,6 +60,9 @@ public class RunEncounterActivity {
         if (runEncounterRequest.getActivity().equals("kill")) {
             encounter = this.runActivities.kill(encounter, runEncounterRequest.getBody());
         }
+        if (runEncounterRequest.getActivity().equals("addEffect")) {
+            encounter = this.runActivities.addEffect(encounter, runEncounterRequest.getBody());
+        }
         encounterDao.writeObject(encounter);
         return RunEncounterResult.builder()
                 .withEncounter(encounter)

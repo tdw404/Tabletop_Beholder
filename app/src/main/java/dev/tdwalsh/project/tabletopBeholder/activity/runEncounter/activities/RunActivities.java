@@ -1,14 +1,20 @@
 package dev.tdwalsh.project.tabletopBeholder.activity.runEncounter.activities;
 
 import dev.tdwalsh.project.tabletopBeholder.dynamodb.models.Creature;
+import dev.tdwalsh.project.tabletopBeholder.dynamodb.models.Effect;
 import dev.tdwalsh.project.tabletopBeholder.dynamodb.models.Encounter;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.time.ZonedDateTime;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Optional;
 import java.util.PriorityQueue;
 import java.util.Queue;
+import java.util.Set;
 
 public class RunActivities {
 
@@ -127,6 +133,35 @@ public class RunActivities {
         creature.setKnockedOut(false);
         creature.setDead(true);
         creature.setCurrentHitPoints(0);
+        creatureMap.put(creature.getEncounterCreatureId(), creature);
+        encounter.setCreatureMap(creatureMap);
+        return encounter;
+    }
+
+    /**
+     * Uses provided details to add an effect to a create.
+     * @param encounter Old state {@link Encounter} object to be updated.
+     * @param body Details to complete task.
+     * @return Updated encounter object.
+     */
+    public Encounter addEffect(Encounter encounter, JSONObject body) {
+        Map<String, Creature> creatureMap = encounter.getCreatureMap();
+        Creature creature = creatureMap.get(body.getString("targetId"));
+        Effect effect = new Effect();
+        JSONObject jsonEffect = body.getJSONObject("effect");
+        effect.setObjectId(jsonEffect.getString("objectId"));
+        effect.setEffectName(jsonEffect.getString("effectName"));
+        effect.setTurnDuration(Integer.parseInt(jsonEffect.getString("turnDuration")));
+        effect.setBlameCreatureId(jsonEffect.getString("blameCreatureId"));
+        effect.setSaveType(jsonEffect.getString("saveType"));
+        effect.setSaveDC(Integer.parseInt(jsonEffect.getString("saveDC")));
+        JSONArray array = jsonEffect.getJSONArray("saveOn");
+        Set<String> stringSet = new HashSet<>();
+        array.forEach(arrayItem -> stringSet.add(arrayItem.toString()));
+        effect.setSaveOn(stringSet);
+        Map<String, Effect> activeEffects = Optional.ofNullable(creature.getActiveEffects()).orElse(new HashMap<>());
+        activeEffects.put(effect.getObjectId(), effect);
+        creature.setActiveEffects(activeEffects);
         creatureMap.put(creature.getEncounterCreatureId(), creature);
         encounter.setCreatureMap(creatureMap);
         return encounter;
