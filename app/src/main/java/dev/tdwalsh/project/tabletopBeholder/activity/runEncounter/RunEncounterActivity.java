@@ -63,6 +63,9 @@ public class RunEncounterActivity {
         if (runEncounterRequest.getActivity().equals("addEffect")) {
             encounter = this.runActivities.addEffect(encounter, runEncounterRequest.getBody());
         }
+        if (runEncounterRequest.getActivity().equals("removeEffect")) {
+            encounter = this.runActivities.removeEffect(encounter, runEncounterRequest.getBody());
+        }
         encounterDao.writeObject(encounter);
         return RunEncounterResult.builder()
                 .withEncounter(encounter)

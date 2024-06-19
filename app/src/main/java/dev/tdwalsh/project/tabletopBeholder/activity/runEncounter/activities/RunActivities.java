@@ -166,4 +166,21 @@ public class RunActivities {
         encounter.setCreatureMap(creatureMap);
         return encounter;
     }
+
+    /**
+     * Uses provided details to add an effect to a create.
+     * @param encounter Old state {@link Encounter} object to be updated.
+     * @param body Details to complete task.
+     * @return Updated encounter object.
+     */
+    public Encounter removeEffect(Encounter encounter, JSONObject body) {
+        Map<String, Creature> creatureMap = encounter.getCreatureMap();
+        Creature creature = creatureMap.get(body.getString("targetId"));
+        Map<String, Effect> activeEffects = Optional.ofNullable(creature.getActiveEffects()).orElse(new HashMap<>());
+        activeEffects.remove(body.getString("effectId"));
+        creature.setActiveEffects(activeEffects);
+        creatureMap.put(creature.getEncounterCreatureId(), creature);
+        encounter.setCreatureMap(creatureMap);
+        return encounter;
+    }
 }

@@ -668,6 +668,44 @@
             </div>
         </div>
     </div>
+    <!--Apply Effect overlay-->
+    <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasViewEffect" aria-labelledby="offcanvasViewEffectLabel">
+        <div class="offcanvas-header">
+            <h5 id="view-effect-target-name">View Effect</h5>
+            <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close" id="offcanvas-view-effect-close"></button>
+        </div>
+        <hr/>
+        <div class="offcanvas-body" id="offcanvas-view-effect-body">
+            <div class="text-center justify-content-center pt-3">
+                <label for="viewEffectName" class="form-label">Effect</label>
+                <input class="form-control" id="viewEffectName" readonly>
+                <label for="viewEffectBlameCreature" class="form-label">Source Creature</label>
+                <input class="form-control" id="viewEffectBlameCreature" readonly>
+                <div class = "row">
+                    <div class="mb-3 col">
+                        <label for="viewEffectDuration" class="form-label">Duration (Turns)</label>
+                        <input class="form-control" id="viewEffectDuration" readonly>
+                    </div>
+                    <div class="mb-3 col">
+                        <label for="viewEffectSaveType" class="form-label">Save Type</label>
+                        <input class="form-control" id="viewEffectSaveType" readonly>
+                    </div>
+                </div>
+                <div class = "row">
+                    <div class="mb-3 col">
+                        <label for="viewEffectSaveDC" class="form-label">Save DC</label>
+                        <input class="form-control" id="viewEffectSaveDC" readonly>
+                    </div>
+                    <div class="mb-3 col">
+                        <label for="viewEffectSaveOn" class="form-label">Save On</label>
+                        <input class="form-control" id="viewEffectSaveOn" readonly>
+                    </div>
+                    </div>
+                </div>
+                <button type="button" class="btn btn-outline-dark pl-3" id="remove-effect-btn">Remove Effect</button>
+            </div>
+        </div>
+    </div>
 </main>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
 
