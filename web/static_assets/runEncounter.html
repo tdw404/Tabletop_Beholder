@@ -500,7 +500,106 @@
         </div>
     </div>
 
+    <!--Spell details popup-->
+    <div class="offcanvas offcanvas-bottom h-100" tabindex="-1" id="offcanvasSpell" aria-labelledby="offcanvasSpellLabel">
+        <div class="offcanvas-header">
+            <h5>Spell Details</h5>
+            <h3 id="spell-name"></h3>
+            <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close" id="offcanvas-spell-close"></button>
+        </div>
+        <hr/>
+        <div class="offcanvas-body" id="offcanvas-spell-body">
+            <div class="mb-3">
+                <label for="spellDescription" class="form-label">Description</label>
+                <textarea class="form-control" id="spellDescription" rows="3" readonly></textarea>
+            </div>
+            <div class="mb-3">
+                <label for="spellHigherLevel" class="form-label">Higher-Level Description</label>
+                <textarea class="form-control" id="spellHigherLevel" rows="3" readonly></textarea>
+            </div>
+            <div class="row">
+                <div class="mb-3 col">
+                    <label for="spellComponents" class="form-label">Spell Components</label>
+                    <input class="form-control" id="spellComponents" readonly>
+                </div>
+                <div class="mb-3 col">
+                    <label for="spellMaterial" class="form-label">Spell Material</label>
+                    <input class="form-control" id="spellMaterial" readonly>
+                </div>
+                <div class="mb-3 col">
+                    <label for="spellRange" class="form-label">Spell Range (ft.)</label>
+                    <input class="form-control" id="spellRange" readonly>
+                </div>
+                <div class="mb-3 col">
+                    <label for="reaction" class="form-label">Reaction?</label>
+                    <input class="form-control" id="reaction" readonly>
+                </div>
+            </div>
+            <div class="row">
+                <div class="mb-3 col">
+                    <label for="ritualCast" class="form-label">Ritual Cast</label>
+                    <input class="form-control" id="ritualCast" readonly>
+                </div>
+                <div class="mb-3 col">
+                    <label for="castingTime" class="form-label">Casting Time</label>
+                    <input class="form-control" id="castingTime" readonly>
+                </div>
+                <div class="mb-3 col">
+                    <label for="spellLevel" class="form-label">Spell Level</label>
+                    <input class="form-control" id="spellLevel" readonly>
+                </div>
+                <div class="mb-3 col">
+                    <label for="innateCasts" class="form-label">Innate Casts</label>
+                    <input class="form-control" id="innateCasts" readonly>
+                </div>
+            </div>
+            <div class="row">
+                <div class="mb-3 col">
+                    <label for="spellSchool" class="form-label">Spell School</label>
+                    <input class="form-control" id="spellSchool" readonly>
+                </div>
+                <div class="mb-3 col">
+                </div>
+                <div class="mb-3 col">
+                </div>
+                <div class="mb-3 col">
+                </div>
+            </div>
+        </div>
+    </div>
 
+    <!--Action details popup-->
+    <div class="offcanvas offcanvas-bottom h-100" tabindex="-1" id="offcanvasAction" aria-labelledby="offcanvasActionLabel">
+        <div class="offcanvas-header">
+            <h5>Action Details</h5>
+            <h3 id="action-name"></h3>
+            <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close" id="offcanvas-action-close"></button>
+        </div>
+        <hr/>
+        <div class="offcanvas-body" id="offcanvas-action-body">
+            <div class="mb-3">
+                <label for="actionDescription" class="form-label">Description</label>
+                <textarea class="form-control" id="actionDescription" rows="3" readonly></textarea>
+            </div>
+            <div class="row">
+                <div class="mb-3 col">
+                    <label for="actionType" class="form-label">Type</label>
+                    <input class="form-control" id="actionType" readonly>
+                </div>
+                <div class="mb-3 col">
+                    <label for="actionUses" class="form-label">Uses</label>
+                    <input class="form-control" id="actionUses" readonly>
+                </div>
+                <div class="mb-3 col">
+                    <label for="actionRecharge" class="form-label">Recharge On</label>
+                    <input class="form-control" id="actionRecharge" readonly>
+                </div>
+                <div class="mb-3 col">
+
+                </div>
+            </div>
+        </div>
+    </div>
 </main>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
 
