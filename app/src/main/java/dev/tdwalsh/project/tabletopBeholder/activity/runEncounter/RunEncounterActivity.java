@@ -54,6 +54,12 @@ public class RunEncounterActivity {
         if (runEncounterRequest.getActivity().equals("heal")) {
             encounter = this.runActivities.heal(encounter, runEncounterRequest.getBody());
         }
+        if (runEncounterRequest.getActivity().equals("knockOut")) {
+            encounter = this.runActivities.knockOut(encounter, runEncounterRequest.getBody());
+        }
+        if (runEncounterRequest.getActivity().equals("kill")) {
+            encounter = this.runActivities.kill(encounter, runEncounterRequest.getBody());
+        }
         encounterDao.writeObject(encounter);
         return RunEncounterResult.builder()
                 .withEncounter(encounter)

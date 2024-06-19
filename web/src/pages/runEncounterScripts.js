@@ -48,7 +48,8 @@ const EMPTY_DATASTORE_STATE = {
                                 'nextTurn', 'viewStats',
                                 'modCalc', 'damageValue',
                                 'applyDamage', 'healValue',
-                                'applyHeal'
+                                'applyHeal', 'knockOut',
+                                'kill'
                                 ], this);
         this.dataStore = new DataStore(EMPTY_DATASTORE_STATE);
         this.navbarProvider = new NavbarProvider();
@@ -338,6 +339,14 @@ const EMPTY_DATASTORE_STATE = {
             btn.addEventListener('click', (event) => {
                                     if (event.target.closest('button')) {this.healValue(event.target.dataset.id)}});
         }
+        for(var btn of document.getElementsByClassName('ko-btn')) {
+                    btn.addEventListener('click', (event) => {
+                                            if (event.target.closest('button')) {this.knockOut(event.target.dataset.id)}});
+                }
+        for(var btn of document.getElementsByClassName('kill-btn')) {
+                    btn.addEventListener('click', (event) => {
+                                            if (event.target.closest('button')) {this.kill(event.target.dataset.id)}});
+                }
         this.hideElementsPlay();
     }
 
@@ -381,32 +390,64 @@ const EMPTY_DATASTORE_STATE = {
         this.populateAccordions();
     }
 
-        async healValue(targetID) {
-            this.dataStore.set([SELECTED_CREATURE_ID_KEY], targetID);
-            this.dataStore.set([TARGET_CREATURE_ID_KEY], targetID);
-            var myOffcanvas = document.getElementById('offcanvasHeal');
-            var bsOffcanvas = new bootstrap.Offcanvas(myOffcanvas);
-            bsOffcanvas.show();
-        }
+    async healValue(targetID) {
+        this.dataStore.set([SELECTED_CREATURE_ID_KEY], targetID);
+        this.dataStore.set([TARGET_CREATURE_ID_KEY], targetID);
+        var myOffcanvas = document.getElementById('offcanvasHeal');
+        var bsOffcanvas = new bootstrap.Offcanvas(myOffcanvas);
+        bsOffcanvas.show();
+    }
 
-        async applyHeal() {
-            document.getElementById('spinner').hidden = false;
-            document.getElementById('spinner-label').hidden = false;
-            document.getElementById('creatureAccordion').hidden = true;
-            var encounter = this.dataStore.get(ENCOUNTER_KEY);
-            var damageValue = document.getElementById('heal-value').value;
-            if (damageValue == '' || damageValue < 0) {
-                damageValue = 0;
-            }
-            document.getElementById('offcanvas-heal-close').click();
-            encounter = await this.runClient.heal(
-                    encounter.objectId, this.dataStore.get(TARGET_CREATURE_ID_KEY), damageValue);
-            this.dataStore.set([ENCOUNTER_KEY], encounter);
-            document.getElementById('spinner').hidden = true;
-            document.getElementById('spinner-label').hidden = true;
-            document.getElementById('creatureAccordion').hidden = false;
-            this.populateAccordions();
+    async applyHeal() {
+        document.getElementById('spinner').hidden = false;
+        document.getElementById('spinner-label').hidden = false;
+        document.getElementById('creatureAccordion').hidden = true;
+        var encounter = this.dataStore.get(ENCOUNTER_KEY);
+        var damageValue = document.getElementById('heal-value').value;
+        if (damageValue == '' || damageValue < 0) {
+            damageValue = 0;
         }
+        document.getElementById('offcanvas-heal-close').click();
+        encounter = await this.runClient.heal(
+                encounter.objectId, this.dataStore.get(TARGET_CREATURE_ID_KEY), damageValue);
+        this.dataStore.set([ENCOUNTER_KEY], encounter);
+        document.getElementById('spinner').hidden = true;
+        document.getElementById('spinner-label').hidden = true;
+        document.getElementById('creatureAccordion').hidden = false;
+        this.populateAccordions();
+    }
+
+    async knockOut(targetID) {
+        this.dataStore.set([SELECTED_CREATURE_ID_KEY], targetID);
+        this.dataStore.set([TARGET_CREATURE_ID_KEY], targetID);
+        document.getElementById('spinner').hidden = false;
+        document.getElementById('spinner-label').hidden = false;
+        document.getElementById('creatureAccordion').hidden = true;
+        var encounter = this.dataStore.get(ENCOUNTER_KEY);
+        encounter = await this.runClient.knockOut(
+                            encounter.objectId, this.dataStore.get(TARGET_CREATURE_ID_KEY));
+        this.dataStore.set([ENCOUNTER_KEY], encounter);
+        document.getElementById('spinner').hidden = true;
+        document.getElementById('spinner-label').hidden = true;
+        document.getElementById('creatureAccordion').hidden = false;
+        this.populateAccordions();
+    }
+
+    async kill(targetID) {
+        this.dataStore.set([SELECTED_CREATURE_ID_KEY], targetID);
+        this.dataStore.set([TARGET_CREATURE_ID_KEY], targetID);
+        document.getElementById('spinner').hidden = false;
+        document.getElementById('spinner-label').hidden = false;
+        document.getElementById('creatureAccordion').hidden = true;
+        var encounter = this.dataStore.get(ENCOUNTER_KEY);
+        encounter = await this.runClient.kill(
+                            encounter.objectId, this.dataStore.get(TARGET_CREATURE_ID_KEY));
+        this.dataStore.set([ENCOUNTER_KEY], encounter);
+        document.getElementById('spinner').hidden = true;
+        document.getElementById('spinner-label').hidden = true;
+        document.getElementById('creatureAccordion').hidden = false;
+        this.populateAccordions();
+    }
 
     viewStats(encounterCreatureId) {
         var creatureMap = this.dataStore.get(CREATURE_MAP_KEY);

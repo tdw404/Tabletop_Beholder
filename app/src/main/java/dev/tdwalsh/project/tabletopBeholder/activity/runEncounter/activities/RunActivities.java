@@ -97,4 +97,38 @@ public class RunActivities {
         encounter.setCreatureMap(creatureMap);
         return encounter;
     }
+
+    /**
+     * Uses provided details to set target creature to unconscious, sets hp to zero.
+     * @param encounter Old state {@link Encounter} object to be updated.
+     * @param body Details to complete task.
+     * @return Updated encounter object.
+     */
+    public Encounter knockOut(Encounter encounter, JSONObject body) {
+        Map<String, Creature> creatureMap = encounter.getCreatureMap();
+        Creature creature = creatureMap.get(body.getString("targetId"));
+        creature.setKnockedOut(true);
+        creature.setDead(false);
+        creature.setCurrentHitPoints(0);
+        creatureMap.put(creature.getEncounterCreatureId(), creature);
+        encounter.setCreatureMap(creatureMap);
+        return encounter;
+    }
+
+    /**
+     * Uses provided details to set target creature to dead, sets hp to zero.
+     * @param encounter Old state {@link Encounter} object to be updated.
+     * @param body Details to complete task.
+     * @return Updated encounter object.
+     */
+    public Encounter kill(Encounter encounter, JSONObject body) {
+        Map<String, Creature> creatureMap = encounter.getCreatureMap();
+        Creature creature = creatureMap.get(body.getString("targetId"));
+        creature.setKnockedOut(false);
+        creature.setDead(true);
+        creature.setCurrentHitPoints(0);
+        creatureMap.put(creature.getEncounterCreatureId(), creature);
+        encounter.setCreatureMap(creatureMap);
+        return encounter;
+    }
 }
