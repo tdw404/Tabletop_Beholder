@@ -1,5 +1,6 @@
 <!doctype html>
 <html lang="en" xmlns="http://www.w3.org/1999/html">
+
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -9,6 +10,14 @@
     <link rel="icon" type="image/x-icon" href="/images/favicon.ico">
     <script type="text/javascript" src="assets/runEncounterScripts.js"></script>
 </head>
+<style>
+    input.form-control:read-only {
+        background-color: #fff;
+    }
+    textarea.form-control:read-only {
+        background-color: #fff;
+    }
+</style>
 <body>
 
 
@@ -50,6 +59,8 @@
         <div class="accordion show-while-playing pad-up" id="creatureAccordion">
         </div>
     </div>
+
+    <!--Offcanvas warning popup-->
     <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasWarn" aria-labelledby="offcanvasWarnLabel">
         <div class="offcanvas-header">
             <h5 id="offcanvasWarnLabel">Warning!</h5>
@@ -60,6 +71,8 @@
             ...
         </div>
     </div>
+
+    <!--Initiative setting dialog-->
     <div class="offcanvas offcanvas-bottom h-100" tabindex="-1" id="offcanvasInitiative" aria-labelledby="offcanvasInitiativeLabel">
         <div class="offcanvas-header">
             <h5 >Roll For Initiative</h5>
@@ -73,6 +86,390 @@
         <div class="offcanvas-body" id="offcanvas-init-body">
         </div>
     </div>
+
+    <!--Creature details popup-->
+    <div class="offcanvas offcanvas-bottom h-100" tabindex="-1" id="offcanvasStats" aria-labelledby="offcanvasStatsLabel">
+        <div class="offcanvas-header">
+            <h5>Creature Details</h5>
+            <h3 id="stats-name"></h3>
+            <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close" id="offcanvas-stats-close"></button>
+        </div>
+        <hr/>
+        <div class="offcanvas-body" id="offcanvas-stats-body">
+            <div class="mb-3 col">
+                <label for="creatureName" class="form-label">Creature</label>
+                <input class="form-control" id="creatureName" readonly>
+            </div>
+            <div class="mb-3">
+                <label for="creatureDescription" class="form-label">Description</label>
+                <textarea class="form-control" id="creatureDescription" rows="3" readonly></textarea>
+            </div>
+            <div class="mb-3">
+                <label for="legendaryDesc" class="form-label">Description</label>
+                <textarea class="form-control" id="legendaryDesc" rows="3" readonly></textarea>
+            </div>
+            <div class="row">
+                <div class="mb-3 col">
+                    <label for="armorClass" class="form-label">Armor Class</label>
+                    <input class="form-control" id="armorClass" readonly>
+                </div>
+                <div class="mb-3 col">
+                    <label for="armorType" class="form-label">Armor Type</label>
+                    <input class="form-control" id="armorType" readonly>
+                </div>
+                <div class="mb-3 col">
+                    <label for="hitPoints" class="form-label">Max Hit Points</label>
+                    <input class="form-control" id="hitPoints" readonly>
+                </div>
+                <div class="mb-3 col">
+                    <label for="hitDice" class="form-label">Hit Dice</label>
+                    <input class="form-control" id="hitDice" readonly>
+                </div>
+            </div>
+            <div class="row">
+                <div class="mb-3 col">
+                    <label for="vulnerabilities" class="form-label">Vulnerabilities</label>
+                    <input class="form-control" id="vulnerabilities" readonly>
+                </div>
+                <div class="mb-3 col">
+                    <label for="resistances" class="form-label">Resistances</label>
+                    <input class="form-control" id="resistances" readonly>
+                </div>
+                <div class="mb-3 col">
+                    <label for="immunities" class="form-label">Immunities</label>
+                    <input class="form-control" id="immunities" readonly>
+                </div>
+                <div class="mb-3 col">
+                    <label for="conditionImmunities" class="form-label">Condition Immunities</label>
+                    <input class="form-control" id="conditionImmunities" readonly>
+                </div>
+            </div>
+            <hr>
+            <div class="row">
+                <div class="mb-3 col">
+                    <label for="sourceBook" class="form-label">Source Book</label>
+                    <input class="form-control" id="sourceBook" readonly>
+                </div>
+                <div class="mb-3 col">
+                    <label for="size" class="form-label">Size</label>
+                    <input class="form-control" id="size" readonly>
+                </div>
+                <div class="mb-3 col">
+                    <label for="type" class="form-label">Type</label>
+                    <input class="form-control" id="type" readonly>
+                </div>
+                <div class="mb-3 col">
+                    <label for="subType" class="form-label">Subtype</label>
+                    <input class="form-control" id="subType" readonly>
+                </div>
+            </div>
+            <div class = "row">
+                <div class="mb-3 col">
+                    <label for="group" class="form-label">Group</label>
+                    <input class="form-control" id="group" readonly>
+                </div>
+                <div class="mb-3 col">
+                    <label for="alignment" class="form-label">Alignment</label>
+                    <input class="form-control" id="alignment" readonly>
+                </div>
+                <div class="mb-3 col">
+                </div>
+                <div class="mb-3 col">
+                </div>
+            </div>
+            <div class = "row">
+                <div class="mb-3 col">
+                    <label for="senses" class="form-label">Senses</label>
+                    <input class="form-control" id="senses" readonly>
+                </div>
+                <div class="mb-3 col">
+                    <label for="languages" class="form-label">Languages</label>
+                    <input class="form-control" id="languages" readonly>
+                </div>
+                <div class="mb-3 col">
+                    <label for="challengeRating" class="form-label">Challenge Rating</label>
+                    <input class="form-control" id="challengeRating" readonly>
+                </div>
+                <div class="mb-3 col">
+                </div>
+            </div>
+            <div class="row">
+                <div class="mb-3 col">
+                    <label for="spellcastingAbility" class="form-label">Spellcasting Ability</label>
+                    <input class="form-control" id="spellcastingAbility" readonly>
+                </div>
+                <div class="mb-3 col">
+                    <label for="spellAttackModifier" class="form-label">Spell Attack Modifier</label>
+                    <input class="form-control" id="spellAttackModifier" readonly>
+                </div>
+                <div class="mb-3 col">
+                    <label for="spellSaveDC" class="form-label">Spell Save DC</label>
+                    <input class="form-control" id="spellSaveDC" readonly>
+                </div>
+                <div class="mb-3 col">
+
+                </div>
+            </div>
+            <div class="row">
+                <div class="mb-3 col">
+                    <div class="table-responsive unlimited">
+                        <table id = "stats-table"  class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Stat Modifiers</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <th>STR</th>
+                                    <th id="strStat"></th>
+                                </tr>
+                                <tr>
+                                    <th>DEX</th>
+                                    <th id="dexStat"></th>
+                                </tr>
+                                <tr>
+                                    <th>CON</th>
+                                    <th id="conStat"></th>
+                                </tr>
+                                <tr>
+                                    <th>INT</th>
+                                    <th id="intStat"></th>
+                                </tr>
+                                <tr>
+                                    <th>WIS</th>
+                                    <th id="wisStat"></th>
+                                </tr>
+                                <tr>
+                                    <th>CHA</th>
+                                    <th id="chaStat"></th>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="mb-3 col">
+                    <div class="table-responsive unlimited">
+                        <table id = "saves-table"  class="table table-striped">
+                            <thead>
+                            <tr>
+                                <th>Saves</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr>
+                                <th>STR</th>
+                                <th id="strSave"></th>
+                            </tr>
+                            <tr>
+                                <th>DEX</th>
+                                <th id="dexSave"></th>
+                            </tr>
+                            <tr>
+                                <th>CON</th>
+                                <th id="conSave"></th>
+                            </tr>
+                            <tr>
+                                <th>INT</th>
+                                <th id="intSave"></th>
+                            </tr>
+                            <tr>
+                                <th>WIS</th>
+                                <th id="wisSave"></th>
+                            </tr>
+                            <tr>
+                                <th>CHA</th>
+                                <th id="chaSave"></th>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="mb-3 col">
+                    <div class="table-responsive unlimited">
+                        <table id = "speed-table"  class="table table-striped">
+                            <thead>
+                            <tr>
+                                <th>Speeds</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr>
+                                <th>Walk</th>
+                                <th id="walkSpeed"></th>
+                            </tr>
+                            <tr>
+                                <th>Fly</th>
+                                <th id="flySpeed"></th>
+                            </tr>
+                            <tr>
+                                <th>Swim</th>
+                                <th id="swimSpeed"></th>
+                            </tr>
+                            <tr>
+                                <th>Burrow</th>
+                                <th id="burrowSpeed"></th>
+                            </tr>
+                            <tr>
+                                <th>Climb</th>
+                                <th id="climbSpeed"></th>
+                            </tr>
+                            <tr>
+                                <th>Hover</th>
+                                <th id="hoverSpeed"></th>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="mb-3 col">
+                    <div class="table-responsive unlimited">
+                        <table id = "skill-table"  class="table table-striped">
+                            <thead>
+                            <tr>
+                                <th>Skills</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr>
+                                <th>Acrobatics</th>
+                                <th id="acrobatics"></th>
+                            </tr>
+                            <tr>
+                                <th>Animal Handling</th>
+                                <th id="animalHandling"></th>
+                            </tr>
+                            <tr>
+                                <th>Arcana</th>
+                                <th id="arcana"></th>
+                            </tr>
+                            <tr>
+                                <th>Athletics</th>
+                                <th id="athletics"></th>
+                            </tr>
+                            <tr>
+                                <th>Deception</th>
+                                <th id="deception"></th>
+                            </tr>
+                            <tr>
+                                <th>History</th>
+                                <th id="history"></th>
+                            </tr>
+                            <tr>
+                                <th>Insight</th>
+                                <th id="insight"></th>
+                            </tr>
+                            <tr>
+                                <th>Intimidation</th>
+                                <th id="intimidation"></th>
+                            </tr>
+                            <tr>
+                                <th>Investigation</th>
+                                <th id="investigation"></th>
+                            </tr>
+                            <tr>
+                                <th>Medicine</th>
+                                <th id="medicine"></th>
+                            </tr>
+                            <tr>
+                                <th>Nature</th>
+                                <th id="nature"></th>
+                            </tr>
+                            <tr>
+                                <th>Perception</th>
+                                <th id="perception"></th>
+                            </tr>
+                            <tr>
+                                <th>Performance</th>
+                                <th id="performance"></th>
+                            </tr>
+                            <tr>
+                                <th>Persuasion</th>
+                                <th id="persuasion"></th>
+                            </tr>
+                            <tr>
+                                <th>Religion</th>
+                                <th id="religion"></th>
+                            </tr>
+                            <tr>
+                                <th>Sleight of Hand</th>
+                                <th id="sleight"></th>
+                            </tr>
+                            <tr>
+                                <th>Stealth</th>
+                                <th id="stealth"></th>
+                            </tr>
+                            <tr>
+                                <th>Survival</th>
+                                <th id="survival"></th>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="mb-3 col">
+                    <div class="table-responsive unlimited">
+                        <table id = "spell-slots-table"  class="table table-striped">
+                            <thead>
+                            <tr>
+                                <th>Spell Slots</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr>
+                                <th>1st Level</th>
+                                <th id="ss1"></th>
+                            </tr>
+                            <tr>
+                                <th>2nd Level</th>
+                                <th id="ss2"></th>
+                            </tr>
+                            <tr>
+                                <th>3rd Level</th>
+                                <th id="ss3"></th>
+                            </tr>
+                            <tr>
+                                <th>4th Level</th>
+                                <th id="ss4"></th>
+                            </tr>
+                            <tr>
+                                <th>5th Level</th>
+                                <th id="ss5"></th>
+                            </tr>
+                            <tr>
+                                <th>6th Level</th>
+                                <th id="ss6"></th>
+                            </tr>
+                            <tr>
+                                <th>7th Level</th>
+                                <th id="ss7"></th>
+                            </tr>
+                            <tr>
+                                <th>8th Level</th>
+                                <th id="ss8"></th>
+                            </tr>
+                            <tr>
+                                <th>9th Level</th>
+                                <th id="ss9"></th>
+                            </tr>
+
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="mb-3 col">
+                </div>
+            </div>
+
+
+        </div>
+    </div>
+
+
 </main>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
 

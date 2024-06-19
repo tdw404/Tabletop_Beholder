@@ -34,6 +34,9 @@ const EMPTY_DATASTORE_STATE = {
 /**
  * Adds functionality to the landing page.
  */
+
+ //TODO Block adding/removing creature from an encounter that has started
+ //TODO clear CREATURE_MAP_KEY when clicking on row or
  class EncounterLibraryScripts extends BindingClass {
     constructor() {
         super();
@@ -143,6 +146,7 @@ const EMPTY_DATASTORE_STATE = {
     }
 
     async encounterRowClick(encounterId) {
+        this.dataStore.set([CREATURE_MAP_KEY], '');
         var encounter = this.dataStore.get(ENCOUNTER_MAP_KEY).get(encounterId);
         this.dataStore.set([SELECTED_ENCOUNTER_KEY], encounter);
         var table = document.getElementById('encounter-table');
@@ -270,6 +274,7 @@ const EMPTY_DATASTORE_STATE = {
 
     async createFinishButton() {
         if(document.getElementById('newName').value != '') {
+            this.dataStore.set([CREATURE_MAP_KEY], '');
             var encounter = {};
             encounter.userEmail = this.dataStore.get(COGNITO_EMAIL_KEY);
             encounter.objectName = document.getElementById('newName').value;

@@ -41,7 +41,8 @@ const EMPTY_DATASTORE_STATE = {
                                 'hideElementsPlay', 'showElementsPlay',
                                 'rollInitiative', 'assignInitiative',
                                 'goEncounter', 'populateAccordions',
-                                'nextTurn'
+                                'nextTurn', 'viewStats',
+                                'modCalc'
                                 ], this);
         this.dataStore = new DataStore(EMPTY_DATASTORE_STATE);
         this.navbarProvider = new NavbarProvider();
@@ -182,11 +183,11 @@ const EMPTY_DATASTORE_STATE = {
     rollInitiative(encounterCreatureId) {
         var creature = this.dataStore.get(CREATURE_MAP_KEY).get(encounterCreatureId);
         var target = 'roll_' + encounterCreatureId;
-        var modifier = 0;
-        if (creature?.statMap?.dexterity) {
-            modifier = Math.floor((creature.statMap.dexterity - 10)/2)
-        }
-        document.getElementById(target).value = Math.floor(Math.random() * (20) + 1) + modifier;
+//        var modifier = 0;
+//        if (creature?.statMap?.dexterity) {
+//            modifier = Math.floor((creature.statMap.dexterity - 10)/2)
+//        }
+        document.getElementById(target).value = Math.floor(Math.random() * (20) + 1) + this.modCalc(creature?.statMap?.dexterity);
     }
 
     assignInitiative() {
@@ -228,7 +229,7 @@ const EMPTY_DATASTORE_STATE = {
             queueList.push(element.objectId);
         }
         var warned = false;
-        var encounter = this.runClient.setInitiative(this.dataStore.get(ENCOUNTER_KEY).objectId,
+        var encounter = await this.runClient.setInitiative(this.dataStore.get(ENCOUNTER_KEY).objectId,
                                                      queueList, (error) => {
                            document.getElementById('offcanvas-warn-body').innerText = error.message;
                            var myOffcanvas = document.getElementById('offcanvasWarn');
@@ -238,6 +239,8 @@ const EMPTY_DATASTORE_STATE = {
                            warned = true;
         });
         this.dataStore.set([ENCOUNTER_KEY], encounter);
+        this.hideElements();
+        document.getElementById('offcanvas-init-close').click();
         this.populateAccordions();
     }
 
@@ -259,7 +262,6 @@ const EMPTY_DATASTORE_STATE = {
             if (creature.encounterCreatureId === encounter.topOfOrder) {
                  creatureName = creatureName + "     (Top of Order)"
             }
-            console.log(creature.encounterCreatureName)
             var accordionItem = `
                <div class="accordion-item">
                    <h2 class="accordion-header" id="heading_${encounterCreatureId}">
@@ -269,7 +271,7 @@ const EMPTY_DATASTORE_STATE = {
                    </h2>
                    <div id="collapse_${encounterCreatureId}" class="accordion-collapse collapse" aria-labelledby="heading_${encounterCreatureId}" data-bs-parent="#creatureAccordion">
                        <div class="accordion-body">
-                            ${creature.creatureDescription}
+                            <button type="button" class="stats-btn btn btn-outline-dark" data-id = "${encounterCreatureId}" id="stats_${encounterCreatureId}">View Details</button>
                        </div>
                    </div>
                </div>`
@@ -279,6 +281,10 @@ const EMPTY_DATASTORE_STATE = {
         document.getElementById('collapse_' + turnQueue[0]).classList.add('show');
         document.getElementById('acc_button_' + turnQueue[0]).classList.remove('collapsed');
         document.getElementById('roundNumber').innerHTML = `Round: ${encounter.encounterRound}`
+        for(var btn of document.getElementsByClassName('stats-btn')) {
+            btn.addEventListener('click', (event) => {
+                                    if (event.target.closest('button')) {this.viewStats(event.target.dataset.id)}});
+        }
         this.hideElementsPlay();
     }
 
@@ -293,6 +299,94 @@ const EMPTY_DATASTORE_STATE = {
         document.getElementById('spinner-label').hidden = true;
         document.getElementById('creatureAccordion').hidden = false;
         this.populateAccordions();
+    }
+
+    viewStats(encounterCreatureId) {
+        var creatureMap = this.dataStore.get(CREATURE_MAP_KEY);
+        var creature = creatureMap.get(encounterCreatureId);
+        document.getElementById('stats-name').innerText = creature.encounterCreatureName;
+        document.getElementById('creatureName').value = creature.objectName;
+        document.getElementById('sourceBook').value = creature.sourceBook;
+        document.getElementById('creatureDescription').value = creature.creatureDescription;
+        document.getElementById('size').value = creature.size;
+        document.getElementById('type').value = creature.type;
+        document.getElementById('subType').value = creature.subType;
+        document.getElementById('group').value = creature.group;
+        document.getElementById('alignment').value = creature.alignment;
+        document.getElementById('armorClass').value = creature.armorClass;
+        document.getElementById('armorType').value = creature.armorType;
+        document.getElementById('vulnerabilities').value = creature.vulnerabilities;
+        document.getElementById('resistances').value = creature.resistances;
+        document.getElementById('immunities').value = creature.immunities;
+        document.getElementById('conditionImmunities').value = creature.conditionImmunities;
+        document.getElementById('hitDice').value = creature.hitDice;
+        document.getElementById('hitPoints').value = creature.hitPoints;
+        document.getElementById('senses').value = creature.senses;
+        document.getElementById('languages').value = creature.languages;
+        document.getElementById('challengeRating').value = creature.challengeRating;
+        document.getElementById('legendaryDesc').value = creature.legendaryDesc;
+        document.getElementById('spellcastingAbility').value = creature.spellcastingAbility;
+        document.getElementById('spellSaveDC').value = creature.spellSaveDC;
+        document.getElementById('spellAttackModifier').value = creature.spellAttackModifier;
+        if (creature.spellSlots !== null) {
+            var spellSlotMap = new Map(Object.entries(creature.spellSlots));
+            document.getElementById('ss1').innerHTML = spellSlotMap.get(1);
+            document.getElementById('ss2').innerHTML = spellSlotMap.get(2);
+            document.getElementById('ss3').innerHTML = spellSlotMap.get(3);
+            document.getElementById('ss4').innerHTML = spellSlotMap.get(4);
+            document.getElementById('ss5').innerHTML = spellSlotMap.get(5);
+            document.getElementById('ss6').innerHTML = spellSlotMap.get(6);
+            document.getElementById('ss7').innerHTML = spellSlotMap.get(7);
+            document.getElementById('ss8').innerHTML = spellSlotMap.get(8);
+            document.getElementById('ss9').innerHTML = spellSlotMap.get(9);
+        }
+        document.getElementById('walkSpeed').innerHTML = creature.speedMap?.walk || '';
+        document.getElementById('flySpeed').innerHTML = creature.speedMap?.fly || '';
+        document.getElementById('swimSpeed').innerHTML = creature.speedMap?.swim || '';
+        document.getElementById('burrowSpeed').innerHTML = creature.speedMap?.burrow || '';
+        document.getElementById('climbSpeed').innerHTML = creature.speedMap?.climb || '';
+        document.getElementById('hoverSpeed').innerHTML = creature.speedMap?.hover || '';
+        document.getElementById('strStat').innerHTML = this.modCalc(creature.statMap?.strength);
+        document.getElementById('dexStat').innerHTML = this.modCalc(creature.statMap?.dexterity);
+        document.getElementById('conStat').innerHTML = this.modCalc(creature.statMap?.constitution);
+        document.getElementById('intStat').innerHTML = this.modCalc(creature.statMap?.intelligence);
+        document.getElementById('wisStat').innerHTML = this.modCalc(creature.statMap?.wisdom);
+        document.getElementById('chaStat').innerHTML = this.modCalc(creature.statMap?.charisma);
+        document.getElementById('strSave').innerHTML = creature.saveMap?.strength_save || '';
+        document.getElementById('dexSave').innerHTML = creature.saveMap?.dexterity_save || '';
+        document.getElementById('conSave').innerHTML = creature.saveMap?.constitution_save || '';
+        document.getElementById('intSave').innerHTML = creature.saveMap?.intelligence_save || '';
+        document.getElementById('wisSave').innerHTML = creature.saveMap?.wisdom_save || '';
+        document.getElementById('chaSave').innerHTML = creature.saveMap?.charisma_save || '';
+        document.getElementById('acrobatics').innerHTML = creature.skillsMap?.acrobatics || '';
+        document.getElementById('animalHandling').innerHTML = creature.skillsMap?.animalHandling || '';
+        document.getElementById('arcana').innerHTML = creature.skillsMap?.arcana || '';
+        document.getElementById('athletics').innerHTML = creature.skillsMap?.athletics || '';
+        document.getElementById('deception').innerHTML = creature.skillsMap?.deception || '';
+        document.getElementById('history').innerHTML = creature.skillsMap?.history || '';
+        document.getElementById('insight').innerHTML = creature.skillsMap?.insight || '';
+        document.getElementById('intimidation').innerHTML = creature.skillsMap?.intimidation || '';
+        document.getElementById('investigation').innerHTML = creature.skillsMap?.investigation || '';
+        document.getElementById('medicine').innerHTML = creature.skillsMap?.medicine || '';
+        document.getElementById('nature').innerHTML = creature.skillsMap?.nature || '';
+        document.getElementById('perception').innerHTML = creature.skillsMap?.perception || '';
+        document.getElementById('performance').innerHTML = creature.skillsMap?.performance || '';
+        document.getElementById('persuasion').innerHTML = creature.skillsMap?.persuasion || '';
+        document.getElementById('religion').innerHTML = creature.skillsMap?.religion || '';
+        document.getElementById('sleight').innerHTML = creature.skillsMap?.sleight || '';
+        document.getElementById('stealth').innerHTML = creature.skillsMap?.stealth || '';
+        document.getElementById('survival').innerHTML = creature.skillsMap?.survival || '';
+        var myOffcanvas = document.getElementById('offcanvasStats');
+        var bsOffcanvas = new bootstrap.Offcanvas(myOffcanvas);
+        bsOffcanvas.show();
+    }
+
+    modCalc(stat) {
+        var modifier = 0;
+        if (stat) {
+            modifier = Math.floor((stat - 10)/2)
+        }
+        return modifier;
     }
 
     showElements() {
