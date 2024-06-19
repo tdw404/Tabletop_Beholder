@@ -52,7 +52,8 @@ const EMPTY_DATASTORE_STATE = {
                                 'kill', 'populateSpells',
                                 'sortSpellTable', 'populateActions',
                                 'sortActionTable', 'populateEffects',
-                                'sortEffectTable'
+                                'sortEffectTable', 'viewSpell',
+                                'viewAction'
                                 ], this);
         this.dataStore = new DataStore(EMPTY_DATASTORE_STATE);
         this.navbarProvider = new NavbarProvider();
@@ -231,7 +232,6 @@ const EMPTY_DATASTORE_STATE = {
         initList = initList.sort(function(a,b) {
                     return a.rank - b.rank
                 });
-        console.log(initList)
         var queueList = [];
         for(var element of initList) {
             queueList.push(element.objectId);
@@ -344,6 +344,8 @@ const EMPTY_DATASTORE_STATE = {
                                         </table>
                                     </div>
                                 </div>
+                            </div>
+                            <div class = "row">
                                 <div class="mb-3 col">
                                     <div class="table-responsive unlimited">
                                         <table id = "effect_table_${encounterCreatureId}"  class="table table-striped">
@@ -358,7 +360,9 @@ const EMPTY_DATASTORE_STATE = {
                                             </tbody>
                                         </table>
                                     </div>
-                                 </div>
+                                </div>
+                                <div class="mb-3 col">
+                                </div>
                             </div>
                        </div>
                    </div>
@@ -411,12 +415,15 @@ const EMPTY_DATASTORE_STATE = {
                 var row = body.insertRow(-1);
                 row.setAttribute('id', value.objectId);
                 row.setAttribute('data-id', value.objectId);
+                row.setAttribute('data-crid', creature.encounterCreatureId);
                 var cell0 = row.insertCell(0);
                 var cell1 = row.insertCell(1);
                 cell0.innerHTML = value.objectName;
                 cell1.innerHTML = value.spellLevel;
             }
             this.sortSpellTable(table);
+            document.getElementById('spell_table_' + encounterCreatureId).addEventListener('click', (event) => {
+                                                                if (event.target.closest('tbody')) {this.viewSpell(event.target.parentNode.dataset.id, event.target.parentNode.dataset.crid)}});
         }
     }
 
@@ -454,12 +461,15 @@ const EMPTY_DATASTORE_STATE = {
                 var row = body.insertRow(-1);
                 row.setAttribute('id', value.objectId);
                 row.setAttribute('data-id', value.objectId);
+                row.setAttribute('data-crid', creature.encounterCreatureId);
                 var cell0 = row.insertCell(0);
                 var cell1 = row.insertCell(1);
                 cell0.innerHTML = value.objectName;
                 cell1.innerHTML = value.actionType;
             }
             this.sortActionTable(table);
+            document.getElementById('action_table_' + encounterCreatureId).addEventListener('click', (event) => {
+                                                                if (event.target.closest('tbody')) {this.viewAction(event.target.parentNode.dataset.id, event.target.parentNode.dataset.crid)}});
         }
     }
 
@@ -629,6 +639,76 @@ const EMPTY_DATASTORE_STATE = {
         document.getElementById('creatureAccordion').hidden = false;
         this.populateAccordions();
     }
+
+    viewSpell(spellId, encounterCreatureId) {
+        var creatureMap = this.dataStore.get(CREATURE_MAP_KEY);
+        var creature = creatureMap.get(encounterCreatureId);
+        var spell = new Map(Object.entries(creature.spellMap)).get(spellId);
+        document.getElementById('spell-name').innerHTML = spell.objectName;
+        document.getElementById('spellDescription').value = spell.spellDescription;
+        document.getElementById('spellHigherLevel').value = spell.spellHigherLevel;
+        document.getElementById('spellRange').value = spell.spellRange;
+        document.getElementById('spellComponents').value = spell.spellComponents;
+        document.getElementById('spellMaterial').value = spell.spellMaterial;
+        document.getElementById('reaction').value = spell.reaction;
+        document.getElementById('ritualCast').value = spell.ritualCast
+                                                      ? "Yes"
+                                                      : "No";
+        switch(spell.castingTime) {
+            case "0":
+                document.getElementById('spellLevel').value = "Cantrip";
+                break;
+            case "1":
+                document.getElementById('spellLevel').value = "1st";
+                break;
+            case "2":
+                document.getElementById('spellLevel').value = "2nd";
+                break;
+            case "3":
+                document.getElementById('spellLevel').value = "3rd";
+                break;
+            case "4":
+                document.getElementById('spellLevel').value = "4th";
+                break;
+            case "5":
+                document.getElementById('spellLevel').value = "5th";
+                break;
+            case "6":
+                document.getElementById('spellLevel').value = "6th";
+                break;
+            case "7":
+                document.getElementById('spellLevel').value = "7th";
+                break;
+            case "8":
+                document.getElementById('spellLevel').value = "8th";
+                break;
+            case "9":
+                document.getElementById('spellLevel').value = "9th";
+                break;
+            default:
+                document.getElementById('spellLevel').value = ""
+        }
+        document.getElementById('castingTime').value = spell.castingTime;
+        document.getElementById('spellSchool').value = spell.spellSchool;
+        document.getElementById('innateCasts').value = spell.innateCasts;
+        var myOffcanvas = document.getElementById('offcanvasSpell');
+        var bsOffcanvas = new bootstrap.Offcanvas(myOffcanvas);
+        bsOffcanvas.show();
+    }
+
+    viewAction(actionId, encounterCreatureId) {
+            var creatureMap = this.dataStore.get(CREATURE_MAP_KEY);
+            var creature = creatureMap.get(encounterCreatureId);
+            var action = new Map(Object.entries(creature.actionMap)).get(actionId);
+            document.getElementById('action-name').innerHTML = action.objectName;
+            document.getElementById('actionDescription').value = action.actionDescription;
+            document.getElementById('actionType').value = action.actionType;
+            document.getElementById('actionUses').value = action.uses;
+            document.getElementById('actionRecharge').value = action.rechargeOn;
+            var myOffcanvas = document.getElementById('offcanvasAction');
+            var bsOffcanvas = new bootstrap.Offcanvas(myOffcanvas);
+            bsOffcanvas.show();
+        }
 
     viewStats(encounterCreatureId) {
         var creatureMap = this.dataStore.get(CREATURE_MAP_KEY);
