@@ -49,7 +49,10 @@ const EMPTY_DATASTORE_STATE = {
                                 'modCalc', 'damageValue',
                                 'applyDamage', 'healValue',
                                 'applyHeal', 'knockOut',
-                                'kill'
+                                'kill', 'populateSpells',
+                                'sortSpellTable', 'populateActions',
+                                'sortActionTable', 'populateEffects',
+                                'sortEffectTable'
                                 ], this);
         this.dataStore = new DataStore(EMPTY_DATASTORE_STATE);
         this.navbarProvider = new NavbarProvider();
@@ -312,10 +315,57 @@ const EMPTY_DATASTORE_STATE = {
                                 <div class="mb-3 col">
                                 </div>
                             </div>
+                            <div class = "row">
+                                <div class="mb-3 col">
+                                    <div class="table-responsive unlimited">
+                                        <table id = "spell_table_${encounterCreatureId}"  class="table table-striped">
+                                            <thead>
+                                            <tr>
+                                                <th>Spell</th>
+                                                <th>Level</th>
+                                            </tr>
+                                            </thead>
+                                            <tbody>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                                <div class="mb-3 col">
+                                    <div class="table-responsive unlimited">
+                                        <table id = "action_table_${encounterCreatureId}"  class="table table-striped">
+                                            <thead>
+                                            <tr>
+                                                <th>Action</th>
+                                                <th>Type</th>
+                                            </tr>
+                                            </thead>
+                                            <tbody>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                                <div class="mb-3 col">
+                                    <div class="table-responsive unlimited">
+                                        <table id = "effect_table_${encounterCreatureId}"  class="table table-striped">
+                                            <thead>
+                                            <tr>
+                                                <th>Effect</th>
+                                                <th>From</th>
+                                                <th>Duration</th>
+                                            </tr>
+                                            </thead>
+                                            <tbody>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                 </div>
+                            </div>
                        </div>
                    </div>
                </div>`
                accordion.insertAdjacentHTML('afterbegin', accordionItem);
+               this.populateSpells(encounterCreatureId);
+               this.populateActions(encounterCreatureId);
         }
         accordion.hidden = false;
         if(this.dataStore.get(SELECTED_CREATURE_ID_KEY)) {
@@ -348,6 +398,137 @@ const EMPTY_DATASTORE_STATE = {
                                             if (event.target.closest('button')) {this.kill(event.target.dataset.id)}});
                 }
         this.hideElementsPlay();
+    }
+
+    populateSpells(encounterCreatureId) {
+        var table = document.getElementById('spell_table_' + encounterCreatureId);
+        var body = table.getElementsByTagName('tbody')[0];
+        body.innerHTML = "";
+        var creature = this.dataStore.get(CREATURE_MAP_KEY).get(encounterCreatureId);
+        if (creature.spellMap) {
+        var spellMap = new Map(Object.entries(creature.spellMap))
+            for(var [key, value] of spellMap) {
+                var row = body.insertRow(-1);
+                row.setAttribute('id', value.objectId);
+                row.setAttribute('data-id', value.objectId);
+                var cell0 = row.insertCell(0);
+                var cell1 = row.insertCell(1);
+                cell0.innerHTML = value.objectName;
+                cell1.innerHTML = value.spellLevel;
+            }
+            this.sortSpellTable(table);
+        }
+    }
+
+    sortSpellTable(table) {
+      var switching = true;
+      while (switching) {
+        switching = false;
+        var rows = table.rows;
+        for (var i = 1; i < (rows.length - 1); i++) {
+          var shouldSwitch = false;
+          var x = rows[i];
+          var y = rows[i + 1];
+          if (x.getElementsByTagName("td")[1].innerHTML > y.getElementsByTagName("td")[1].innerHTML ||
+                (x.getElementsByTagName("td")[1].innerHTML == y.getElementsByTagName("td")[1].innerHTML &&
+                 x.getElementsByTagName("td")[0].innerHTML > y.getElementsByTagName("td")[0].innerHTML)) {
+            shouldSwitch = true;
+            break;
+          }
+        }
+        if (shouldSwitch) {
+          rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
+          switching = true;
+        }
+      }
+    }
+
+    populateActions(encounterCreatureId) {
+        var table = document.getElementById('action_table_' + encounterCreatureId);
+        var body = table.getElementsByTagName('tbody')[0];
+        body.innerHTML = "";
+        var creature = this.dataStore.get(CREATURE_MAP_KEY).get(encounterCreatureId);
+        if (creature.actionMap) {
+            var actionMap = new Map(Object.entries(creature.actionMap))
+            for(var [key, value] of actionMap) {
+                var row = body.insertRow(-1);
+                row.setAttribute('id', value.objectId);
+                row.setAttribute('data-id', value.objectId);
+                var cell0 = row.insertCell(0);
+                var cell1 = row.insertCell(1);
+                cell0.innerHTML = value.objectName;
+                cell1.innerHTML = value.actionType;
+            }
+            this.sortActionTable(table);
+        }
+    }
+
+    sortActionTable(table) {
+      var switching = true;
+      while (switching) {
+        switching = false;
+        var rows = table.rows;
+        for (var i = 1; i < (rows.length - 1); i++) {
+          var shouldSwitch = false;
+          var x = rows[i];
+          var y = rows[i + 1];
+          if (x.getElementsByTagName("td")[1].innerHTML > y.getElementsByTagName("td")[1].innerHTML ||
+                (x.getElementsByTagName("td")[1].innerHTML == y.getElementsByTagName("td")[1].innerHTML &&
+                 x.getElementsByTagName("td")[0].innerHTML > y.getElementsByTagName("td")[0].innerHTML)) {
+            shouldSwitch = true;
+            break;
+          }
+        }
+        if (shouldSwitch) {
+          rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
+          switching = true;
+        }
+      }
+    }
+
+    populateEffects(encounterCreatureId) {
+        var table = document.getElementById('effect_table_' + encounterCreatureId);
+        var body = table.getElementsByTagName('tbody')[0];
+        body.innerHTML = "";
+        var creature = this.dataStore.get(CREATURE_MAP_KEY).get(encounterCreatureId);
+        if (creature.effectMap) {
+            var effectMap = new Map(Object.entries(creature.effectMap))
+            for(var [key, value] of actionMap) {
+                var row = body.insertRow(-1);
+                row.setAttribute('id', value.objectId);
+                row.setAttribute('data-id', value.objectId);
+                var cell0 = row.insertCell(0);
+                var cell1 = row.insertCell(1);
+                var cell2 = row.insertCell(2);
+                cell0.innerHTML = value.effectName;
+                cell1.innerHTML = this.dataStore.get(CREATURE_MAP_KEY).get(value.blameCreatureId).encounterCreatureName;
+                cell2.innerHTML = value.turnDuration;
+            }
+            this.sortEffectTable(table);
+        }
+    }
+
+    sortEffectTable(table) {
+      var switching = true;
+      while (switching) {
+        switching = false;
+        var rows = table.rows;
+        for (var i = 1; i < (rows.length - 1); i++) {
+          var shouldSwitch = false;
+          var x = rows[i];
+          var y = rows[i + 1];
+          if (x.getElementsByTagName("td")[1].innerHTML > y.getElementsByTagName("td")[1].innerHTML ||
+                (x.getElementsByTagName("td")[1].innerHTML == y.getElementsByTagName("td")[1].innerHTML &&
+                 x.getElementsByTagName("td")[0].innerHTML > y.getElementsByTagName("td")[0].innerHTML)) {
+            shouldSwitch = true;
+            break;
+          }
+        }
+        if (shouldSwitch) {
+          rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
+          switching = true;
+        }
+      }
     }
 
     async nextTurn() {
