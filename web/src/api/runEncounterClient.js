@@ -159,6 +159,22 @@ export default class EncounterClient extends BindingClass {
         }
     }
 
+    async removeEffect(encounterId, targetId, effectId, errorCallback) {
+        try {
+            const token = await this.getTokenOrThrow("Encountered token error trying to call RunEncounter endpoint.");
+            const response = await this.axiosClient.post(`runEncounter/${encounterId}?activity=removeEffect`, {
+                targetId: targetId,
+                effectId: effectId
+            }, {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }});
+            return response.data.encounter;
+        } catch (error) {
+            this.handleError(error, errorCallback)
+        }
+    }
+
     /**
      * Helper method to log the error and run any error functions.
      * @param error The error received from the server.

@@ -17,6 +17,7 @@ const ENCOUNTER_KEY = 'encounter-key';
 const CREATURE_MAP_KEY = 'creature-map-key';
 const SELECTED_CREATURE_ID_KEY = 'selected-creature-id-key';
 const TARGET_CREATURE_ID_KEY = 'target-creature-id-key';
+const SELECTED_EFFECT_ID_KEY = 'selected-effect-id-key';
 const EMPTY_DATASTORE_STATE = {
     [COGNITO_NAME_KEY]: '',
     [COGNITO_EMAIL_KEY]: '',
@@ -28,6 +29,7 @@ const EMPTY_DATASTORE_STATE = {
     [CREATURE_MAP_KEY]: '',
     [SELECTED_CREATURE_ID_KEY]: '',
     [TARGET_CREATURE_ID_KEY]: '',
+    [SELECTED_EFFECT_ID_KEY]: '',
 };
 /**
  * Adds functionality to the landing page.
@@ -55,7 +57,8 @@ const EMPTY_DATASTORE_STATE = {
                                 'sortActionTable', 'populateEffects',
                                 'sortEffectTable', 'viewSpell',
                                 'viewAction', 'addEffect',
-                                'addEffectFinish'
+                                'addEffectFinish', 'viewEffect',
+                                'removeEffect'
                                 ], this);
         this.dataStore = new DataStore(EMPTY_DATASTORE_STATE);
         this.navbarProvider = new NavbarProvider();
@@ -84,6 +87,7 @@ const EMPTY_DATASTORE_STATE = {
     document.getElementById('apply-damage-btn').addEventListener('click', this.applyDamage);
     document.getElementById('apply-heal-btn').addEventListener('click', this.applyHeal);
     document.getElementById('apply-effect-btn').addEventListener('click', this.addEffectFinish);
+    document.getElementById('remove-effect-btn').addEventListener('click', this.removeEffect);
     document.getElementById('session-list').addEventListener('change', (event) => {
                                                 if (event.target.closest('select')) {this.populateEncounters(event.target.value)}});
     document.getElementById('offcanvas-init-body').addEventListener('click', (event) => {
@@ -511,12 +515,12 @@ const EMPTY_DATASTORE_STATE = {
         body.innerHTML = "";
         var creature = this.dataStore.get(CREATURE_MAP_KEY).get(encounterCreatureId);
         if (creature.activeEffects) {
-            console.log(creature.activeEffects)
             var effectMap = new Map(Object.entries(creature.activeEffects))
             for(var [key, value] of effectMap) {
                 var row = body.insertRow(-1);
                 row.setAttribute('id', value.objectId);
                 row.setAttribute('data-id', value.objectId);
+                row.setAttribute('data-crid', creature.encounterCreatureId)
                 var cell0 = row.insertCell(0);
                 var cell1 = row.insertCell(1);
                 var cell2 = row.insertCell(2);
@@ -525,6 +529,8 @@ const EMPTY_DATASTORE_STATE = {
                 cell2.innerHTML = value.turnDuration;
             }
             this.sortEffectTable(table);
+            document.getElementById('effect_table_' + encounterCreatureId).addEventListener('click', (event) => {
+                                                                if (event.target.closest('tbody')) {this.viewEffect(event.target.parentNode.dataset.id, event.target.parentNode.dataset.crid)}});
         }
     }
 
@@ -706,6 +712,23 @@ const EMPTY_DATASTORE_STATE = {
         bsOffcanvas.show();
     }
 
+    viewEffect(effectId, encounterCreatureId) {
+        this.dataStore.set(SELECTED_EFFECT_ID_KEY, effectId)
+        this.dataStore.set(SELECTED_CREATURE_ID_KEY, encounterCreatureId);
+        var creatureMap = this.dataStore.get(CREATURE_MAP_KEY);
+        var creature = creatureMap.get(encounterCreatureId);
+        var effect = new Map(Object.entries(creature.activeEffects)).get(effectId);
+        document.getElementById('viewEffectName').value = effect.effectName;
+        document.getElementById('viewEffectBlameCreature').value = creatureMap.get(effect.blameCreatureId).encounterCreatureName;
+        document.getElementById('viewEffectDuration').value = effect.turnDuration;
+        document.getElementById('viewEffectSaveType').value = effect.saveType;
+        document.getElementById('viewEffectSaveDC').value = effect.saveDC;
+        document.getElementById('viewEffectSaveOn').value = effect.saveOn;
+        var myOffcanvas = document.getElementById('offcanvasViewEffect');
+        var bsOffcanvas = new bootstrap.Offcanvas(myOffcanvas);
+        bsOffcanvas.show();
+    }
+
     viewAction(actionId, encounterCreatureId) {
             var creatureMap = this.dataStore.get(CREATURE_MAP_KEY);
             var creature = creatureMap.get(encounterCreatureId);
@@ -842,11 +865,27 @@ const EMPTY_DATASTORE_STATE = {
         }
        encounter = await this.runClient.addEffect(encounter.objectId, encounterCreatureId, effect);
        this.dataStore.set([ENCOUNTER_KEY], encounter);
+       document.getElementById('offcanvas-effect-close').click()
        document.getElementById('spinner').hidden = true;
        document.getElementById('spinner-label').hidden = true;
        document.getElementById('creatureAccordion').hidden = false;
        this.populateAccordions();
-
+    }
+    
+    async removeEffect() {
+        document.getElementById('spinner').hidden = false;
+        document.getElementById('spinner-label').hidden = false;
+        document.getElementById('creatureAccordion').hidden = true;
+        var encounterCreatureId = this.dataStore.get(SELECTED_CREATURE_ID_KEY);
+        var effectId = this.dataStore.get(SELECTED_EFFECT_ID_KEY);
+        var encounter = this.dataStore.get(ENCOUNTER_KEY);
+        encounter = await this.runClient.removeEffect(encounter.objectId, encounterCreatureId, effectId);
+        this.dataStore.set([ENCOUNTER_KEY], encounter);
+        document.getElementById('offcanvas-view-effect-close').click()
+        document.getElementById('spinner').hidden = true;
+        document.getElementById('spinner-label').hidden = true;
+        document.getElementById('creatureAccordion').hidden = false;
+        this.populateAccordions();
     }
 
     modCalc(stat) {
