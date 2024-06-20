@@ -3,18 +3,14 @@ package dev.tdwalsh.project.tabletopBeholder.activity.runEncounter.activities;
 import dev.tdwalsh.project.tabletopBeholder.dynamodb.models.Creature;
 import dev.tdwalsh.project.tabletopBeholder.dynamodb.models.Effect;
 import dev.tdwalsh.project.tabletopBeholder.dynamodb.models.Encounter;
+import org.apache.logging.log4j.core.util.JsonUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.w3c.dom.ls.LSOutput;
 
+import java.sql.Array;
 import java.time.ZonedDateTime;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Optional;
-import java.util.PriorityQueue;
-import java.util.Queue;
-import java.util.Set;
+import java.util.*;
 
 public class RunActivities {
 
@@ -47,12 +43,72 @@ public class RunActivities {
      * @return Updated encounter object.
      */
     public Encounter nextTurn(Encounter encounter) {
+        Queue<String> messageQueue = new PriorityQueue<>();
         Queue<String> turnQueue = encounter.getTurnQueue();
+        String exitingCreatureId = turnQueue.peek();
         turnQueue.add(turnQueue.remove());
+        String enteringCreatureId = turnQueue.peek();
         encounter.setTurnQueue(turnQueue);
         if (encounter.getTopOfOrder().equals(turnQueue.peek())) {
             encounter.setEncounterRound(encounter.getEncounterRound() + 1);
+            messageQueue.add(String.format("This is the start of round %s!", encounter.getEncounterRound()));
         }
+
+        Map<String, Creature> creatureMap = encounter.getCreatureMap();
+        Creature exitingCreature = creatureMap.get(exitingCreatureId);
+        Creature enteringCreature = creatureMap.get(enteringCreatureId);
+        Map<String, Effect> exitingEffects = exitingCreature.getActiveEffects();
+        Map<String, Effect> enteringEffects = enteringCreature.getActiveEffects();
+        List<String> removeEffects = new ArrayList<>();
+        Optional.ofNullable(exitingEffects).orElse(new HashMap<>()).values()
+                .forEach(effect -> {
+                    String blameName = "NONE";
+                    if (!effect.getBlameCreatureId().equals("0")) {
+                        blameName = creatureMap.get(effect.getBlameCreatureId()).getEncounterCreatureName();
+                    }
+                    effect
+                        .setTurnDuration(Optional.ofNullable(
+                                effect.getTurnDuration()).orElse(0) - 1);
+                    if (effect.getTurnDuration() < 1) {
+                        messageQueue.add(String.format("[%s] effect, caused by [%s], ended for [%s].",
+                                effect.getEffectName(),
+                                blameName,
+                                exitingCreature.getEncounterCreatureName()));
+                        removeEffects.add(effect.getObjectId());
+                    } else if (effect.getSaveOn().contains("end")) {
+                                messageQueue.add(String.format("[%s] needs to roll a [%s] save versus [%o], against [%s]'s [%s] effect.",
+                                exitingCreature.getEncounterCreatureName(),
+                                effect.getSaveType(),
+                                effect.getSaveDC(),
+                                blameName,
+                                effect.getEffectName()));
+                   }
+                });
+        removeEffects
+                .forEach(effectId -> exitingEffects.remove(effectId));
+        exitingCreature.setActiveEffects(exitingEffects);
+        creatureMap.put(exitingCreatureId, exitingCreature);
+
+        Optional.ofNullable(enteringEffects).orElse(new HashMap<>()).values()
+                .forEach(effect -> {
+                    if (effect.getSaveOn().contains("start")) {
+                        String blameName = "NONE";
+                        if (!effect.getBlameCreatureId().equals("0")) {
+                            blameName = creatureMap.get(effect.getBlameCreatureId()).getEncounterCreatureName();
+                        }
+                        messageQueue.add(String.format("[%s] needs to roll a [%s] save versus [%o], against [%s]'s [%s] effect.",
+                        enteringCreature.getEncounterCreatureName(),
+                        effect.getSaveType(),
+                        effect.getSaveDC(),
+                        blameName,
+                        effect.getEffectName()));
+                    }
+                });
+
+        enteringCreature.setActiveEffects(enteringEffects);
+        creatureMap.put(enteringCreatureId, enteringCreature);
+        encounter.setCreatureMap(creatureMap);
+        encounter.setMessageQueue(messageQueue);
         return encounter;
     }
 

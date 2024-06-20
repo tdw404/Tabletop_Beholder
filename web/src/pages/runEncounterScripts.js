@@ -58,7 +58,7 @@ const EMPTY_DATASTORE_STATE = {
                                 'sortEffectTable', 'viewSpell',
                                 'viewAction', 'addEffect',
                                 'addEffectFinish', 'viewEffect',
-                                'removeEffect'
+                                'removeEffect', 'showNotifications'
                                 ], this);
         this.dataStore = new DataStore(EMPTY_DATASTORE_STATE);
         this.navbarProvider = new NavbarProvider();
@@ -88,6 +88,7 @@ const EMPTY_DATASTORE_STATE = {
     document.getElementById('apply-heal-btn').addEventListener('click', this.applyHeal);
     document.getElementById('apply-effect-btn').addEventListener('click', this.addEffectFinish);
     document.getElementById('remove-effect-btn').addEventListener('click', this.removeEffect);
+    document.getElementById('notifications-btn').addEventListener('click', this.showNotifications);
     document.getElementById('session-list').addEventListener('change', (event) => {
                                                 if (event.target.closest('select')) {this.populateEncounters(event.target.value)}});
     document.getElementById('offcanvas-init-body').addEventListener('click', (event) => {
@@ -324,8 +325,8 @@ const EMPTY_DATASTORE_STATE = {
                             </div>
                             <div class = "row">
                                 <div class="mb-3 col">
-                                    <div class="table-responsive unlimited">
-                                        <table id = "spell_table_${encounterCreatureId}"  class="table table-striped">
+                                    <div class="table-responsive unlimited accordion-table"">
+                                        <table id = "spell_table_${encounterCreatureId}"  class="table table-striped accordion-table">
                                             <thead>
                                             <tr>
                                                 <th>Spell</th>
@@ -338,8 +339,8 @@ const EMPTY_DATASTORE_STATE = {
                                     </div>
                                 </div>
                                 <div class="mb-3 col">
-                                    <div class="table-responsive unlimited">
-                                        <table id = "action_table_${encounterCreatureId}"  class="table table-striped">
+                                    <div class="table-responsive unlimited accordion-table">
+                                        <table id = "action_table_${encounterCreatureId}"  class="table table-striped accordion-table">
                                             <thead>
                                             <tr>
                                                 <th>Action</th>
@@ -354,8 +355,8 @@ const EMPTY_DATASTORE_STATE = {
                             </div>
                             <div class = "row">
                                 <div class="mb-3 col">
-                                    <div class="table-responsive unlimited">
-                                        <table id = "effect_table_${encounterCreatureId}"  class="table table-striped">
+                                    <div class="table-responsive unlimited accordion-table">
+                                        <table id = "effect_table_${encounterCreatureId}"  class="table table-striped accordion-table">
                                             <thead>
                                             <tr>
                                                 <th>Effect</th>
@@ -379,6 +380,17 @@ const EMPTY_DATASTORE_STATE = {
                this.populateActions(encounterCreatureId);
                this.populateEffects(encounterCreatureId);
         }
+         var notifications = document.getElementById('notification-list');
+         notifications.innerHTML = '';
+         if(encounter.messageQueue) {
+            for(var message of encounter.messageQueue) {
+                var messageLine = `<li class="list-group-item">${message}</li>`
+            }
+            notifications.insertAdjacentHTML('afterbegin', messageLine);
+            document.getElementById('notifications-btn').innerHTML = "Notifications (" + encounter.messageQueue.length +")";
+             } else {
+            document.getElementById('notifications-btn').innerHTML = "Notifications";
+             }
         accordion.hidden = false;
         if(this.dataStore.get(SELECTED_CREATURE_ID_KEY)) {
             document.getElementById('collapse_' + this.dataStore.get(SELECTED_CREATURE_ID_KEY)).classList.add('show');
@@ -525,7 +537,11 @@ const EMPTY_DATASTORE_STATE = {
                 var cell1 = row.insertCell(1);
                 var cell2 = row.insertCell(2);
                 cell0.innerHTML = value.effectName;
-                cell1.innerHTML = this.dataStore.get(CREATURE_MAP_KEY).get(value.blameCreatureId).encounterCreatureName;
+                if (value.blameCreatureId = '0') {
+                    cell1.innerHTML = '';
+                } else {
+                    cell1.innerHTML = this.dataStore.get(CREATURE_MAP_KEY).get(value.blameCreatureId).encounterCreatureName;
+                }
                 cell2.innerHTML = value.turnDuration;
             }
             this.sortEffectTable(table);
@@ -719,7 +735,11 @@ const EMPTY_DATASTORE_STATE = {
         var creature = creatureMap.get(encounterCreatureId);
         var effect = new Map(Object.entries(creature.activeEffects)).get(effectId);
         document.getElementById('viewEffectName').value = effect.effectName;
-        document.getElementById('viewEffectBlameCreature').value = creatureMap.get(effect.blameCreatureId).encounterCreatureName;
+        if(effect.blameCreatureId = '0') {
+            document.getElementById('viewEffectBlameCreature').value = '';
+         } else {
+            document.getElementById('viewEffectBlameCreature').value = creatureMap.get(effect.blameCreatureId).encounterCreatureName;
+        }
         document.getElementById('viewEffectDuration').value = effect.turnDuration;
         document.getElementById('viewEffectSaveType').value = effect.saveType;
         document.getElementById('viewEffectSaveDC').value = effect.saveDC;
@@ -853,10 +873,10 @@ const EMPTY_DATASTORE_STATE = {
         var effect = {};
         effect.objectId = uuidv4();
         effect.effectName = document.getElementById('effectName').value;
-        effect.turnDuration = document.getElementById('effectTurnDuration').value;
+        effect.turnDuration = document.getElementById('effectTurnDuration').value || "1";
         effect.blameCreatureId = document.getElementById('effectBlameCreatureId').value;
         effect.saveType = document.getElementById('effectSaveType').value;
-        effect.saveDC = document.getElementById('effectSaveDC').value;
+        effect.saveDC = document.getElementById('effectSaveDC').value || "0";
         effect.saveOn = [];
         for (var option of document.getElementById('effectSaveOn').options) {
             if(option.selected) {
@@ -886,6 +906,12 @@ const EMPTY_DATASTORE_STATE = {
         document.getElementById('spinner-label').hidden = true;
         document.getElementById('creatureAccordion').hidden = false;
         this.populateAccordions();
+    }
+
+    showNotifications() {
+        var myOffcanvas = document.getElementById('offcanvasNotification');
+        var bsOffcanvas = new bootstrap.Offcanvas(myOffcanvas);
+        bsOffcanvas.show();
     }
 
     modCalc(stat) {

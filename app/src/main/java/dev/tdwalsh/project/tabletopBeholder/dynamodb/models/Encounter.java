@@ -30,6 +30,7 @@ public class Encounter implements BeholderObject {
     private Queue<String> turnQueue;
     private Integer encounterRound;
     private List<String> turnOrder;
+    private Queue<String> messageQueue;
     private String topOfOrder;
     private String sessionId;
     private ZonedDateTime createDateTime;
@@ -134,6 +135,16 @@ public class Encounter implements BeholderObject {
 
     public void setTurnOrder(List<String> turnOrder) {
         this.turnOrder = turnOrder;
+    }
+
+    @DynamoDBAttribute(attributeName = "messageQueue")
+    @DynamoDBTypeConverted(converter = CreatureQueueConverter.class)
+    public Queue<String> getMessageQueue() {
+        return messageQueue;
+    }
+
+    public void setMessageQueue(Queue<String> messageQueue) {
+        this.messageQueue = messageQueue;
     }
 
     @DynamoDBIndexRangeKey(globalSecondaryIndexName = "EncountersSortBySessionIndex", attributeName = "sessionId")
