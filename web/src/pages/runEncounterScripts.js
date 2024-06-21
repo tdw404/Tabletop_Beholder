@@ -160,7 +160,7 @@ const EMPTY_DATASTORE_STATE = {
                         <div class = "row">
                                         <div class="col-sm-4 mb-3">
                                             <label for="name_${value.encounterCreatureId}" class="form-label">Name</label>
-                                            <input class="form-control" id="name_${value.encounterCreatureId}" readonly value = "${value.objectName}">
+                                            <input class="form-control" id="name_${value.encounterCreatureId}" readonly value = "${value.encounterCreatureName}">
                                         </div>
                                         <div class="col-sm-2 mb-3">
                                             <label for="roll_${value.encounterCreatureId}" class="form-label">Roll</label>
@@ -212,7 +212,7 @@ const EMPTY_DATASTORE_STATE = {
         for(var result of document.getElementsByClassName('initiative-roll')) {
             var entry = {};
             entry.roll = result.value;
-            entry.objectId = result.dataset.id;
+            entry.encounterCreatureId = result.dataset.id;
             initList.push(entry);
         }
         initList = initList.sort(function(a,b) {
@@ -221,7 +221,7 @@ const EMPTY_DATASTORE_STATE = {
         var rollMap = new Map();
         var i = 1;
         for(var entry of initList) {
-            rollMap.set(entry.objectId, i);
+            rollMap.set(entry.encounterCreatureId, i);
             i ++;
         }
         for(var [key, value] of rollMap) {
@@ -234,7 +234,7 @@ const EMPTY_DATASTORE_STATE = {
         for(var result of document.getElementsByClassName('initiative-rank')) {
             var entry = {};
             entry.rank = result.value;
-            entry.objectId = result.dataset.id;
+            entry.encounterCreatureId = result.dataset.id;
             initList.push(entry);
         }
         initList = initList.sort(function(a,b) {
@@ -242,7 +242,7 @@ const EMPTY_DATASTORE_STATE = {
                 });
         var queueList = [];
         for(var element of initList) {
-            queueList.push(element.objectId);
+            queueList.push(element.encounterCreatureId);
         }
         var warned = false;
         var encounter = await this.runClient.setInitiative(this.dataStore.get(ENCOUNTER_KEY).objectId,
@@ -537,7 +537,8 @@ const EMPTY_DATASTORE_STATE = {
                 var cell1 = row.insertCell(1);
                 var cell2 = row.insertCell(2);
                 cell0.innerHTML = value.effectName;
-                if (value.blameCreatureId = '0') {
+                console.log(value)
+                if (value.blameCreatureId == '0') {
                     cell1.innerHTML = '';
                 } else {
                     cell1.innerHTML = this.dataStore.get(CREATURE_MAP_KEY).get(value.blameCreatureId).encounterCreatureName;
@@ -735,7 +736,7 @@ const EMPTY_DATASTORE_STATE = {
         var creature = creatureMap.get(encounterCreatureId);
         var effect = new Map(Object.entries(creature.activeEffects)).get(effectId);
         document.getElementById('viewEffectName').value = effect.effectName;
-        if(effect.blameCreatureId = '0') {
+        if(effect.blameCreatureId == '0') {
             document.getElementById('viewEffectBlameCreature').value = '';
          } else {
             document.getElementById('viewEffectBlameCreature').value = creatureMap.get(effect.blameCreatureId).encounterCreatureName;
