@@ -382,7 +382,7 @@ const EMPTY_DATASTORE_STATE = {
         }
          var notifications = document.getElementById('notification-list');
          notifications.innerHTML = '';
-         if(encounter.messageQueue) {
+         if(encounter?.messageQueue.length > 0) {
             for(var message of encounter.messageQueue) {
                 var messageLine = `<li class="list-group-item">${message}</li>`
             }

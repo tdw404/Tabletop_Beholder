@@ -137,6 +137,10 @@ main {
     font-weight: bold;
 }
 
+.accordion-body {
+            background-color: rgba(156, 251, 204, 0.08);
+        }
+
 .topfield {
    max-width: 100px;
  }
