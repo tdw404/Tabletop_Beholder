@@ -9,10 +9,10 @@ on:
 env:
 
   # STUDENTS: Set these environment variables 
-  API_BASE_URL: https://vcvqkwla57.execute-api.us-east-2.amazonaws.com/Prod/
+  API_BASE_URL: https://4xxxj1a00e.execute-api.us-east-2.amazonaws.com/Prod/
   COGNITO_DOMAIN: tabletop-beholder
-  COGNITO_REDIRECT_SIGNIN: https://df5r0wzha0bpp.cloudfront.net
-  COGNITO_REDIRECT_SIGNOUT: https://df5r0wzha0bpp.cloudfront.net
+  COGNITO_REDIRECT_SIGNIN: https://d1cbs8vvxfyhzu.cloudfront.net
+  COGNITO_REDIRECT_SIGNOUT: https://d1cbs8vvxfyhzu.cloudfront.net
 
   COGNITO_USER_POOL_ID: ${{ secrets.COGNITO_USER_POOL_ID }}
   COGNITO_USER_POOL_CLIENT_ID: ${{ secrets.COGNITO_USER_POOL_CLIENT_ID }}
@@ -25,8 +25,8 @@ env:
   SAM_TEMPLATE: template.yaml
 
   STACK_NAME: project-tabletop-beholder
-  PIPELINE_EXECUTION_ROLE: arn:aws:iam::211125563089:role/aws-sam-cli-managed-TBService-PipelineExecutionRole-JKhstuQutVQK
-  CLOUDFORMATION_EXECUTION_ROLE: arn:aws:iam::211125563089:role/aws-sam-cli-managed-TBSer-CloudFormationExecutionRo-gRAEdNgVX2jq
+  PIPELINE_EXECUTION_ROLE: arn:aws:iam::010438496967:role/aws-sam-cli-managed-TBService-PipelineExecutionRole-JKhstuQutVQK
+  CLOUDFORMATION_EXECUTION_ROLE: arn:aws:iam::010438496967:role/aws-sam-cli-managed-TBSer-CloudFormationExecutionRo-gRAEdNgVX2jq
   ARTIFACTS_BUCKET: aws-sam-cli-managed-tbservice-pipe-artifactsbucket-lzsaji7dwcmf
   REGION: us-east-2
 
