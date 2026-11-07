@@ -1,3 +1,4 @@
+import EncounterClient from '../api/encounterClient';
 import AuthClient from "../api/authClient";
 import NavbarProvider from"../components/navbarProvider";
 import BindingClass from "../util/bindingClass";
@@ -29,6 +30,15 @@ const EMPTY_DATASTORE_STATE = {
     async startupActivities() {
         if (await this.client.verifyLogin()) {
             document.getElementById('welcomeText').hidden = false;
+            let id;
+            try { id = localStorage.getItem('beholder:lastEncounter'); } catch {}
+            if (!id) return;
+            const encounter = await new EncounterClient().getSingleEncounter(id);
+            if (encounter?.turnQueue?.length && encounter.turnQueue.every(creatureId => encounter.creatureMap?.[creatureId])) {
+                const link = document.getElementById('home-run');
+                link.href = 'runEncounter.html?encounter=' + encodeURIComponent(id);
+                link.textContent = 'Resume ' + encounter.objectName;
+            }
         }
     }
 

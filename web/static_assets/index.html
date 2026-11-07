@@ -8,6 +8,7 @@
     <title>Beholder</title>
     <link rel="icon" type="image/x-icon" href="/images/favicon.ico">
     <script type="text/javascript" src="assets/indexScripts.js"></script>
+    <link rel="stylesheet" href="css/mission-control.css">
 </head>
 <body>
 
@@ -21,31 +22,20 @@
         <div id = "header-bar">
 
         </div>
-        <div class="container align-items-center pad-up">
-            <h1 class="text-center align-self-center">Beholder</h1>
-            <h3 class="text-center align-self-center">An Encounter Management Tool for DMs</h3>
-            <div class="container align-items-center pad-up">
-                <div class="card" id="welcomeText" hidden>
-                    <div class="card-body">
-                        <ul>
-                            <li>Welcome! You can get started by adding a few creatures to your library</li>
-                            <li>Beholder is using <a href="https://open5e.com/">Open 5E</a>'s API to import creatures and spells.</li>
-                            <ul>
-                                <li>If you can't find the resource you're looking for, you can always create it yourself.</li>
-                            </ul>
-                            <li>When you import a creature, Beholder will do its best to import its actions and spells.</li>
-                            <ul>
-                                <li>Beholder is trying its best, but it's far from perfect!</li>
-                                <li>You'll want to double check creatures/spells after import and possibly clean them up.</li>
-                            </ul>
-                            <li>You can also create Player Characters - really just placeholders for encounter turn order.</li>
-                            <li>After you've created a few creatures, you're ready to create an encounter and add creatures to it!</li>
-                        </ul>
-                    </div>
+        <section class="container py-4">
+            <p class="mc-label">Dungeon Master workspace</p>
+            <h1>Beholder</h1>
+            <p class="mc-muted">Prepare encounters and track turns, hit points, and effects at the table.</p>
+            <div id="welcomeText" class="mt-4" hidden>
+                <div class="mc-home-links">
+                    <a id="home-run" class="btn mc-primary" href="runEncounter.html">Choose encounter</a>
+                    <a class="btn btn-outline-dark" href="encounterLibrary.html">Prepare encounters</a>
+                    <a class="btn btn-outline-dark" href="creatureLibrary.html">Browse creatures</a>
+                    <a class="btn btn-outline-dark" href="spellLibrary.html">Browse spells</a>
                 </div>
+                <p class="mc-muted mt-3">Start with a creature, add it to a roster, then open the encounter to set initiative.</p>
             </div>
-
-        </div>
+        </section>
     </div>
 </main>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>

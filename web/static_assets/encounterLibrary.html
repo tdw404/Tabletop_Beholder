@@ -8,6 +8,7 @@
     <title>Encounter Library - Beholder</title>
     <link rel="icon" type="image/x-icon" href="/images/favicon.ico">
     <script type="text/javascript" src="assets/encounterLibraryScripts.js"></script>
+    <link rel="stylesheet" href="css/mission-control.css">
 </head>
 <body>
 
@@ -57,7 +58,9 @@
     </div>
     <div class="col-lg gx-5 align-items-center pad-up overflow-auto">
         <h2 class="text-center align-self-center" id="encounterNameBig" pad-up>Encounter</h2>
-        <button type="button" class="btn btn-outline-dark" id="update-btn">Save Changes</button>
+        <button type="button" class="btn btn-outline-dark" id="update-btn">Save changes</button>
+        <a class="btn mc-primary" id="mc-run-saved" hidden>Run encounter →</a>
+        <p class="mc-feedback" id="mc-encounter-feedback" role="status"></p>
         <button type="button" class="btn btn-outline-dark" id="delete-btn">Delete Encounter</button>
         <button type="button" class="btn btn-outline-dark" id="create-btn">New Encounter</button>
         <hr/>
@@ -81,7 +84,8 @@
         </div>
     </form>
         <hr/>
-        <button type="button" class="btn btn-outline-dark" id="add-creature-btn">Add Creature</button>
+        <button type="button" class="btn btn-outline-dark" id="add-creature-btn">Add creatures</button>
+        <h3 class="mc-label mt-3">Encounter roster</h3>
         <div class="table-responsive">
             <table id = "creature-table"  class="table table-striped">
                 <thead>
@@ -158,6 +162,9 @@
         </div>
         <hr/>
         <div class="offcanvas-body" id="offcanvas-new-creature-body">
+            <label for="mc-roster-search" class="form-label">Search creature library</label>
+            <input id="mc-roster-search" class="form-control mb-2" type="search">
+            <p id="mc-roster-feedback" class="mc-feedback" role="status"></p>
             <div class="table-responsive">
                 <table id = "add-creature-table"  class="table table-striped">
                     <thead>
@@ -178,7 +185,11 @@
                 <label for="new-creature-name" class="form-label">Individual Name</label>
                 <input class="form-control" id="new-creature-name">
             </div>
-            <button type="button" class="btn btn-outline-dark" id="add-creature-finish-btn">Add</button>
+            <div class="mb-3">
+                <label for="mc-roster-quantity" class="form-label">Copies</label>
+                <input class="form-control" id="mc-roster-quantity" type="number" min="1" max="20" step="1" value="1" required>
+            </div>
+            <button type="button" class="btn mc-primary" id="add-creature-finish-btn">Add to roster</button>
             <div class="d-flex justify-content-center pad-up" >
                 <div class="spinner-border" role="status" id = "spinner-new-creature" hidden>
                 </div>

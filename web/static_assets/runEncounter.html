@@ -9,15 +9,8 @@
     <title>Run Encounter</title>
     <link rel="icon" type="image/x-icon" href="/images/favicon.ico">
     <script type="text/javascript" src="assets/runEncounterScripts.js"></script>
+    <link rel="stylesheet" href="css/mission-control.css">
 </head>
-<style>
-    input.form-control:read-only {
-        background-color: #fff;
-    }
-    textarea.form-control:read-only {
-        background-color: #fff;
-    }
-</style>
 <body>
 
 
@@ -30,12 +23,15 @@
         <div id = "header-bar">
 
         </div>
-        <h2 class="text-center align-self-center pt-3" id="encounterNameBig">Run Encounter</h2>
-        <h5 class="text-center align-self-center" id="roundNumber"></h5>
-        <div class="text-center  pt-3">
-            <button type="button" class="btn btn-outline-dark show-while-playing" id="next-turn-btn" hidden>Next Turn</button>
+        <p class="mc-label mt-3">Encounter operations</p>
+        <h2 id="encounterNameBig">Run Encounter</h2>
+        <div class="mc-turn-strip show-while-playing" hidden>
+            <div aria-live="polite"><strong id="roundNumber"></strong> <span id="mc-active"></span><br><small class="mc-muted" id="mc-next"></small></div>
+            <button type="button" class="btn mc-primary show-while-playing" id="next-turn-btn" hidden>Next Turn →</button>
             <button type="button" class="btn btn-outline-dark show-while-playing" id="notifications-btn" hidden>Notifications</button>
+            <button type="button" class="btn btn-outline-dark" id="mc-reassign">Reset initiative</button>
         </div>
+        <p class="mc-feedback" id="mc-combat-feedback" role="status"></p>
         <div class = "show-while-loading hide-while-playing" id="spinner-set">
             <div class="d-flex justify-content-center pad-up">
                 <div class="spinner-border show-while-loading hide-while-playing" role="status" id = "spinner"></div>
@@ -46,18 +42,24 @@
             <div class="mb-3 col">
                 <label for="session-list" class="form-label">Session</label>
                 <select class="form-select" data-id = 'thing' id="session-list">
-                    <option class = "session-dropdown" data-id = '0' selected value = '0'></option>
+                    <option selected value="none">No session</option>
                 </select>
             </div>
             <div class="mb-3 col">
                 <label for="encounter-list" class="form-label">Encounter</label>
                 <select class="form-select" id="encounter-list">
-                    <option class = "encounter-dropdown" data-id = '0' selected value = '0'></option>
+                    <option selected value="0">Choose an encounter</option>
                 </select>
             </div>
         </div>
-        <button type="button" class="btn btn-outline-dark hide-while-loading hide-while-playing" id="launch-session-btn" hidden>Launch Encounter</button>
-        <div class="accordion show-while-playing pad-up" id="creatureAccordion">
+        <p class="mc-muted hide-while-playing" id="mc-launch-roster" role="status"></p>
+        <button type="button" class="btn mc-primary hide-while-loading hide-while-playing" id="launch-session-btn" hidden disabled>Set initiative</button>
+        <div class="mc-combat-grid show-while-playing" hidden>
+            <section class="mc-panel" aria-labelledby="mc-order-heading">
+                <h3 class="mc-label" id="mc-order-heading">Turn order</h3>
+                <div class="mc-turn-list" id="mc-turn-list"></div>
+            </section>
+            <section class="accordion" id="creatureAccordion" aria-label="Combatant details"></section>
         </div>
     </div>
 
@@ -76,15 +78,20 @@
     <!--Initiative setting dialog-->
     <div class="offcanvas offcanvas-bottom h-100" tabindex="-1" id="offcanvasInitiative" aria-labelledby="offcanvasInitiativeLabel">
         <div class="offcanvas-header">
-            <h5 >Roll For Initiative</h5>
+            <h5 id="offcanvasInitiativeLabel">Set initiative</h5>
             <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close" id="offcanvas-init-close"></button>
         </div>
         <div class = "mx-3">
-            <button type="button" class="btn btn-outline-dark pl-3" id="initiative-btn">Assign Initiative</button>
-            <button type="button" class="btn btn-outline-dark pl-3" id="go-btn">Start</button>
+            <button type="button" class="btn btn-outline-dark pl-3" id="initiative-btn">Roll all</button>
+            <button type="button" class="btn btn-outline-dark pl-3" id="go-btn" disabled>Start combat</button>
         </div>
         <hr/>
-        <div class="offcanvas-body" id="offcanvas-init-body">
+        <div class="offcanvas-body">
+            <p class="mc-muted">Enter initiative totals or roll with each combatant’s Dexterity modifier.</p>
+            <div id="offcanvas-init-body"></div>
+            <h6 class="mc-label mt-3">Order preview</h6>
+            <ol id="mc-initiative-preview"></ol>
+            <p class="mc-feedback" id="mc-initiative-feedback" role="status"></p>
         </div>
     </div>
 
@@ -481,6 +488,7 @@
                 <label for="damage-value" class="form-label">Damage Amount</label>
                 <input class="form-control text-center" id="damage-value" type="number" min="0" data-bind="value:replyNumber">
                 <button type="button" class="btn btn-outline-dark pl-3" id="apply-damage-btn">Apply Damage</button>
+                <p class="mc-feedback" role="status" id="mc-damage-feedback"></p>
             </div>
         </div>
     </div>
@@ -497,6 +505,7 @@
                 <label for="heal-value" class="form-label">Heal Amount</label>
                 <input class="form-control text-center" id="heal-value" type="number" min="0" data-bind="value:replyNumber">
                 <button type="button" class="btn btn-outline-dark pl-3" id="apply-heal-btn">Apply Healing</button>
+                <p class="mc-feedback" role="status" id="mc-heal-feedback"></p>
             </div>
         </div>
     </div>
@@ -653,7 +662,7 @@
                 </div>
                 <div class = "row">
                     <div class="mb-3 col">
-                        <label for="effectSaveDC" class="form-label">Save DV</label>
+                        <label for="effectSaveDC" class="form-label">Save DC</label>
                         <input class="form-control" id="effectSaveDC" type="number" min="0" data-bind="value:replyNumber">
                     </div>
                     <div class="mb-3 col">
@@ -666,6 +675,7 @@
                     </div>
                 </div>
                 <button type="button" class="btn btn-outline-dark pl-3" id="apply-effect-btn">Apply Effect</button>
+                <p class="mc-feedback" role="status" id="mc-effect-feedback"></p>
             </div>
         </div>
     </div>
@@ -705,6 +715,7 @@
                 </div>
             </div>
             <button type="button" class="btn btn-outline-dark pl-3" id="remove-effect-btn">Remove Effect</button>
+            <p class="mc-feedback" role="status" id="mc-remove-effect-feedback"></p>
         </div>
     </div>
 

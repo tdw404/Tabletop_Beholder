@@ -8,6 +8,7 @@
     <title>Spell Library - Beholder</title>
     <link rel="icon" type="image/x-icon" href="/images/favicon.ico">
     <script type="text/javascript" src="assets/spellLibraryScripts.js"></script>
+    <link rel="stylesheet" href="css/mission-control.css">
 </head>
 <body>
 
@@ -67,8 +68,8 @@
                         </div>
                     </div>
                 </form>
-                <button type="button" class="btn btn-outline-dark hide-while-loading" id="filter-btn" hidden>Filter</button>
-                <button type="button" class="btn btn-outline-dark hide-while-loading" id="clear-btn" hidden>Clear</button>
+                <button type="button" class="btn btn-outline-dark hide-while-loading" id="filter-btn" hidden>Apply filters</button>
+                <button type="button" class="btn btn-outline-dark hide-while-loading" id="clear-btn" hidden>Clear filters</button><p class="mc-muted" id="mc-result-count" role="status"></p>
                 <div class="table-responsive">
                     <table id = "spell-table"  class="table table-striped hide-while-loading" hidden>
                         <thead>
@@ -76,7 +77,7 @@
                             <th>Name</th>
                             <th>Level</th>
                             <th>Ritual Cast</th>
-                            <th>School</th>
+                            <th>School</th><th>Casting time</th>
                         </tr>
                         </thead>
                         <tbody>
@@ -86,12 +87,15 @@
             </div>
             <div class="col-lg gx-5 align-items-center pad-up overflow-auto">
                 <h2 class="text-center align-self-center" id="spellNameBig">Spell</h2>
-                <button type="button" class="btn btn-outline-dark" id="update-btn">Save Changes</button>
+
                 <button type="button" class="btn btn-outline-dark" id="delete-btn">Delete Spell</button>
                 <button type="button" class="btn btn-outline-dark" id="create-btn">New Spell</button>
                 <button type="button" class="btn btn-outline-dark" id="import-btn">Import Spell</button>
                 <hr/>
-                <form>
+                <section id="mc-record-summary" aria-live="polite"><p class="mc-muted">Select a record to view its details.</p></section>
+        <button type="button" class="btn mc-primary mt-2" id="mc-edit-record" hidden>Edit spell</button>
+        <p class="mc-feedback mt-2" id="mc-record-feedback" role="status"></p>
+        <form id="mc-record-editor" hidden>
                     <div class="mb-3">
                         <label for="objectName" class="form-label">Spell Name</label>
                         <input class="form-control" id="objectName">
@@ -181,7 +185,11 @@
                             <input class="form-control" id="innateCasts" type="number" min="-1" data-bind="value:replyNumber">
                         </div>
                     </div>
-                </form>
+                <div class="mc-save-bar d-flex flex-wrap gap-2 align-items-center">
+        <button type="button" class="btn mc-primary" id="update-btn">Save changes</button>
+        <button type="button" class="btn btn-outline-dark" id="mc-cancel-edit">Cancel</button>
+        <span id="mc-draft-status" role="status" class="mc-feedback"></span>
+    </div></form>
             </div>
         </div>
     </div>
@@ -263,7 +271,8 @@
             </select>
             <div class = "pad-up-mini">
                 <button type="button" class="btn btn-outline-dark" id="search-btn">Search</button>
-                <button type="button" class="btn btn-outline-dark" id="import-finish-btn">Import Selected</button>
+                <div id="mc-import-preview" class="mc-muted my-2" role="status">Select a result to preview it.</div>
+                <button type="button" class="btn btn-outline-dark" id="import-finish-btn" disabled>Import Selected</button>
             </div>
             <div class="table-responsive table-short pad-up-mini">
                 <table id = "template-table"  class="table table-striped">

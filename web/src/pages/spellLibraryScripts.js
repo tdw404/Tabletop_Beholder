@@ -1,3 +1,4 @@
+import {recordWorkspace, showRecord, previewTemplate} from '../components/recordWorkspace';
 import AuthClient from "../api/authClient";
 import SpellClient from "../api/spellClient"
 import NavbarProvider from"../components/navbarProvider";
@@ -60,6 +61,13 @@ const EMPTY_DATASTORE_STATE = {
     }
 
     async attachEventListeners() {
+        this.recordWorkspace = recordWorkspace(
+            record => showRecord('spell', record),
+            () => this.dataStore.get(SELECTED_SPELL_KEY),
+            id => this.spellRowClick(id)
+        );
+        document.getElementById('nameSearch').addEventListener('input', this.populateTable);
+
         document.getElementById('delete-btn').addEventListener('click', await this.deleteButton);
         document.getElementById('filter-btn').addEventListener('click', await this.populateTable);
         document.getElementById('clear-btn').addEventListener('click', await this.filterResetButton);
@@ -99,17 +107,21 @@ const EMPTY_DATASTORE_STATE = {
                     var cell3 = row.insertCell(2);
                     var cell4 = row.insertCell(3);
                     cell1.innerHTML = spell.objectName;
-                    cell2.innerHTML = spell.spellLevel;
+                    cell2.textContent = Number(spell.spellLevel) === 0 ? 'Cantrip' : spell.spellLevel;
                     cell3.innerHTML = spell.ritualCast
                                         ? "Yes"
                                         : "No";
-                    cell4.innerHTML = spell.spellSchool;
+                    cell4.textContent = spell.spellSchool;
+                    row.insertCell(4).textContent = spell.castingTime || '—';
                 }
             }
             oldTableBody.parentNode.replaceChild(newTableBody, oldTableBody);
+            document.getElementById('mc-result-count').textContent = newTableBody.rows.length + ' results';
     }
 
     async templateRowClick(templateId) {
+        previewTemplate(templateId, slug => this.spellClient.getTemplate(slug), 'spell',
+            () => this.dataStore.get(SPELL_LIST_KEY));
         this.dataStore.set([SELECTED_TEMPLATE_KEY], templateId);
         var table = document.getElementById('template-table');
         for (var i = 0; i < table.rows.length; i++){
@@ -119,13 +131,17 @@ const EMPTY_DATASTORE_STATE = {
     }
 
     async spellRowClick(spellId) {
-        var spell = this.dataStore.get(SPELL_MAP_KEY).get(spellId);
+        if (!this.recordWorkspace.canSwitch()) return;
+        if (!this.dataStore.get(SPELL_MAP_KEY).has(spellId)) return;
+
+        const spell = structuredClone(this.dataStore.get(SPELL_MAP_KEY).get(spellId));
         this.dataStore.set([SELECTED_SPELL_KEY], spell);
         var table = document.getElementById('spell-table');
         for (var i = 0; i < table.rows.length; i++){
             table.rows[i].removeAttribute('class');
         }
-        document.getElementById(spellId).setAttribute('class','selectedRow');
+        document.getElementById(spellId)?.setAttribute('class','selectedRow');
+        this.recordWorkspace.show(spell);
         document.getElementById('spellNameBig').innerText = spell.objectName;
         document.getElementById('objectName').value = spell.objectName;
         document.getElementById('spellDescription').value = spell.spellDescription;
@@ -154,6 +170,15 @@ const EMPTY_DATASTORE_STATE = {
     }
 
     async updateButton() {
+        if (!this.recordWorkspace.beginSave()) return;
+        try {
+            await this.saveRecord();
+        } finally {
+            this.recordWorkspace.endSave();
+        }
+    }
+
+    async saveRecord() {
         this.hideElements();
         var spell = this.dataStore.get(SELECTED_SPELL_KEY);
         spell.objectName = document.getElementById('objectName').value;
@@ -163,9 +188,9 @@ const EMPTY_DATASTORE_STATE = {
         spell.spellComponents = document.getElementById('spellComponents').value;
         spell.spellMaterial = document.getElementById('spellMaterial').value;
         spell.reaction = document.getElementById('reaction').value;
-        if (document.getElementById('ritualCast').value.equals == "yes") {
+        if (document.getElementById('ritualCast').value == "yes") {
             spell.ritualCast = true;
-        } else if (document.getElementById('ritualCast').value.equals == "no") {
+        } else if (document.getElementById('ritualCast').value == "no") {
             spell.ritualCast = false;
         } else {
             spell.ritualCast = '';
@@ -176,7 +201,7 @@ const EMPTY_DATASTORE_STATE = {
         spell.spellSchool = document.getElementById('spellSchool').value;
         spell.innateCasts = document.getElementById('innateCasts').value;
         var warned = false;
-            await this.spellClient.updateSpell(spell, (error) => {
+            const saved = await this.spellClient.updateSpell(spell, (error) => {
                 document.getElementById('offcanvas-warn-body').innerText = error.message;
                 var myOffcanvas = document.getElementById('offcanvasWarn');
                 var bsOffcanvas = new bootstrap.Offcanvas(myOffcanvas);
@@ -184,7 +209,19 @@ const EMPTY_DATASTORE_STATE = {
                 this.showElements();
                 warned = true;
             });
-        if(!warned) { location.reload(); };
+        if (!warned && saved) {
+                this.dataStore.get(SPELL_MAP_KEY).set(saved.objectId, saved);
+                const records = this.dataStore.get(SPELL_LIST_KEY);
+                const index = records.findIndex(record => record.objectId === saved.objectId);
+                if (index >= 0) records[index] = saved;
+                this.recordWorkspace.finishEdit();
+                this.showElements();
+                await this.populateTable();
+                await this.spellRowClick(saved.objectId);
+                document.getElementById('mc-record-feedback').textContent = 'Changes saved.';
+            } else {
+                this.recordWorkspace.saveFailed();
+            }
 
     }
 
@@ -196,6 +233,8 @@ const EMPTY_DATASTORE_STATE = {
     }
 
     createButton() {
+        if (!this.recordWorkspace.canSwitch()) return;
+        this.recordWorkspace.finishEdit();
         var myOffcanvas = document.getElementById('offcanvasCreate');
         var bsOffcanvas = new bootstrap.Offcanvas(myOffcanvas);
         bsOffcanvas.show();
@@ -237,6 +276,9 @@ const EMPTY_DATASTORE_STATE = {
     }
 
     importButton() {
+        if (!this.recordWorkspace.canSwitch()) return;
+        this.recordWorkspace.finishEdit();
+        previewTemplate(null);
         var myOffcanvas = document.getElementById('offcanvasImport');
         var bsOffcanvas = new bootstrap.Offcanvas(myOffcanvas);
         bsOffcanvas.show();
@@ -244,10 +286,11 @@ const EMPTY_DATASTORE_STATE = {
 
     async importFinishButton() {
         var slug = this.dataStore.get(SELECTED_TEMPLATE_KEY);
-        if(!slug=='') {
+        if (slug && !document.getElementById('import-finish-btn').disabled) {
+            document.getElementById('import-finish-btn').disabled = true;
             var warned = false;
             this.hideElements();
-            document.getElementById('close-import-btn').click()
+
             var newSpell = await this.spellClient.createTemplate(slug, (error) => {
                 document.getElementById('offcanvas-warn-body').innerText = error.message;
                 var myOffcanvas = document.getElementById('offcanvasWarn');
@@ -255,8 +298,10 @@ const EMPTY_DATASTORE_STATE = {
                 bsOffcanvas.show();
                 this.showElements();
                 warned = true;
+                document.getElementById('import-finish-btn').disabled = false;
             });
             if (!warned) {
+                document.getElementById('close-import-btn').click();
                 this.dataStore.set([SPELL_LIST_KEY], await this.spellClient.getMultipleSpells());
                 var spellMap = new Map(this.dataStore.get([SPELL_LIST_KEY]).map((obj) => [obj.objectId, obj]));
                 this.dataStore.set([SPELL_MAP_KEY], spellMap);
@@ -268,6 +313,7 @@ const EMPTY_DATASTORE_STATE = {
     }
 
     async searchButton() {
+        previewTemplate(null);
         this.dataStore.set([SELECTED_TEMPLATE_KEY], '');
         document.getElementById('template-table').hidden = true;
         document.getElementById('spinner-side').hidden = false;
@@ -281,19 +327,12 @@ const EMPTY_DATASTORE_STATE = {
         if(spellList) {
         spellList?.sort((a, b) => a.name.localeCompare(b.name));
             for(var templateSpell of spellList) {
-                if (
-                    !templateSpell.resourceExists
-                ) {
-                    var row = newTableBody.insertRow(-1);
-                    row.setAttribute('id', templateSpell.slug);
-                    row.setAttribute('data-id', templateSpell.slug);
-                    var cell1 = row.insertCell(0);
-                    var cell2 = row.insertCell(1);
-                    var cell3 = row.insertCell(2);
-                    cell1.innerHTML = templateSpell.name;
-                    cell2.innerHTML = templateSpell.level;
-                    cell3.innerHTML = templateSpell.document__title
-                }
+                const row = newTableBody.insertRow(-1);
+                row.id = templateSpell.slug;
+                row.dataset.id = templateSpell.slug;
+                row.insertCell().textContent = templateSpell.name + (templateSpell.resourceExists ? ' · In library' : '');
+                row.insertCell().textContent = templateSpell.level;
+                row.insertCell().textContent = templateSpell.document__title;
             }
         }
         oldTableBody.parentNode.replaceChild(newTableBody, oldTableBody);

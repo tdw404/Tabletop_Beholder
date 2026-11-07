@@ -8,94 +8,50 @@ import BindingClass from "../util/bindingClass";
  export default class Header extends BindingClass {
     constructor() {
         super();
-        const methodsToBind = ['addNavbarToPage', 'createLoginButton',
-                                'createLogoutButton', 'createButton',
-                                'addHeaderToPage', 'align',
-                                'getHeight', 'getWidth',
-                                'provideBars'];
+        const methodsToBind = ['provideBars'];
         this.bindClassMethods(methodsToBind, this);
         this.client = new AuthClient();
     };
 
     async provideBars() {
-        this.addHeaderToPage();
-        this.addNavbarToPage();
-        window.addEventListener('resize', await this.align, true);
-        this.align();
-    }
-
-    async addHeaderToPage() {
         const currentUser = await this.client.getIdentity();
-        const header = `<header class="d-flex flex-wrap justify-content-left py-3 px-3 shadow" id = 'header-buttons'>
-                                        <a href="index.html" class="btn btn-flat align-items-center rounded">Beholder</a>
-                                        <a href="encounterLibrary.html" class="btn btn-flat align-items-center rounded preload disabled">Encounters</a>
-                                        <a href="creatureLibrary.html" class="btn btn-flat align-items-center rounded preload disabled">Creatures</a>
-                                        <a href="spellLibrary.html" class="btn btn-flat align-items-center rounded preload disabled">Spells</a>
-                                        <a href="runEncounter.html" class="btn btn-flat align-items-center rounded preload disabled">Run Encounter</a>
-                                    </header>`;
-        document.getElementById('header-bar').insertAdjacentHTML('afterbegin', header);
-        const button = currentUser
-           ? this.createLogoutButton(currentUser)
-           : this.createLoginButton();
-        var headerList = document.getElementById('header-buttons');
-        headerList.appendChild(button);
+        const header = document.createElement('header');
+        header.id = 'header-buttons';
+        header.className = 'd-flex flex-wrap align-items-center py-2 px-2';
+        const nav = document.createElement('nav');
+        nav.className = 'd-flex flex-wrap gap-1';
+        nav.setAttribute('aria-label', 'Main navigation');
+        const current = location.pathname.split('/').pop() || 'index.html';
+        const destinations = [
+            ['Beholder', 'index.html'],
+            ['Encounters', 'encounterLibrary.html'],
+            ['Creatures', 'creatureLibrary.html'],
+            ['Spells', 'spellLibrary.html'],
+            ['Run Encounter', 'runEncounter.html'],
+        ];
+        for (const [label, href] of destinations) {
+            if (!currentUser && href !== 'index.html') continue;
+            const link = document.createElement('a');
+            link.href = href;
+            link.className = 'btn btn-flat';
+            if (href === 'index.html') link.classList.add('mc-brand');
+            if (href === current) link.setAttribute('aria-current', 'page');
+            link.textContent = label;
+            nav.append(link);
+        }
+        const account = currentUser ? this.createLogoutButton(currentUser) : this.createLoginButton();
+        account.classList.add('mc-account');
+        header.append(nav, account);
+        document.getElementById('header-bar').replaceChildren(header);
     }
-
-    async addNavbarToPage() {
-        const currentUser = await this.client.getIdentity();
-        const navbar = `<div class="flex-shrink-0 p-3 bg-white" style="width: 280px;">
-                                    <a href="/" class="d-flex align-items-center pb-3 mb-3 link-dark text-decoration-none border-bottom">
-                                        <svg class="bi me-2" width="30" height="24"><use xlink:href="#bootstrap"/></svg>
-                                        <span class="fs-5 fw-semibold px-2">Beholder</span>
-                                        <img src="images/d20a.png" width="30" height="30">
-                                    </a>
-                                    <ul class="list-unstyled ps-0" id = "list">
-                                        <li class="mb-1">
-                                            <a href="encounterLibrary.html" class="btn btn-flat align-items-center rounded preload disabled">
-                                                Encounter Library
-                                            </a>
-                                        </li>
-                                        <li class="mb-1">
-                                            <a href="creatureLibrary.html" class="btn btn-flat align-items-center rounded preload disabled">
-                                                Creature Library
-                                            </a>
-                                        </li>
-                                        <li class="mb-1">
-                                            <a href="spellLibrary.html" class="btn btn-flat align-items-center rounded preload disabled">
-                                                Spell Library
-                                            </a>
-                                        </li>
-
-                                        <li class="border-top my-3"></li>
-                                        <li class="mb-1">
-                                            <a href="runEncounter.html" class="btn btn-flat align-items-center rounded preload disabled">
-                                                Run Encounter
-                                            </a>
-                                        <li class="border-top my-3"></li>
-                                    </ul>
-                                </div>`;
-                                document.getElementById('navbar').insertAdjacentHTML('afterbegin', navbar);
-                                const button = currentUser
-                                   ? this.createLogoutButton(currentUser)
-                                   : this.createLoginButton();
-                                var ul = document.getElementById("list");
-                                var li = document.createElement("li");
-                                li.appendChild(button);
-                                li.classList.add('mb-1');
-                                ul.appendChild(li);
-                                if (currentUser) {
-                                    this.enabler();
-                                }
-    };
-
 
     createButton(text, clickHandler) {
-        const button = document.createElement('a');
+        const button = document.createElement('button');
         button.classList.add('btn');
         button.classList.add('btn-flat');
         button.classList.add('align-items-center');
         button.classList.add('rounded');
-        button.href = '#';
+        button.type = 'button';
         button.innerText = text;
         button.addEventListener('click', async () => {
                     await clickHandler();
@@ -104,50 +60,11 @@ import BindingClass from "../util/bindingClass";
     };
 
     createLoginButton() {
-        return this.createButton('Login', this.client.login);
+        return this.createButton('Sign in', this.client.login);
     };
 
     createLogoutButton(currentUser) {
-        return this.createButton(`Logout: ${currentUser.name}`, this.client.logout);
+        return this.createButton(`Sign out · ${currentUser.name}`, this.client.logout);
     };
 
-    enabler() {
-        var inputs = document.getElementsByClassName('preload');
-        for(var i = 0; i < inputs.length; i++) {
-            inputs[i].classList.remove("disabled");
-        }
-    }
-
-    align() {
-            if(this.getHeight() > this.getWidth()) {
-                document.getElementById('navbar').hidden = true;
-                document.getElementById('navbar-divider').hidden = true;
-                document.getElementById('header-bar').hidden = false;
-            } else {
-                document.getElementById('navbar').hidden = false;
-                document.getElementById('navbar-divider').hidden = false;
-                document.getElementById('header-bar').hidden = true;
-            }
-    };
-
-    getWidth() {
-      return Math.max(
-        document.body.scrollWidth,
-        document.documentElement.scrollWidth,
-        document.body.offsetWidth,
-        document.documentElement.offsetWidth,
-        document.documentElement.clientWidth
-      );
-    };
-
-    getHeight() {
-      return Math.max(
-        document.body.scrollHeight,
-        document.documentElement.scrollHeight,
-        document.body.offsetHeight,
-        document.documentElement.offsetHeight,
-        document.documentElement.clientHeight
-      )
-    };
-
-  };
+}
