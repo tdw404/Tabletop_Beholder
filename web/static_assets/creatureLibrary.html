@@ -21,20 +21,25 @@
     <div class="container-fluid p-3 align-items-center overflow-auto">
         <div id = "header-bar">
         </div>
-        <div class="row">
-            <div class="col-lg gx-5 align-items-center pad-up">
-                <h2 class="text-center align-self-center">Creature Library</h2>
+        <header class="mc-page-heading"><h1>Creature Library</h1><div class="mc-controls"><button type="button" class="btn mc-primary" id="create-btn">New Creature</button><button type="button" class="btn mc-secondary" id="import-btn">Import Creature</button></div></header>
+        <div class="mc-library">
+            <div class="mc-panel mc-list-pane"><h2 class="mc-panel-heading">Your creatures</h2>
                 <div class = "show-while-loading">
                     <div class="d-flex justify-content-center pad-up">
                        <div class="spinner-border show-while-loading" role="status" id = "spinner"></div>
                     </div>
                     <span class="d-flex justify-content-center show-while-loading">Loading...</span>
                 </div>
-                <form>
-                    <div class="row hide-while-loading pad-up" id="search-fields" hidden>
+                <div class="mc-search hide-while-loading" hidden>
+                    <label for="nameSearch" class="form-label">Search creatures</label>
+                    <input class="form-control" type="search" id="nameSearch">
+                </div>
+                <details class="mc-filter-panel hide-while-loading" hidden>
+                    <summary>Filters</summary>
+                    <form>
+                    <div class="row mc-filter-fields" id="search-fields">
                         <div class="mb-3 col">
-                            <label for="nameSearch" class="form-label">Name</label>
-                            <input class="form-control" id="nameSearch"><label for="mc-type" class="form-label mt-2">Creature type</label><input id="mc-type" class="form-control" placeholder="Any type">
+                            <label for="mc-type" class="form-label mt-2">Creature type</label><input id="mc-type" class="form-control" placeholder="Any type">
                         </div>
                         <div class="mb-3 col">
                             <label for="pcSearch" class="form-label">PC/NPC</label>
@@ -68,10 +73,11 @@
                 </form>
                 <button type="button" class="btn btn-outline-dark hide-while-loading" id="filter-btn" hidden>Apply filters</button>
                 <button type="button" class="btn btn-outline-dark hide-while-loading" id="clear-btn" hidden>Clear filters</button>
+                </details>
                 <div class="d-flex flex-wrap gap-1 my-2" id="mc-active-filters" aria-label="Active filters"></div>
                 <p class="mc-muted" id="mc-result-count" role="status"></p>
                 <div class="table-responsive">
-                    <table id = "creature-table"  class="table table-striped hide-while-loading" hidden>
+                    <table id = "creature-table"  class="table table-striped mc-record-list hide-while-loading" hidden>
                         <thead>
                         <tr>
                             <th>Name</th>
@@ -87,19 +93,19 @@
                     </table>
                 </div>
             </div>
-    <div class="col-lg gx-5 align-items-center pad-up overflow-auto">
-        <h2 class="text-center align-self-center" id="creatureNameBig" pad-up>Creature</h2>
+    <div class="mc-panel mc-detail-pane">
+        <h2 class="mc-panel-heading">Stat block</h2>
+        <button type="button" class="btn mc-secondary mc-library-back" id="mc-library-back">← Back to creatures</button>
+        <h2 class="mc-record-title" id="creatureNameBig" pad-up>Creature</h2>
 
         <details class="mb-2">
             <summary class="mc-muted">More creature actions</summary>
             <button type="button" class="btn btn-outline-dark mt-2" id="clone-btn">Clone Creature</button>
             <button type="button" class="btn btn-outline-dark mt-2" id="delete-btn">Delete Creature</button>
         </details>
-        <button type="button" class="btn btn-outline-dark" id="create-btn">New Creature</button>
-        <button type="button" class="btn btn-outline-dark" id="import-btn">Import Creature</button>
         <hr/>
+        <button type="button" class="btn mc-secondary my-2" id="mc-edit-record" hidden>Edit creature</button>
         <section id="mc-record-summary" aria-live="polite"><p class="mc-muted">Select a record to view its details.</p></section>
-        <button type="button" class="btn mc-primary mt-2" id="mc-edit-record" hidden>Edit creature</button>
         <p class="mc-feedback mt-2" id="mc-record-feedback" role="status"></p>
         <form id="mc-record-editor" hidden>
             <ul class="nav nav-tabs"  role="tablist">

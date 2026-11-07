@@ -90,6 +90,24 @@ const EMPTY_DATASTORE_STATE = {
     document.getElementById('apply-effect-btn').addEventListener('click', this.addEffectFinish);
     document.getElementById('remove-effect-btn').addEventListener('click', this.removeEffect);
     document.getElementById('notifications-btn').addEventListener('click', this.showNotifications);
+    const saveDialog = document.getElementById('mc-save-dialog');
+    this.pendingSaves = [];
+    document.getElementById('mc-pending-saves').addEventListener('click', () => saveDialog.showModal());
+    document.getElementById('mc-save-later').addEventListener('click', () => saveDialog.close());
+    saveDialog.addEventListener('close', () => {
+        const pending = document.getElementById('mc-pending-saves');
+        (pending.hidden ? document.getElementById('next-turn-btn') : pending).focus();
+    });
+    const compact = window.matchMedia('(max-width: 700px)');
+    const order = document.getElementById('mc-turn-list');
+    const desktopOrder = order.parentElement;
+    const sheet = document.getElementById('mc-order-sheet');
+    const placeOrder = () => {
+        (compact.matches ? document.getElementById('mc-order-mobile') : desktopOrder).append(order);
+        if (!compact.matches) bootstrap.Offcanvas.getInstance(sheet)?.hide();
+    };
+    compact.addEventListener('change', placeOrder);
+    placeOrder();
     document.getElementById('session-list').addEventListener('change', (event) => {
                                                 if (event.target.closest('select')) {this.populateEncounters(event.target.value)}});
     document.getElementById('encounter-list').addEventListener('change', event => this.previewEncounter(event.target.value));
@@ -170,6 +188,10 @@ const EMPTY_DATASTORE_STATE = {
                 feedback.textContent = 'Add creatures in the Encounter Library before launching.';
                 return;
             }
+            if (this.dataStore.get(ENCOUNTER_KEY)?.objectId !== encounter.objectId) {
+                this.pendingSaves = [];
+                this.renderSaveReminders();
+            }
             this.dataStore.set([ENCOUNTER_KEY], encounter);
             this.inspectId = null;
             document.getElementById('encounterNameBig').textContent = encounter.objectName;
@@ -182,8 +204,7 @@ const EMPTY_DATASTORE_STATE = {
         } finally {
             this.loadingEncounter = false;
             this.showElements();
-            if (this.dataStore.get(ENCOUNTER_KEY)?.turnQueue?.length &&
-                !document.getElementById('mc-turn-list').closest('[hidden]')) this.hideElementsPlay();
+            if (!document.querySelector('.mc-combat-grid').hidden) this.hideElementsPlay();
         }
     }
 
@@ -476,20 +497,12 @@ const EMPTY_DATASTORE_STATE = {
         }));
         document.getElementById('notifications-btn').textContent = messages.length
             ? 'Notifications (' + messages.length + ')' : 'Notifications';
-        document.getElementById('roundNumber').textContent = 'Round ' + encounter.encounterRound + ' · ';
+        document.getElementById('roundNumber').textContent = 'Round ' + encounter.encounterRound;
         document.getElementById('mc-active').textContent = creatureMap.get(turnQueue[0]).encounterCreatureName;
-        document.getElementById('mc-next').textContent = 'Up next · ' + creatureMap.get(turnQueue[1] || turnQueue[0]).encounterCreatureName;
+        document.getElementById('mc-current-card').replaceChildren(this.turnCard(creatureMap.get(turnQueue[0]), true));
         const list = document.getElementById('mc-turn-list');
         list.replaceChildren(...turnQueue.map((id, index) => {
-            const creature = creatureMap.get(id);
-            const button = document.createElement('button');
-            button.type = 'button';
-            button.className = 'btn btn-outline-dark';
-            button.dataset.combatant = id;
-            button.textContent = creature.encounterCreatureName + (index === 0 ? ' · Active' : index === 1 ? ' · Next' : '');
-            if (index === 0) button.setAttribute('aria-current', 'step');
-            button.addEventListener('click', () => this.inspectCombatant(id));
-            return button;
+            return this.turnCard(creatureMap.get(id), index === 0, id);
         }));
         accordion.hidden = false;
         this.inspectCombatant(turnQueue.includes(this.inspectId) ? this.inspectId : turnQueue[0]);
@@ -666,6 +679,53 @@ const EMPTY_DATASTORE_STATE = {
       }
     }
 
+    turnCard(creature, current, id) {
+        const card = document.createElement('div');
+        card.className = 'mc-turn-card';
+        card.classList.toggle('mc-turn-current', current);
+        card.classList.toggle('mc-turn-dead', Boolean(creature.dead));
+        const title = document.createElement(id ? 'button' : 'div');
+        title.className = 'mc-turn-card-title';
+        if (id) {
+            title.type = 'button';
+            title.dataset.combatant = id;
+            if (current) title.setAttribute('aria-current', 'step');
+            title.addEventListener('click', () => {
+                this.inspectCombatant(id);
+                bootstrap.Offcanvas.getInstance(document.getElementById('mc-order-sheet'))?.hide();
+            });
+        }
+        const name = document.createElement('strong');
+        name.textContent = creature.encounterCreatureName;
+        const hp = document.createElement('small');
+        hp.textContent = (creature.currentHitPoints ?? '—') + ' / ' + (creature.hitPoints ?? '—') + ' HP';
+        title.append(name, hp);
+        card.append(title);
+        const tags = document.createElement('div');
+        tags.className = 'mc-turn-tags';
+        const badge = (label, style = '') => {
+            const element = document.createElement('span');
+            element.className = 'mc-status-tag ' + style;
+            element.textContent = label;
+            return element;
+        };
+        if (creature.dead) tags.append(badge('☠ Dead', 'mc-dead-tag'));
+        else if (creature.knockedOut) tags.append(badge('◐ Unconscious', 'mc-ko-tag'));
+        const effects = Object.values(creature.activeEffects || {}).filter(Boolean);
+        const effectTag = effect => badge(effect.effectName + (effect.turnDuration == null ? '' :
+            ' · ' + effect.turnDuration + (Number(effect.turnDuration) === 1 ? ' turn' : ' turns')));
+        tags.append(...effects.slice(0, 2).map(effectTag));
+        if (effects.length > 2) {
+            const extra = document.createElement('details');
+            const summary = document.createElement('summary');
+            summary.textContent = '+' + (effects.length - 2) + ' more';
+            extra.append(summary, ...effects.slice(2).map(effectTag));
+            tags.append(extra);
+        }
+        if (tags.childNodes.length) card.append(tags);
+        return card;
+    }
+
     inspectCombatant(id) {
         this.inspectId = id;
         document.querySelectorAll('[data-combatant-panel]').forEach(panel => {
@@ -685,7 +745,55 @@ const EMPTY_DATASTORE_STATE = {
 
     async nextTurn() {
         const encounter = this.dataStore.get(ENCOUNTER_KEY);
-        await this.saveCombat(() => this.runClient.nextTurn(encounter.objectId), {followTurn:true});
+        const previous = encounter.creatureMap[encounter.turnQueue[0]];
+        const saved = await this.saveCombat(() => this.runClient.nextTurn(encounter.objectId), {followTurn:true});
+        if (!saved) return;
+        const updated = this.dataStore.get(ENCOUNTER_KEY);
+        const current = updated.creatureMap[updated.turnQueue[0]];
+        const reminders = [];
+        for (const message of updated.messageQueue || []) {
+            const match = message.match(/^\[(.+?)\] needs to roll a \[(.*?)\] save versus \[([0-7]+)\], against \[(.*?)\]'s \[(.*?)\] effect\.$/);
+            if (!match) continue;
+            const [, name, ability, dc, , effect] = match;
+            const timing = previous.encounterCreatureName === current.encounterCreatureName ? '' :
+                name === current.encounterCreatureName ? 'Start of turn' :
+                name === previous.encounterCreatureName ? 'End of turn' : '';
+            // The legacy API serializes effect save DCs in octal.
+            reminders.push([name, effect, timing, ability + ' save DC ' + Number.parseInt(dc, 8)].filter(Boolean).join(' · '));
+        }
+        if (current.isPC && current.knockedOut && !current.dead && current.currentHitPoints === 0) {
+            reminders.push(current.encounterCreatureName + ' · Start of turn · Death saving throw');
+        }
+        this.pendingSaves.push(...reminders);
+        this.renderSaveReminders();
+        if (reminders.length) document.getElementById('mc-save-dialog').showModal();
+    }
+
+    renderSaveReminders() {
+        const pending = document.getElementById('mc-pending-saves');
+        const dialog = document.getElementById('mc-save-dialog');
+        pending.hidden = !this.pendingSaves.length;
+        pending.textContent = this.pendingSaves.length + (this.pendingSaves.length === 1 ? ' save pending' : ' saves pending');
+        const list = document.getElementById('mc-save-list');
+        list.replaceChildren(...this.pendingSaves.map((reminder, index) => {
+            const item = document.createElement('li');
+            item.className = 'list-group-item mc-controls justify-content-between';
+            const label = document.createElement('span');
+            label.textContent = reminder;
+            const handled = document.createElement('button');
+            handled.type = 'button';
+            handled.className = 'btn mc-primary';
+            handled.textContent = 'Mark handled';
+            handled.setAttribute('aria-label', 'Mark handled: ' + reminder);
+            handled.addEventListener('click', () => {
+                this.pendingSaves.splice(index, 1);
+                this.renderSaveReminders();
+                if (this.pendingSaves.length) list.querySelector('button')?.focus();
+                else dialog.close();
+            });
+            item.append(label, handled);
+            return item;
+        }));
     }
 
     async damageValue(targetID) {

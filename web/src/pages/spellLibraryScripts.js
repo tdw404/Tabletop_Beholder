@@ -1,3 +1,4 @@
+import {bindLibraryLayout, renderLibraryRow, showLibraryDetail} from '../components/libraryLayout';
 import {recordWorkspace, showRecord, previewTemplate} from '../components/recordWorkspace';
 import AuthClient from "../api/authClient";
 import SpellClient from "../api/spellClient"
@@ -77,8 +78,7 @@ const EMPTY_DATASTORE_STATE = {
         document.getElementById('import-btn').addEventListener('click', await this.importButton);
         document.getElementById('search-btn').addEventListener('click', await this.searchButton);
         document.getElementById('import-finish-btn').addEventListener('click', await this.importFinishButton);
-        document.getElementById('spell-table').addEventListener('click', (event) => {
-                                            if (event.target.closest('tbody')) {this.spellRowClick(event.target.parentNode.dataset.id)}});
+        bindLibraryLayout('spell-table', this.spellRowClick);
         document.getElementById('template-table').addEventListener('click', (event) => {
                                             if (event.target.closest('tbody')) {this.templateRowClick(event.target.parentNode.dataset.id)}});
     }
@@ -106,7 +106,7 @@ const EMPTY_DATASTORE_STATE = {
                     var cell2 = row.insertCell(1);
                     var cell3 = row.insertCell(2);
                     var cell4 = row.insertCell(3);
-                    cell1.innerHTML = spell.objectName;
+                    renderLibraryRow(cell1, spell.objectName, [Number(spell.spellLevel) === 0 ? 'Cantrip' : 'Level ' + spell.spellLevel, spell.spellSchool, spell.ritualCast ? 'Ritual' : null]);
                     cell2.textContent = Number(spell.spellLevel) === 0 ? 'Cantrip' : spell.spellLevel;
                     cell3.innerHTML = spell.ritualCast
                                         ? "Yes"
@@ -142,6 +142,7 @@ const EMPTY_DATASTORE_STATE = {
         }
         document.getElementById(spellId)?.setAttribute('class','selectedRow');
         this.recordWorkspace.show(spell);
+        showLibraryDetail();
         document.getElementById('spellNameBig').innerText = spell.objectName;
         document.getElementById('objectName').value = spell.objectName;
         document.getElementById('spellDescription').value = spell.spellDescription;

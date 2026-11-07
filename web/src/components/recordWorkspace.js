@@ -106,7 +106,7 @@ function metrics(entries) {
 
 function block(title, value) {
     const section = document.createElement('section');
-    section.className = 'mt-3';
+    section.className = 'mc-reading mt-3';
     const heading = document.createElement('h3');
     heading.className = 'mc-label';
     heading.textContent = title;
@@ -131,7 +131,7 @@ export function showRecord(kind, record) {
             block('Actions', actions.join('\n') || 'No actions assigned.'));
         if (defenses.length) {
             const details = document.createElement('details');
-            details.className = 'mt-3';
+            details.className = 'mc-reading mt-3';
             const title = document.createElement('summary');
             title.textContent = 'Senses, defenses, and notes';
             details.append(title, paragraph(defenses.join('\n'), 'mc-prose'));
@@ -139,10 +139,28 @@ export function showRecord(kind, record) {
         }
     } else {
         const level = Number(record.spellLevel) === 0 ? 'Cantrip' : 'Level ' + record.spellLevel;
-        panel.replaceChildren(paragraph([level, record.spellSchool, record.ritualCast ? 'Ritual' : null].filter(Boolean).join(' · '), 'mc-muted'),
-            metrics([['Casting time', record.castingTime], ['Range', record.spellRange], ['Components', record.spellComponents]]),
+        panel.replaceChildren(paragraph([level, record.spellSchool].filter(Boolean).join(' · '), 'mc-muted'),
+            metrics([['Casting time', record.castingTime], ['Range', record.spellRange], ['Components', record.spellComponents], ['Duration', record.spellDuration ?? record.duration]]),
             block('Description', record.spellDescription));
-        if (record.spellHigherLevel) panel.append(block('At higher levels', record.spellHigherLevel));
+        const labels = [record.ritualCast && 'Ritual', record.requiresConcentration === true && 'Concentration'].filter(Boolean);
+        if (labels.length) {
+            const tags = paragraph('', 'd-flex flex-wrap gap-2 mt-2');
+            for (const label of labels) {
+                const tag = document.createElement('span');
+                tag.className = 'mc-status-tag';
+                tag.textContent = label;
+                tags.append(tag);
+            }
+            panel.children[0].after(tags);
+        }
+        if (record.spellHigherLevel) {
+            const details = document.createElement('details');
+            details.className = 'mc-reading mt-3';
+            const title = document.createElement('summary');
+            title.textContent = Number(record.spellLevel) === 0 ? 'Cantrip scaling' : 'At higher levels';
+            details.append(title, paragraph(record.spellHigherLevel, 'mc-prose'));
+            panel.append(details);
+        }
     }
 }
 

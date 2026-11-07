@@ -22,18 +22,31 @@
         <div id = "header-bar">
 
         </div>
-        <section class="container py-4">
-            <p class="mc-label">Dungeon Master workspace</p>
-            <h1>Beholder</h1>
-            <p class="mc-muted">Prepare encounters and track turns, hit points, and effects at the table.</p>
-            <div id="welcomeText" class="mt-4" hidden>
-                <div class="mc-home-links">
+        <section class="mc-home">
+            <header class="mc-home-brand">
+                <svg class="mc-d20" viewBox="0 0 48 48" aria-hidden="true">
+                    <path d="M24 2 43 13v22L24 46 5 35V13zM24 2 12 33h24zM5 13l7 20 12 13 12-13 7-20M5 35l7-2m24 0 7 2" fill="none" stroke="currentColor" stroke-width="1.5"/>
+                    <text x="24" y="28" text-anchor="middle" fill="currentColor" font-size="9">20</text>
+                </svg>
+                <p class="mc-label">Dungeon Master workspace</p>
+                <h1>Beholder</h1>
+                <p class="mc-muted">Prepare encounters and track combat at the table.</p>
+            </header>
+            <section class="mc-panel" id="mc-home-sign-in" hidden>
+                <button type="button" class="btn mc-primary" id="mc-home-login">Sign in</button>
+            </section>
+            <div id="welcomeText" hidden>
+                <section class="mc-panel">
+                    <h2 class="mc-panel-heading" id="mc-home-run-label">Get ready</h2>
+                    <p class="mc-home-encounter" id="mc-home-encounter" hidden></p>
                     <a id="home-run" class="btn mc-primary" href="runEncounter.html">Choose encounter</a>
-                    <a class="btn btn-outline-dark" href="encounterLibrary.html">Prepare encounters</a>
-                    <a class="btn btn-outline-dark" href="creatureLibrary.html">Browse creatures</a>
-                    <a class="btn btn-outline-dark" href="spellLibrary.html">Browse spells</a>
-                </div>
-                <p class="mc-muted mt-3">Start with a creature, add it to a roster, then open the encounter to set initiative.</p>
+                </section>
+                <section class="mc-panel">
+                    <h2 class="mc-panel-heading">Workspace</h2>
+                    <a class="mc-home-link" href="encounterLibrary.html"><span><strong>Prepare encounters</strong><small>Build a roster for your next session</small></span><span aria-hidden="true">›</span></a>
+                    <a class="mc-home-link" href="creatureLibrary.html"><span><strong>Creature Library</strong><small>Browse and manage your creatures</small></span><span aria-hidden="true">›</span></a>
+                    <a class="mc-home-link" href="spellLibrary.html"><span><strong>Spell Library</strong><small>Look up spells and casting details</small></span><span aria-hidden="true">›</span></a>
+                </section>
             </div>
         </section>
     </div>

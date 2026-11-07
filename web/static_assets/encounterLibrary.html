@@ -21,9 +21,9 @@
     <div class="container-fluid p-3 align-items-center overflow-auto">
         <div id = "header-bar">
         </div>
-        <div class="row">
-    <div class="col-lg gx-5 align-items-center pad-up">
-        <h2 class="text-center align-self-center">Encounter Library</h2>
+        <header class="mc-page-heading"><h1>Encounter Library</h1><div class="mc-controls"><button type="button" class="btn mc-primary" id="create-btn">New Encounter</button></div></header>
+        <div class="mc-library">
+            <div class="mc-panel mc-list-pane"><h2 class="mc-panel-heading">Your encounters</h2>
         <div class="d-flex justify-content-center pad-up">
             <div class="spinner-border show-while-loading" role="status" id = "spinner">
                 <span class="visually-hidden">Loading...</span>
@@ -32,6 +32,8 @@
         <form>
             <div class="row hide-while-loading" id="search-fields" hidden>
                     <div class="mb-3 col">
+                        <label for="mc-encounter-search" class="form-label">Search encounters</label>
+                        <input type="search" class="form-control mb-2" id="mc-encounter-search">
                         <label for="session-search" class="form-label">Session</label>
                         <select class="form-select" id="session-search">
                             <option class = "session-dropdown" selected value = '0'></option>
@@ -45,7 +47,7 @@
             </div>
         </form>
         <div class="table-responsive">
-            <table id = "encounter-table"  class="table table-striped hide-while-loading" hidden>
+            <table id = "encounter-table"  class="table table-striped mc-record-list hide-while-loading" hidden>
                 <thead>
                 <tr>
                     <th>Encounter</th>
@@ -56,13 +58,13 @@
             </table>
         </div>
     </div>
-    <div class="col-lg gx-5 align-items-center pad-up overflow-auto">
-        <h2 class="text-center align-self-center" id="encounterNameBig" pad-up>Encounter</h2>
-        <button type="button" class="btn btn-outline-dark" id="update-btn">Save changes</button>
-        <a class="btn mc-primary" id="mc-run-saved" hidden>Run encounter →</a>
-        <p class="mc-feedback" id="mc-encounter-feedback" role="status"></p>
+    <div class="mc-panel mc-detail-pane">
+        <h2 class="mc-panel-heading">Encounter builder</h2>
+        <button type="button" class="btn mc-secondary mc-library-back" id="mc-library-back">← Back to encounters</button>
+        <h2 class="mc-record-title" id="encounterNameBig" pad-up>Encounter</h2>
+
         <button type="button" class="btn btn-outline-dark" id="delete-btn">Delete Encounter</button>
-        <button type="button" class="btn btn-outline-dark" id="create-btn">New Encounter</button>
+
         <hr/>
     <form>
         <div class="mb-3">
@@ -84,25 +86,22 @@
         </div>
     </form>
         <hr/>
-        <button type="button" class="btn btn-outline-dark" id="add-creature-btn">Add creatures</button>
-        <h3 class="mc-label mt-3">Encounter roster</h3>
+        <div class="mc-controls justify-content-between mb-3">
+            <h3 class="mc-label mb-0">Encounter roster</h3>
+            <button type="button" class="btn mc-secondary" id="add-creature-btn">Add creatures</button>
+        </div>
         <div class="table-responsive">
-            <table id = "creature-table"  class="table table-striped">
+            <table id = "creature-table" class="table mc-record-list" aria-label="Encounter roster">
                 <thead>
                 <tr>
                     <th>Name</th>
-                    <th>Creature</th>
-                    <th>PC</th>
-                    <th>CR</th>
-                    <th>Size</th>
-                    <th>Type</th>
-                    <th>Alignment</th>
                 </tr>
                 </thead>
                 <tbody>
                 </tbody>
             </table>
         </div>
+        <div class="mc-save-bar mc-controls mt-3"><button type="button" class="btn mc-primary" id="update-btn">Save changes</button><a class="btn mc-secondary" id="mc-run-saved" hidden>Run encounter →</a><p class="mc-feedback mb-0" id="mc-encounter-feedback" role="status"></p></div>
     </div>
         </div>
     </div>
@@ -166,15 +165,10 @@
             <input id="mc-roster-search" class="form-control mb-2" type="search">
             <p id="mc-roster-feedback" class="mc-feedback" role="status"></p>
             <div class="table-responsive">
-                <table id = "add-creature-table"  class="table table-striped">
+                <table id = "add-creature-table" class="table mc-record-list" aria-label="Creatures available to add">
                     <thead>
                         <tr>
                             <th>Name</th>
-                            <th>PC</th>
-                            <th>CR</th>
-                            <th>Size</th>
-                            <th>Type</th>
-                            <th>Alignment</th>
                         </tr>
                     </thead>
                     <tbody>

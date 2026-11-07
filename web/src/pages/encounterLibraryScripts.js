@@ -1,3 +1,4 @@
+import {bindLibraryLayout, renderLibraryRow, showLibraryDetail} from '../components/libraryLayout';
 import AuthClient from "../api/authClient";
 import EncounterClient from "../api/encounterClient"
 import SessionClient from "../api/sessionClient"
@@ -53,7 +54,7 @@ const EMPTY_DATASTORE_STATE = {
                                 'updateButton', 'createFinishButton',
                                 'addCreatureRowClick', 'addCreatureFinishButton',
                                 'addCreatureButton', 'attachEventListeners',
-                                'sortCreatureTable', 'creatureTablePopulate',
+                                'creatureTablePopulate',
                                 'mapToObj', 'creatureRowClick',
                                 'updateCreatureButton', 'deleteCreatureButton',
                                 'lockElements', 'unlockElements'], this);
@@ -100,6 +101,8 @@ const EMPTY_DATASTORE_STATE = {
             if (this.encounterDirty) {event.preventDefault(); event.returnValue = '';}
         });
 
+        document.getElementById('mc-encounter-search').addEventListener('input', this.populateTable);
+        document.getElementById('session-search').addEventListener('change', this.populateTable);
         document.getElementById('filter-session-btn').addEventListener('click', await this.populateTable);
         document.getElementById('delete-btn').addEventListener('click', await this.deleteButton);
         document.getElementById('new-session-btn').addEventListener('click', await this.createSessionButton);
@@ -112,12 +115,18 @@ const EMPTY_DATASTORE_STATE = {
         document.getElementById('create-finish-btn').addEventListener('click', await this.createFinishButton);
         document.getElementById('save-creature-btn').addEventListener('click', await this.updateCreatureButton);
         document.getElementById('delete-creature-btn').addEventListener('click', await this.deleteCreatureButton);
-        document.getElementById('encounter-table').addEventListener('click', (event) => {
-                                            if (event.target.closest('tbody')) {this.encounterRowClick(event.target.parentNode.dataset.id)}});
+        bindLibraryLayout('encounter-table', this.encounterRowClick);
         document.getElementById('add-creature-table').addEventListener('click', (event) => {
-                                            if (event.target.closest('tbody')) {this.addCreatureRowClick(event.target.parentNode.dataset.id)}});
+            const row = event.target.closest('tbody tr[data-id]');
+            if (row) this.addCreatureRowClick(row.dataset.id);
+        });
         document.getElementById('creature-table').addEventListener('click', (event) => {
-                                            if (event.target.closest('tbody')) {this.creatureRowClick(event.target.parentNode.dataset.id)}});
+            const row = event.target.closest('tbody tr[data-id]');
+            if (row) this.creatureRowClick(row.dataset.id);
+        });
+        const picker = document.getElementById('offcanvasNewCreature');
+        picker.addEventListener('shown.bs.offcanvas', () => document.getElementById('mc-roster-search').focus());
+        picker.addEventListener('hidden.bs.offcanvas', () => document.getElementById('add-creature-btn').focus({preventScroll: true}));
     }
 
     async populateTable() {
@@ -127,16 +136,17 @@ const EMPTY_DATASTORE_STATE = {
             var encounterList = this.dataStore.get(ENCOUNTER_LIST_KEY);
             encounterList.sort((a, b) => a.objectName.localeCompare(b.objectName));
             var sessionSearch = document.getElementById('session-search').value;
+            const nameSearch = document.getElementById('mc-encounter-search').value.trim().toLowerCase();
             for(var encounter of encounterList) {
                 if (
-                    (sessionSearch == '0' || encounter.sessionId == sessionSearch)
+                    (sessionSearch == '0' || encounter.sessionId == sessionSearch) && encounter.objectName.toLowerCase().includes(nameSearch)
                 ) {
 
                     var row = newTableBody.insertRow(-1);
                     row.setAttribute('id', encounter.objectId);
                     row.setAttribute('data-id', encounter.objectId);
                     var cell1 = row.insertCell(0);
-                    cell1.innerHTML = encounter.objectName;
+                    renderLibraryRow(cell1, encounter.objectName, [this.dataStore.get(SESSION_MAP_KEY).get(encounter.sessionId)?.objectName || 'No session', Object.keys(encounter.creatureMap || {}).length + ' in roster']);
                 }
             }
             oldTableBody.parentNode.replaceChild(newTableBody, oldTableBody);
@@ -177,6 +187,7 @@ const EMPTY_DATASTORE_STATE = {
         document.getElementById('session-list').value = encounter.sessionId;
         this.creatureTablePopulate();
         this.updateRunLink(encounter);
+        showLibraryDetail();
     }
 
     creatureRowClick(encounterCreatureId) {
@@ -206,54 +217,19 @@ const EMPTY_DATASTORE_STATE = {
         var encounter = this.dataStore.get(SELECTED_ENCOUNTER_KEY);
         if(encounter.creatureMap != null) {
             var creatureMap = new Map(Object.entries(encounter.creatureMap));
-            for (var [key, value] of creatureMap) {
+            for (const value of [...creatureMap.values()].sort((a, b) => a.encounterCreatureName.localeCompare(b.encounterCreatureName))) {
                 var row = creatureBody.insertRow(-1);
                 row.setAttribute('id', value.encounterCreatureId);
                 row.setAttribute('data-id', value.encounterCreatureId);
-                var cell0 = row.insertCell(0);
-                var cell1 = row.insertCell(1);
-                var cell2 = row.insertCell(2);
-                var cell3 = row.insertCell(3);
-                var cell4 = row.insertCell(4);
-                var cell5 = row.insertCell(5);
-                var cell6 = row.insertCell(6);
-                cell0.innerHTML = value.encounterCreatureName;
-                cell1.innerHTML = value.objectName;
-                cell2.innerHTML = value.isPC
-                                    ? "Yes"
-                                    : "No";
-                cell3.innerHTML = value.challengeRating;
-                cell4.innerHTML = value.size;
-                cell5.innerHTML = value.type;
-                cell6.innerHTML = value.alignment;
+                renderLibraryRow(row.insertCell(), value.encounterCreatureName,
+                    [value.isPC ? 'PC' : 'NPC', (value.currentHitPoints ?? value.hitPoints ?? '—') + ' HP',
+                        'AC ' + (value.armorClass ?? '—'), value.type]);
             }
             this.dataStore.set([CREATURE_MAP_KEY], creatureMap);
-            this.sortCreatureTable(creatureTable);
         } else {
                          creatureMap = '';
                      }
     }
-
-       sortCreatureTable(table) {
-         var switching = true;
-         while (switching) {
-           switching = false;
-           var rows = table.rows;
-           for (var i = 1; i < (rows.length - 1); i++) {
-             var shouldSwitch = false;
-             var x = rows[i];
-             var y = rows[i + 1];
-             if (x.getElementsByTagName("td")[0].innerHTML > y.getElementsByTagName("td")[0].innerHTML) {
-               shouldSwitch = true;
-               break;
-             }
-           }
-           if (shouldSwitch) {
-             rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
-             switching = true;
-           }
-         }
-       }
 
     async deleteButton() {
         var objectId = this.dataStore.get(SELECTED_ENCOUNTER_KEY).objectId;
@@ -401,20 +377,9 @@ const EMPTY_DATASTORE_STATE = {
                 var row = creatureBody.insertRow(-1);
                row.setAttribute('id', creature.objectId);
                row.setAttribute('data-id', creature.objectId);
-               var cell0 = row.insertCell(0);
-               var cell1 = row.insertCell(1);
-               var cell2 = row.insertCell(2);
-               var cell3 = row.insertCell(3);
-               var cell4 = row.insertCell(4);
-               var cell5 = row.insertCell(5);
-               cell0.innerHTML = creature.objectName;
-               cell1.innerHTML = creature.isPC
-                                   ? "Yes"
-                                   : "No";
-               cell2.innerHTML = creature.challengeRating;
-               cell3.innerHTML = creature.size;
-               cell4.innerHTML = creature.type;
-               cell5.innerHTML = creature.alignment;
+               renderLibraryRow(row.insertCell(), creature.objectName,
+                   [creature.isPC ? 'PC' : 'NPC', creature.size, creature.type,
+                       (creature.hitPoints ?? '—') + ' HP', 'AC ' + (creature.armorClass ?? '—')]);
 
                document.getElementById('spinner-new-creature').hidden = true;
                document.getElementById('add-creature-table').hidden = false;

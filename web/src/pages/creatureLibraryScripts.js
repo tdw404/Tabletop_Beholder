@@ -1,3 +1,4 @@
+import {bindLibraryLayout, renderLibraryRow, showLibraryDetail} from '../components/libraryLayout';
 import {recordWorkspace, showRecord, previewTemplate} from '../components/recordWorkspace';
 import AuthClient from "../api/authClient";
 import CreatureClient from "../api/creatureClient"
@@ -104,8 +105,7 @@ const EMPTY_DATASTORE_STATE = {
         document.getElementById('import-btn').addEventListener('click', await this.importButton);
         document.getElementById('search-btn').addEventListener('click', await this.searchButton);
         document.getElementById('import-finish-btn').addEventListener('click', await this.importFinishButton);
-        document.getElementById('creature-table').addEventListener('click', (event) => {
-                                        if (event.target.closest('tbody')) {this.creatureRowClick(event.target.parentNode.dataset.id)}});
+        bindLibraryLayout('creature-table', this.creatureRowClick);
         document.getElementById('actions').addEventListener('click', (event) => {
                                         if (event.target.closest('tbody')) {this.actionRowClick(event.target.parentNode.dataset.id)}});
         document.getElementById('spells-table').addEventListener('click', (event) => {
@@ -173,7 +173,7 @@ const EMPTY_DATASTORE_STATE = {
                     var cell4 = row.insertCell(3);
                     var cell5 = row.insertCell(4);
                     var cell6 = row.insertCell(5);
-                    cell1.textContent = creature.objectName;
+                    renderLibraryRow(cell1, creature.objectName, [creature.isPC ? 'PC' : 'NPC', creature.size, creature.type, creature.challengeRating != null && !creature.isPC ? 'CR ' + creature.challengeRating : null]);
                     cell2.textContent = creature.isPC ? 'PC' : 'NPC';
                     cell3.innerHTML = creature.challengeRating;
                     cell4.innerHTML = creature.size;
@@ -197,6 +197,7 @@ const EMPTY_DATASTORE_STATE = {
         }
         document.getElementById(creatureId)?.setAttribute('class','selectedRow');
         this.recordWorkspace.show(creature);
+        showLibraryDetail();
         if (creature.isPC) {
             var show = document.getElementsByClassName('pc-tab');
                             for(var i = 0; i < show.length; i++) {

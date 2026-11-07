@@ -6,6 +6,7 @@
     --mc-text: #edf4fa;
     --mc-muted: #aec0d0;
     --mc-accent: #ffc66a;
+    --mc-secondary: #9ce5ea;
 }
 body { background: var(--mc-bg); color: var(--mc-text); }
 [hidden] { display: none !important; }
@@ -51,10 +52,71 @@ input.form-control:read-only, textarea.form-control:read-only,
 .mc-stat-grid > div { padding: .55rem; background: #101b26; border-top: 2px solid var(--mc-line); }
 .mc-stat-grid strong { display: block; font-variant-numeric: tabular-nums; font-size: 1.2rem; }
 .mc-save-bar { position: sticky; bottom: 0; z-index: 5; background: var(--mc-panel); border-top: 1px solid var(--mc-line); padding: .65rem; }
-.mc-home-links { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: .75rem; }
+.btn.mc-secondary { color: var(--mc-secondary); border: 1px solid var(--mc-secondary); background: #10202a; }
+.btn.mc-primary { border: 1px solid var(--mc-accent); }
+.mc-page-heading, .mc-controls { display: flex; align-items: center; flex-wrap: wrap; gap: .65rem; }
+.mc-page-heading { justify-content: space-between; margin-block: 1.25rem; padding-inline-start: .85rem; border-inline-start: 3px solid var(--mc-accent); }
+.mc-page-heading h1, .mc-record-title { margin: 0; font-size: clamp(1.5rem, 4vw, 2rem); }
+.mc-library { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.75fr); align-items: start; gap: 1rem; margin-bottom: 1.25rem; }
+.mc-panel-heading { color: var(--mc-accent); font-size: .8rem; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; padding: .65rem 1rem; margin: -1rem -1rem 1rem; border-bottom: 1px solid var(--mc-line); background: linear-gradient(105deg, #33291e, var(--mc-panel) 75%); border-radius: .35rem .35rem 0 0; }
+.mc-library-back, .mc-mobile-turn { display: none; }
+.mc-search { margin-bottom: .75rem; }
+.mc-filter-panel { border: 1px solid var(--mc-line); border-radius: .35rem; padding: .6rem .75rem; margin-bottom: .75rem; }
+.mc-filter-panel summary { color: var(--mc-secondary); }
+.mc-filter-fields { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 115px), 1fr)); margin-top: .75rem; }
+.mc-record-list thead, .mc-record-list td:not(:first-child) { display: none; }
+.mc-record-list td:first-child { border: 0; padding: 0 0 .45rem; background: transparent; box-shadow: none; }
+.mc-record-choice { display: block; width: 100%; min-height: 44px; text-align: start; border: 1px solid var(--mc-line); border-radius: .35rem; background: #101b26; color: var(--mc-text); padding: .5rem .7rem; }
+.mc-record-choice small { display: block; color: var(--mc-muted); }
+.mc-record-choice:hover { border-color: var(--mc-secondary); }
+.selectedRow .mc-record-choice { border-color: var(--mc-accent); box-shadow: inset 3px 0 var(--mc-accent); background: #30291e; }
+.mc-reading, .mc-stat-grid > div { padding: .65rem .75rem; border: 1px solid var(--mc-line); border-radius: .35rem; background: #101b26; }
+.mc-reading .mc-prose:last-child, .mc-stat-grid .mc-label { margin-bottom: .15rem; }
+.mc-home { width: min(100%, 520px); margin: clamp(1.25rem, 8vh, 5rem) auto 2rem; }
+.mc-home-brand { text-align: center; margin-bottom: 1.4rem; }
+.mc-home .mc-panel + .mc-panel { margin-top: .9rem; }
+.mc-home .mc-primary { width: 100%; justify-content: center; }
+.mc-d20 { width: 3rem; height: 3rem; color: var(--mc-accent); margin-bottom: .65rem; }
+.mc-home-encounter { font-size: 1.35rem; font-weight: 650; }
+.mc-home-link { min-height: 44px; display: flex; justify-content: space-between; align-items: center; gap: .75rem; padding: .55rem .2rem; color: var(--mc-text); text-decoration: none; }
+.mc-home-link:hover, .mc-home-link > span:last-child { color: var(--mc-secondary); }
+.mc-home-link > span:last-child { font-size: 1.5rem; }
+.mc-home-link + .mc-home-link { border-top: 1px solid var(--mc-line); }
+.mc-home-link small { display: block; color: var(--mc-muted); }
+.mc-turn-card { border: 1px solid var(--mc-line); border-radius: .35rem; background: #101b26; }
+.mc-turn-card-title { width: 100%; display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: .35rem; padding: .55rem .7rem; min-height: 44px; background: transparent; color: inherit; text-align: start; border: 0; border-radius: inherit; }
+.mc-turn-card-title small { color: var(--mc-muted); white-space: nowrap; }
+.mc-turn-card.mc-turn-current { background: #30291e; border-color: var(--mc-accent); border-inline-start-width: 4px; }
+.mc-turn-current .mc-turn-card-title { padding-block: .75rem; font-size: 1.1rem; }
+.mc-turn-card.mc-turn-dead { background: #1c242e; color: #c7d0d9; }
+.mc-turn-card:has([aria-pressed="true"]:not([aria-current])) { outline: 1px solid var(--mc-secondary); }
+.mc-turn-list .mc-turn-card-title[aria-pressed="true"] { outline: none; }
+.mc-turn-list .mc-turn-card-title:focus-visible { outline: 2px solid var(--mc-secondary); }
+.mc-turn-tags { display: flex; flex-wrap: wrap; align-items: baseline; gap: .3rem; padding: 0 .7rem .55rem; }
+.mc-status-tag { display: inline-block; border: 1px solid var(--mc-line); border-radius: .25rem; padding: .1rem .35rem; font-size: .78rem; color: var(--mc-secondary); }
+.mc-ko-tag { color: #dac6ff; border-color: #907ab3; }
+.mc-dead-tag { color: #e2e8ed; }
+#mc-order-sheet { height: 75vh; height: min(75dvh, 42rem); }
+#mc-save-dialog { background: var(--mc-panel); color: var(--mc-text); border: 1px solid var(--mc-accent); border-radius: .55rem; width: min(35rem, calc(100% - 1rem)); max-height: 90dvh; padding: 1rem; }
+#mc-save-dialog::backdrop { background: #080f19bf; }
+.btn.damage-btn { color: #ffadab !important; border-color: #ca7779; }
+.btn.heal-btn { color: #a8e9b8 !important; border-color: #6ea77c; }
 :focus-visible { outline: 2px solid var(--mc-accent); outline-offset: 3px; }
-@media (max-width: 720px) {
-    .mc-combat-grid { grid-template-columns: 1fr; }
-    .mc-combat-grid > :last-child { grid-row: 1; }
+@media (max-width: 700px) {
+    .mc-library, .mc-combat-grid { grid-template-columns: minmax(0, 1fr); }
+    .mc-library:not(.mc-detail-open) .mc-detail-pane, .mc-detail-open .mc-list-pane, .mc-combat-grid > :first-child { display: none; }
+    .mc-library-back { display: inline-flex; margin-bottom: .75rem; }
+    .mc-mobile-turn { display: grid; gap: .55rem; margin-bottom: .75rem; }
+    .mc-mobile-turn > button { justify-self: start; }
+    #offcanvasNewCreature { width: 100%; }
+    #mc-save-dialog { margin: auto .5rem .5rem; }
+    .mc-home { margin-top: 1.25rem; }
     .mc-turn-strip #next-turn-btn { margin-inline-start: 0; }
+    .mc-turn-strip { gap: .4rem; padding: .5rem; }
+    #header-buttons .mc-account { margin-inline-start: 0; }
+}
+@media (pointer: coarse), (max-width: 700px) {
+    .btn, summary { min-height: 44px; }
+    summary { padding-block: .55rem; }
+    .form-control, .form-select { min-height: 44px; font-size: 16px; }
 }

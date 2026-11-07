@@ -41,7 +41,8 @@ import BindingClass from "../util/bindingClass";
         }
         const account = currentUser ? this.createLogoutButton(currentUser) : this.createLoginButton();
         account.classList.add('mc-account');
-        header.append(nav, account);
+        header.append(nav);
+        if (currentUser || current !== 'index.html') header.append(account);
         document.getElementById('header-bar').replaceChildren(header);
     }
 

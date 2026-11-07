@@ -24,6 +24,7 @@ const EMPTY_DATASTORE_STATE = {
 
      mount() {
         this.navbarProvider.provideBars();
+        document.getElementById('mc-home-login').addEventListener('click', this.client.login);
         this.startupActivities();
      };
 
@@ -34,11 +35,19 @@ const EMPTY_DATASTORE_STATE = {
             try { id = localStorage.getItem('beholder:lastEncounter'); } catch {}
             if (!id) return;
             const encounter = await new EncounterClient().getSingleEncounter(id);
-            if (encounter?.turnQueue?.length && encounter.turnQueue.every(creatureId => encounter.creatureMap?.[creatureId])) {
+            const rosterSize = Object.keys(encounter?.creatureMap || {}).length;
+            if (rosterSize && encounter.turnQueue?.length === rosterSize &&
+                new Set(encounter.turnQueue).size === rosterSize && encounter.turnQueue.every(id => encounter.creatureMap[id])) {
                 const link = document.getElementById('home-run');
                 link.href = 'runEncounter.html?encounter=' + encodeURIComponent(id);
-                link.textContent = 'Resume ' + encounter.objectName;
+                link.textContent = 'Resume encounter';
+                document.getElementById('mc-home-run-label').textContent = 'In progress';
+                const name = document.getElementById('mc-home-encounter');
+                name.textContent = encounter.objectName;
+                name.hidden = false;
             }
+        } else {
+            document.getElementById('mc-home-sign-in').hidden = false;
         }
     }
 

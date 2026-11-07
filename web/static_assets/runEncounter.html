@@ -26,9 +26,10 @@
         <p class="mc-label mt-3">Encounter operations</p>
         <h2 id="encounterNameBig">Run Encounter</h2>
         <div class="mc-turn-strip show-while-playing" hidden>
-            <div aria-live="polite"><strong id="roundNumber"></strong> <span id="mc-active"></span><br><small class="mc-muted" id="mc-next"></small></div>
+            <div aria-live="polite"><strong id="roundNumber"></strong> <span id="mc-active" class="visually-hidden"></span></div>
             <button type="button" class="btn mc-primary show-while-playing" id="next-turn-btn" hidden>Next Turn →</button>
             <button type="button" class="btn btn-outline-dark show-while-playing" id="notifications-btn" hidden>Notifications</button>
+            <button type="button" class="btn mc-secondary" id="mc-pending-saves" hidden></button>
             <button type="button" class="btn btn-outline-dark" id="mc-reassign">Reset initiative</button>
         </div>
         <p class="mc-feedback" id="mc-combat-feedback" role="status"></p>
@@ -54,14 +55,34 @@
         </div>
         <p class="mc-muted hide-while-playing" id="mc-launch-roster" role="status"></p>
         <button type="button" class="btn mc-primary hide-while-loading hide-while-playing" id="launch-session-btn" hidden disabled>Set initiative</button>
+        <section class="mc-mobile-turn show-while-playing" hidden>
+            <div id="mc-current-card"></div>
+            <button type="button" class="btn mc-secondary" id="mc-open-order" data-bs-toggle="offcanvas" data-bs-target="#mc-order-sheet" aria-controls="mc-order-sheet">Turn order</button>
+        </section>
         <div class="mc-combat-grid show-while-playing" hidden>
             <section class="mc-panel" aria-labelledby="mc-order-heading">
                 <h3 class="mc-label" id="mc-order-heading">Turn order</h3>
                 <div class="mc-turn-list" id="mc-turn-list"></div>
             </section>
-            <section class="accordion" id="creatureAccordion" aria-label="Combatant details"></section>
+            <section class="mc-panel" aria-labelledby="mc-combatant-heading">
+                <h3 class="mc-panel-heading" id="mc-combatant-heading">Combatant details</h3>
+                <div class="accordion" id="creatureAccordion"></div>
+            </section>
         </div>
     </div>
+
+    <div class="offcanvas offcanvas-bottom" tabindex="-1" id="mc-order-sheet" aria-labelledby="mc-order-title">
+        <div class="offcanvas-header">
+            <h2 id="mc-order-title" class="h5">Turn order</h2>
+            <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+        </div>
+        <div class="offcanvas-body" id="mc-order-mobile"></div>
+    </div>
+    <dialog id="mc-save-dialog" aria-labelledby="mc-save-title">
+        <h2 class="h4" id="mc-save-title">Saving throws due</h2>
+        <ul class="list-group my-3" id="mc-save-list"></ul>
+        <button type="button" class="btn mc-secondary" id="mc-save-later">Review later</button>
+    </dialog>
 
     <!--Offcanvas warning popup-->
     <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasWarn" aria-labelledby="offcanvasWarnLabel">
