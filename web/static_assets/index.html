@@ -8,6 +8,7 @@
     <title>Beholder</title>
     <link rel="icon" type="image/x-icon" href="/images/favicon.ico">
     <script type="text/javascript" src="assets/indexScripts.js"></script>
+    <link rel="stylesheet" href="css/mission-control.css">
 </head>
 <body>
 
@@ -21,31 +22,33 @@
         <div id = "header-bar">
 
         </div>
-        <div class="container align-items-center pad-up">
-            <h1 class="text-center align-self-center">Beholder</h1>
-            <h3 class="text-center align-self-center">An Encounter Management Tool for DMs</h3>
-            <div class="container align-items-center pad-up">
-                <div class="card" id="welcomeText" hidden>
-                    <div class="card-body">
-                        <ul>
-                            <li>Welcome! You can get started by adding a few creatures to your library</li>
-                            <li>Beholder is using <a href="https://open5e.com/">Open 5E</a>'s API to import creatures and spells.</li>
-                            <ul>
-                                <li>If you can't find the resource you're looking for, you can always create it yourself.</li>
-                            </ul>
-                            <li>When you import a creature, Beholder will do its best to import its actions and spells.</li>
-                            <ul>
-                                <li>Beholder is trying its best, but it's far from perfect!</li>
-                                <li>You'll want to double check creatures/spells after import and possibly clean them up.</li>
-                            </ul>
-                            <li>You can also create Player Characters - really just placeholders for encounter turn order.</li>
-                            <li>After you've created a few creatures, you're ready to create an encounter and add creatures to it!</li>
-                        </ul>
-                    </div>
-                </div>
+        <section class="mc-home">
+            <header class="mc-home-brand">
+                <svg class="mc-d20" viewBox="0 0 48 48" aria-hidden="true">
+                    <path d="M24 2 43 13v22L24 46 5 35V13zM24 2 12 33h24zM5 13l7 20 12 13 12-13 7-20M5 35l7-2m24 0 7 2" fill="none" stroke="currentColor" stroke-width="1.5"/>
+                    <text x="24" y="28" text-anchor="middle" fill="currentColor" font-size="9">20</text>
+                </svg>
+                <p class="mc-label">Dungeon Master workspace</p>
+                <h1>Beholder</h1>
+                <p class="mc-muted">Prepare encounters and track combat at the table.</p>
+            </header>
+            <section class="mc-panel" id="mc-home-sign-in" hidden>
+                <button type="button" class="btn mc-primary" id="mc-home-login">Sign in</button>
+            </section>
+            <div id="welcomeText" hidden>
+                <section class="mc-panel">
+                    <h2 class="mc-panel-heading" id="mc-home-run-label">Get ready</h2>
+                    <p class="mc-home-encounter" id="mc-home-encounter" hidden></p>
+                    <a id="home-run" class="btn mc-primary" href="runEncounter.html">Choose encounter</a>
+                </section>
+                <section class="mc-panel">
+                    <h2 class="mc-panel-heading">Workspace</h2>
+                    <a class="mc-home-link" href="encounterLibrary.html"><span><strong>Prepare encounters</strong><small>Build a roster for your next session</small></span><span aria-hidden="true">›</span></a>
+                    <a class="mc-home-link" href="creatureLibrary.html"><span><strong>Creature Library</strong><small>Browse and manage your creatures</small></span><span aria-hidden="true">›</span></a>
+                    <a class="mc-home-link" href="spellLibrary.html"><span><strong>Spell Library</strong><small>Look up spells and casting details</small></span><span aria-hidden="true">›</span></a>
+                </section>
             </div>
-
-        </div>
+        </section>
     </div>
 </main>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>

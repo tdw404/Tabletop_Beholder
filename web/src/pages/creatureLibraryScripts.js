@@ -1,3 +1,5 @@
+import {bindLibraryLayout, renderLibraryRow, showLibraryDetail} from '../components/libraryLayout';
+import {recordWorkspace, showRecord, previewTemplate} from '../components/recordWorkspace';
 import AuthClient from "../api/authClient";
 import CreatureClient from "../api/creatureClient"
 import SpellClient from "../api/spellClient"
@@ -87,6 +89,13 @@ const EMPTY_DATASTORE_STATE = {
     }
 
     async attachEventListeners() {
+        this.recordWorkspace = recordWorkspace(
+            record => showRecord('creature', record),
+            () => this.dataStore.get(SELECTED_CREATURE_KEY),
+            id => this.creatureRowClick(id)
+        );
+        document.getElementById('nameSearch').addEventListener('input', this.populateTable);
+
         document.getElementById('delete-btn').addEventListener('click', await this.deleteButton);
         document.getElementById('filter-btn').addEventListener('click', await this.populateTable);
         document.getElementById('clear-btn').addEventListener('click', await this.filterResetButton);
@@ -96,8 +105,7 @@ const EMPTY_DATASTORE_STATE = {
         document.getElementById('import-btn').addEventListener('click', await this.importButton);
         document.getElementById('search-btn').addEventListener('click', await this.searchButton);
         document.getElementById('import-finish-btn').addEventListener('click', await this.importFinishButton);
-        document.getElementById('creature-table').addEventListener('click', (event) => {
-                                        if (event.target.closest('tbody')) {this.creatureRowClick(event.target.parentNode.dataset.id)}});
+        bindLibraryLayout('creature-table', this.creatureRowClick);
         document.getElementById('actions').addEventListener('click', (event) => {
                                         if (event.target.closest('tbody')) {this.actionRowClick(event.target.parentNode.dataset.id)}});
         document.getElementById('spells-table').addEventListener('click', (event) => {
@@ -132,13 +140,29 @@ const EMPTY_DATASTORE_STATE = {
             var crAboveSearch = document.getElementById('crAboveSearch').value;
             var crBelowSearch = document.getElementById('crBelowSearch').value;
             var sizeSearch = document.getElementById('sizeSearch').value;
+            const typeSearch = document.getElementById('mc-type').value.trim();
+            const chips = [
+                nameSearch && 'Name · ' + nameSearch,
+                pcSearch !== 'Both' && pcSearch,
+                typeSearch && 'Type · ' + typeSearch,
+                sizeSearch && 'Size · ' + sizeSearch,
+                crAboveSearch && 'Min CR · ' + crAboveSearch,
+                crBelowSearch && 'Max CR · ' + crBelowSearch,
+            ].filter(Boolean).map(label => {
+                const chip = document.createElement('span');
+                chip.className = 'badge border';
+                chip.textContent = label;
+                return chip;
+            });
+            document.getElementById('mc-active-filters').replaceChildren(...chips);
             for(var creature of creatureList) {
                 if (
                     (nameSearch == '' || creature.objectName.toLowerCase().includes(nameSearch.toLowerCase())) &&
                     (pcSearch == 'Both' || creature.isPC == true && pcSearch == 'PC' || creature.isPC == false && pcSearch == 'NPC') &&
                     (crAboveSearch == '' || creature.challengeRating >= crAboveSearch) &&
                     (crBelowSearch == '' || creature.challengeRating <= crBelowSearch) &&
-                    (sizeSearch == '' || creature.size == sizeSearch)
+                    (sizeSearch == '' || creature.size == sizeSearch) &&
+                    (creature.type || '').toLowerCase().includes(typeSearch.toLowerCase())
                 ) {
                     var row = newTableBody.insertRow(-1);
                     row.setAttribute('id', creature.objectId);
@@ -149,10 +173,8 @@ const EMPTY_DATASTORE_STATE = {
                     var cell4 = row.insertCell(3);
                     var cell5 = row.insertCell(4);
                     var cell6 = row.insertCell(5);
-                    cell1.innerHTML = creature.objectName;
-                    cell2.innerHTML = creature.isPC
-                                        ?"Yes"
-                                        :"";
+                    renderLibraryRow(cell1, creature.objectName, [creature.isPC ? 'PC' : 'NPC', creature.size, creature.type, creature.challengeRating != null && !creature.isPC ? 'CR ' + creature.challengeRating : null]);
+                    cell2.textContent = creature.isPC ? 'PC' : 'NPC';
                     cell3.innerHTML = creature.challengeRating;
                     cell4.innerHTML = creature.size;
                     cell5.innerHTML = creature.type;
@@ -160,16 +182,22 @@ const EMPTY_DATASTORE_STATE = {
                 }
             }
             oldTableBody.parentNode.replaceChild(newTableBody, oldTableBody);
+            document.getElementById('mc-result-count').textContent = newTableBody.rows.length + ' results';
     }
 
     async creatureRowClick(creatureId) {
-        var creature = this.dataStore.get(CREATURE_MAP_KEY).get(creatureId);
+        if (!this.recordWorkspace.canSwitch()) return;
+        if (!this.dataStore.get(CREATURE_MAP_KEY).has(creatureId)) return;
+
+        const creature = structuredClone(this.dataStore.get(CREATURE_MAP_KEY).get(creatureId));
         this.dataStore.set([SELECTED_CREATURE_KEY], creature);
         var table = document.getElementById('creature-table');
         for (var i = 0; i < table.rows.length; i++){
           table.rows[i].removeAttribute('class');
         }
-        document.getElementById(creatureId).setAttribute('class','selectedRow');
+        document.getElementById(creatureId)?.setAttribute('class','selectedRow');
+        this.recordWorkspace.show(creature);
+        showLibraryDetail();
         if (creature.isPC) {
             var show = document.getElementsByClassName('pc-tab');
                             for(var i = 0; i < show.length; i++) {
@@ -322,6 +350,8 @@ const EMPTY_DATASTORE_STATE = {
     }
 
     async templateRowClick(templateId) {
+        previewTemplate(templateId, slug => this.creatureClient.getTemplate(slug), 'creature',
+            () => this.dataStore.get(CREATURE_LIST_KEY));
         this.dataStore.set([SELECTED_TEMPLATE_KEY], templateId);
         var table = document.getElementById('template-table');
         for (var i = 0; i < table.rows.length; i++){
@@ -570,6 +600,15 @@ const EMPTY_DATASTORE_STATE = {
     }
 
     async updateButton() {
+        if (!this.recordWorkspace.beginSave()) return;
+        try {
+            await this.saveRecord();
+        } finally {
+            this.recordWorkspace.endSave();
+        }
+    }
+
+    async saveRecord() {
         var creature = this.dataStore.get(SELECTED_CREATURE_KEY);
         if (creature) {
             this.hideElements();
@@ -657,7 +696,7 @@ const EMPTY_DATASTORE_STATE = {
             spellSlotMap.set(9, document.getElementById('ss9').value);
             creature.spellSlots = this.mapToObj(spellSlotMap);
             var warned = false;
-            await this.creatureClient.updateCreature(creature, (error) => {
+            const saved = await this.creatureClient.updateCreature(creature, (error) => {
                 document.getElementById('offcanvas-warn-body').innerText = error.message;
                 var myOffcanvas = document.getElementById('offcanvasWarn');
                 var bsOffcanvas = new bootstrap.Offcanvas(myOffcanvas);
@@ -665,7 +704,19 @@ const EMPTY_DATASTORE_STATE = {
                 this.showElements();
                 warned = true;
             });
-            if (!warned) { location.reload(); };
+            if (!warned && saved) {
+                this.dataStore.get(CREATURE_MAP_KEY).set(saved.objectId, saved);
+                const records = this.dataStore.get(CREATURE_LIST_KEY);
+                const index = records.findIndex(record => record.objectId === saved.objectId);
+                if (index >= 0) records[index] = saved;
+                this.recordWorkspace.finishEdit();
+                this.showElements();
+                await this.populateTable();
+                await this.creatureRowClick(saved.objectId);
+                document.getElementById('mc-record-feedback').textContent = 'Changes saved.';
+            } else {
+                this.recordWorkspace.saveFailed();
+            }
         }
     }
 
@@ -683,6 +734,7 @@ const EMPTY_DATASTORE_STATE = {
     }
 
     filterResetButton() {
+        document.getElementById('mc-type').value = '';
         document.getElementById('nameSearch').value = '';
         document.getElementById('pcSearch').value = 'Both';
         document.getElementById('crAboveSearch').value = '';
@@ -692,6 +744,8 @@ const EMPTY_DATASTORE_STATE = {
     }
 
     createButton() {
+        if (!this.recordWorkspace.canSwitch()) return;
+        this.recordWorkspace.finishEdit();
         var myOffcanvas = document.getElementById('offcanvasCreate');
         var bsOffcanvas = new bootstrap.Offcanvas(myOffcanvas);
         bsOffcanvas.show();
@@ -734,6 +788,9 @@ const EMPTY_DATASTORE_STATE = {
     }
 
     importButton() {
+        if (!this.recordWorkspace.canSwitch()) return;
+        this.recordWorkspace.finishEdit();
+        previewTemplate(null);
         var myOffcanvas = document.getElementById('offcanvasImport');
         var bsOffcanvas = new bootstrap.Offcanvas(myOffcanvas);
         bsOffcanvas.show();
@@ -741,9 +798,10 @@ const EMPTY_DATASTORE_STATE = {
 
     async importFinishButton() {
         var slug = this.dataStore.get(SELECTED_TEMPLATE_KEY);
-        if(!slug=='') {
+        if (slug && !document.getElementById('import-finish-btn').disabled) {
+            document.getElementById('import-finish-btn').disabled = true;
                 this.hideElements();
-                document.getElementById('close-import-btn').click()
+
                 var warned = false;
                 var newCreature = await this.creatureClient.createTemplate(slug, (error) => {
                     document.getElementById('offcanvas-warn-body').innerText = error.message;
@@ -752,8 +810,10 @@ const EMPTY_DATASTORE_STATE = {
                     bsOffcanvas.show();
                     this.showElements();
                     warned = true;
+                    document.getElementById('import-finish-btn').disabled = false;
                 });
                 if (!warned) {
+                    document.getElementById('close-import-btn').click();
                     this.dataStore.set([CREATURE_LIST_KEY], await this.creatureClient.getMultipleCreatures());
                     var creatureMap = new Map(this.dataStore.get([CREATURE_LIST_KEY]).map((obj) => [obj.objectId, obj]));
                     this.dataStore.set([CREATURE_MAP_KEY], creatureMap);
@@ -765,6 +825,7 @@ const EMPTY_DATASTORE_STATE = {
     }
 
     async searchButton() {
+        previewTemplate(null);
         this.dataStore.set([SELECTED_TEMPLATE_KEY], '');
         document.getElementById('template-table').hidden = true;
         document.getElementById('spinner-side').hidden = false;
@@ -816,19 +877,25 @@ const EMPTY_DATASTORE_STATE = {
     }
 
     async rebaseSpellsContinue() {
-        var spellMap = this.dataStore.get(SPELL_MAP_KEY);
-        this.hideElements();
-        for (var [key, value] of spellMap) {
-            try {
-                var rebaseSpell = await this.spellClient.getSingleSpell(key);
-            } catch (error) {
-                spellMap.delete(key);
+        const creature = this.dataStore.get(SELECTED_CREATURE_KEY);
+        const button = document.getElementById('rebase-continue-btn');
+        const status = document.getElementById('mc-draft-status');
+        const spellMap = new Map(this.dataStore.get(SPELL_MAP_KEY));
+        button.disabled = true;
+        try {
+            for (const key of spellMap.keys()) {
+                const spell = await this.spellClient.getSingleSpell(key);
+                if (spell) spellMap.set(key, spell);
             }
-            spellMap.set(key, rebaseSpell);
+            if (this.dataStore.get(SELECTED_CREATURE_KEY) !== creature) return;
+            this.dataStore.set(SPELL_MAP_KEY, spellMap);
+            creature.spellMap = this.mapToObj(spellMap);
+            this.spellTablePopulate();
+            status.textContent = 'Available spells refreshed. Save changes to keep them.';
+            document.getElementById('rebase-warn-close').click();
+        } finally {
+            button.disabled = false;
         }
-        this.dataStore.get(SELECTED_CREATURE_KEY).spellMap = this.mapToObj(spellMap);
-        this.updateButton();
-        document.getElementById('rebase-warn-close').click()
     }
 
     showElements() {

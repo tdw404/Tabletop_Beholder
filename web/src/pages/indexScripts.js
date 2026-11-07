@@ -1,3 +1,4 @@
+import EncounterClient from '../api/encounterClient';
 import AuthClient from "../api/authClient";
 import NavbarProvider from"../components/navbarProvider";
 import BindingClass from "../util/bindingClass";
@@ -23,12 +24,30 @@ const EMPTY_DATASTORE_STATE = {
 
      mount() {
         this.navbarProvider.provideBars();
+        document.getElementById('mc-home-login').addEventListener('click', this.client.login);
         this.startupActivities();
      };
 
     async startupActivities() {
         if (await this.client.verifyLogin()) {
             document.getElementById('welcomeText').hidden = false;
+            let id;
+            try { id = localStorage.getItem('beholder:lastEncounter'); } catch {}
+            if (!id) return;
+            const encounter = await new EncounterClient().getSingleEncounter(id);
+            const rosterSize = Object.keys(encounter?.creatureMap || {}).length;
+            if (rosterSize && encounter.turnQueue?.length === rosterSize &&
+                new Set(encounter.turnQueue).size === rosterSize && encounter.turnQueue.every(id => encounter.creatureMap[id])) {
+                const link = document.getElementById('home-run');
+                link.href = 'runEncounter.html?encounter=' + encodeURIComponent(id);
+                link.textContent = 'Resume encounter';
+                document.getElementById('mc-home-run-label').textContent = 'In progress';
+                const name = document.getElementById('mc-home-encounter');
+                name.textContent = encounter.objectName;
+                name.hidden = false;
+            }
+        } else {
+            document.getElementById('mc-home-sign-in').hidden = false;
         }
     }
 

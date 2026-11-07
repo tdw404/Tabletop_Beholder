@@ -1,3 +1,4 @@
+import {bindLibraryLayout, renderLibraryRow, showLibraryDetail} from '../components/libraryLayout';
 import AuthClient from "../api/authClient";
 import EncounterClient from "../api/encounterClient"
 import SessionClient from "../api/sessionClient"
@@ -53,7 +54,7 @@ const EMPTY_DATASTORE_STATE = {
                                 'updateButton', 'createFinishButton',
                                 'addCreatureRowClick', 'addCreatureFinishButton',
                                 'addCreatureButton', 'attachEventListeners',
-                                'sortCreatureTable', 'creatureTablePopulate',
+                                'creatureTablePopulate',
                                 'mapToObj', 'creatureRowClick',
                                 'updateCreatureButton', 'deleteCreatureButton',
                                 'lockElements', 'unlockElements'], this);
@@ -88,6 +89,20 @@ const EMPTY_DATASTORE_STATE = {
     }
 
     async attachEventListeners() {
+        document.getElementById('mc-roster-search').addEventListener('input', event => {
+            const term = event.target.value.trim().toLowerCase();
+            document.querySelectorAll('#add-creature-table tbody tr').forEach(row => {
+                row.hidden = !row.cells[0].textContent.toLowerCase().includes(term);
+            });
+        });
+        document.getElementById('objectName').addEventListener('input', () => this.markEncounterDirty());
+        document.getElementById('session-list').addEventListener('change', () => this.markEncounterDirty());
+        window.addEventListener('beforeunload', event => {
+            if (this.encounterDirty) {event.preventDefault(); event.returnValue = '';}
+        });
+
+        document.getElementById('mc-encounter-search').addEventListener('input', this.populateTable);
+        document.getElementById('session-search').addEventListener('change', this.populateTable);
         document.getElementById('filter-session-btn').addEventListener('click', await this.populateTable);
         document.getElementById('delete-btn').addEventListener('click', await this.deleteButton);
         document.getElementById('new-session-btn').addEventListener('click', await this.createSessionButton);
@@ -100,12 +115,18 @@ const EMPTY_DATASTORE_STATE = {
         document.getElementById('create-finish-btn').addEventListener('click', await this.createFinishButton);
         document.getElementById('save-creature-btn').addEventListener('click', await this.updateCreatureButton);
         document.getElementById('delete-creature-btn').addEventListener('click', await this.deleteCreatureButton);
-        document.getElementById('encounter-table').addEventListener('click', (event) => {
-                                            if (event.target.closest('tbody')) {this.encounterRowClick(event.target.parentNode.dataset.id)}});
+        bindLibraryLayout('encounter-table', this.encounterRowClick);
         document.getElementById('add-creature-table').addEventListener('click', (event) => {
-                                            if (event.target.closest('tbody')) {this.addCreatureRowClick(event.target.parentNode.dataset.id)}});
+            const row = event.target.closest('tbody tr[data-id]');
+            if (row) this.addCreatureRowClick(row.dataset.id);
+        });
         document.getElementById('creature-table').addEventListener('click', (event) => {
-                                            if (event.target.closest('tbody')) {this.creatureRowClick(event.target.parentNode.dataset.id)}});
+            const row = event.target.closest('tbody tr[data-id]');
+            if (row) this.creatureRowClick(row.dataset.id);
+        });
+        const picker = document.getElementById('offcanvasNewCreature');
+        picker.addEventListener('shown.bs.offcanvas', () => document.getElementById('mc-roster-search').focus());
+        picker.addEventListener('hidden.bs.offcanvas', () => document.getElementById('add-creature-btn').focus({preventScroll: true}));
     }
 
     async populateTable() {
@@ -115,16 +136,17 @@ const EMPTY_DATASTORE_STATE = {
             var encounterList = this.dataStore.get(ENCOUNTER_LIST_KEY);
             encounterList.sort((a, b) => a.objectName.localeCompare(b.objectName));
             var sessionSearch = document.getElementById('session-search').value;
+            const nameSearch = document.getElementById('mc-encounter-search').value.trim().toLowerCase();
             for(var encounter of encounterList) {
                 if (
-                    (sessionSearch == '0' || encounter.sessionId == sessionSearch)
+                    (sessionSearch == '0' || encounter.sessionId == sessionSearch) && encounter.objectName.toLowerCase().includes(nameSearch)
                 ) {
 
                     var row = newTableBody.insertRow(-1);
                     row.setAttribute('id', encounter.objectId);
                     row.setAttribute('data-id', encounter.objectId);
                     var cell1 = row.insertCell(0);
-                    cell1.innerHTML = encounter.objectName;
+                    renderLibraryRow(cell1, encounter.objectName, [this.dataStore.get(SESSION_MAP_KEY).get(encounter.sessionId)?.objectName || 'No session', Object.keys(encounter.creatureMap || {}).length + ' in roster']);
                 }
             }
             oldTableBody.parentNode.replaceChild(newTableBody, oldTableBody);
@@ -146,19 +168,26 @@ const EMPTY_DATASTORE_STATE = {
     }
 
     async encounterRowClick(encounterId) {
+        if (this.savingEncounter || (this.encounterDirty && !window.confirm('Discard unsaved encounter changes?'))) return;
+        if (!this.dataStore.get(ENCOUNTER_MAP_KEY).has(encounterId)) return;
+        this.encounterDirty = false;
+        document.getElementById('mc-encounter-feedback').textContent = '';
+
         this.dataStore.set([CREATURE_MAP_KEY], '');
-        var encounter = this.dataStore.get(ENCOUNTER_MAP_KEY).get(encounterId);
+        const encounter = structuredClone(this.dataStore.get(ENCOUNTER_MAP_KEY).get(encounterId));
         this.dataStore.set([SELECTED_ENCOUNTER_KEY], encounter);
         var table = document.getElementById('encounter-table');
         for (var i = 0; i < table.rows.length; i++){
             table.rows[i].removeAttribute('class');
         }
-        document.getElementById(encounterId).setAttribute('class','selectedRow');
+        document.getElementById(encounterId)?.setAttribute('class','selectedRow');
         document.getElementById('encounterNameBig').innerText = encounter.objectName;
         document.getElementById('objectName').value = encounter.objectName;
         document.getElementById('currentRound').value = encounter.encounterRound;
         document.getElementById('session-list').value = encounter.sessionId;
         this.creatureTablePopulate();
+        this.updateRunLink(encounter);
+        showLibraryDetail();
     }
 
     creatureRowClick(encounterCreatureId) {
@@ -188,54 +217,19 @@ const EMPTY_DATASTORE_STATE = {
         var encounter = this.dataStore.get(SELECTED_ENCOUNTER_KEY);
         if(encounter.creatureMap != null) {
             var creatureMap = new Map(Object.entries(encounter.creatureMap));
-            for (var [key, value] of creatureMap) {
+            for (const value of [...creatureMap.values()].sort((a, b) => a.encounterCreatureName.localeCompare(b.encounterCreatureName))) {
                 var row = creatureBody.insertRow(-1);
                 row.setAttribute('id', value.encounterCreatureId);
                 row.setAttribute('data-id', value.encounterCreatureId);
-                var cell0 = row.insertCell(0);
-                var cell1 = row.insertCell(1);
-                var cell2 = row.insertCell(2);
-                var cell3 = row.insertCell(3);
-                var cell4 = row.insertCell(4);
-                var cell5 = row.insertCell(5);
-                var cell6 = row.insertCell(6);
-                cell0.innerHTML = value.encounterCreatureName;
-                cell1.innerHTML = value.objectName;
-                cell2.innerHTML = value.isPC
-                                    ? "Yes"
-                                    : "No";
-                cell3.innerHTML = value.challengeRating;
-                cell4.innerHTML = value.size;
-                cell5.innerHTML = value.type;
-                cell6.innerHTML = value.alignment;
+                renderLibraryRow(row.insertCell(), value.encounterCreatureName,
+                    [value.isPC ? 'PC' : 'NPC', (value.currentHitPoints ?? value.hitPoints ?? '—') + ' HP',
+                        'AC ' + (value.armorClass ?? '—'), value.type]);
             }
             this.dataStore.set([CREATURE_MAP_KEY], creatureMap);
-            this.sortCreatureTable(creatureTable);
         } else {
                          creatureMap = '';
                      }
     }
-
-       sortCreatureTable(table) {
-         var switching = true;
-         while (switching) {
-           switching = false;
-           var rows = table.rows;
-           for (var i = 1; i < (rows.length - 1); i++) {
-             var shouldSwitch = false;
-             var x = rows[i];
-             var y = rows[i + 1];
-             if (x.getElementsByTagName("td")[0].innerHTML > y.getElementsByTagName("td")[0].innerHTML) {
-               shouldSwitch = true;
-               break;
-             }
-           }
-           if (shouldSwitch) {
-             rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
-             switching = true;
-           }
-         }
-       }
 
     async deleteButton() {
         var objectId = this.dataStore.get(SELECTED_ENCOUNTER_KEY).objectId;
@@ -252,15 +246,54 @@ const EMPTY_DATASTORE_STATE = {
         location.reload();
     }
 
+    markEncounterDirty() {
+        if (!this.dataStore.get(SELECTED_ENCOUNTER_KEY)) return;
+        this.encounterDirty = true;
+        document.getElementById('mc-run-saved').hidden = true;
+        document.getElementById('mc-encounter-feedback').textContent = 'Unsaved changes';
+    }
+
+    updateRunLink(encounter) {
+        const link = document.getElementById('mc-run-saved');
+        link.hidden = !Object.keys(encounter.creatureMap || {}).length;
+        link.href = 'runEncounter.html?encounter=' + encodeURIComponent(encounter.objectId);
+    }
+
     async updateButton() {
-        var encounter = this.dataStore.get(SELECTED_ENCOUNTER_KEY);
-        if (encounter) {
-            this.hideElements();
-            encounter.objectName = document.getElementById('objectName').value;
-            encounter.sessionId = document.getElementById('session-list').value;
-            await this.encounterClient.updateEncounter(encounter);
-            location.reload();
+        const encounter = this.dataStore.get(SELECTED_ENCOUNTER_KEY);
+        if (!encounter || this.savingEncounter) return;
+        const name = document.getElementById('objectName');
+        const feedback = document.getElementById('mc-encounter-feedback');
+        if (!name.value.trim()) {
+            feedback.textContent = 'Enter an encounter name.';
+            name.focus();
+            return;
         }
+        const session = document.getElementById('session-list').value || encounter.sessionId;
+        const save = document.getElementById('update-btn');
+        const controls = [save, name, document.getElementById('session-list'), document.getElementById('add-creature-btn')];
+        controls.forEach(control => {control.disabled = true;});
+        this.savingEncounter = true;
+        feedback.textContent = 'Saving…';
+        let saved;
+        try {
+            saved = await this.encounterClient.updateEncounter({...encounter, objectName: name.value.trim(), sessionId: session});
+        } finally {
+            this.savingEncounter = false;
+            controls.forEach(control => {control.disabled = false;});
+        }
+        if (!saved) {
+            feedback.textContent = 'Save failed. Your edits are still here.';
+            return;
+        }
+        this.encounterDirty = false;
+        this.dataStore.get(ENCOUNTER_MAP_KEY).set(saved.objectId, saved);
+        const list = this.dataStore.get(ENCOUNTER_LIST_KEY);
+        const index = list.findIndex(entry => entry.objectId === saved.objectId);
+        if (index >= 0) list[index] = saved;
+        await this.populateTable();
+        await this.encounterRowClick(saved.objectId);
+        feedback.textContent = 'Changes saved.';
     }
 
     createButton() {
@@ -315,6 +348,11 @@ const EMPTY_DATASTORE_STATE = {
         }
     }
     async addCreatureButton() {
+        if (this.savingEncounter) return;
+        this.dataStore.set([SELECTED_NEW_CREATURE_KEY], '');
+        document.getElementById('mc-roster-search').value = '';
+        document.getElementById('mc-roster-quantity').value = '1';
+        document.getElementById('mc-roster-feedback').textContent = '';
         if(this.dataStore.get(SELECTED_ENCOUNTER_KEY) != '') {
             document.getElementById('spinner-new-creature').hidden = false;
             document.getElementById('add-creature-table').hidden = true;
@@ -324,6 +362,11 @@ const EMPTY_DATASTORE_STATE = {
             var bsOffcanvas = new bootstrap.Offcanvas(myOffcanvas);
             bsOffcanvas.show();
             var newCreatureList = await this.creatureClient.getMultipleCreatures();
+            if (!newCreatureList?.length) {
+                document.getElementById('mc-roster-feedback').textContent = newCreatureList ? 'No creatures in your library.' : 'Could not load the creature library.';
+                document.getElementById('spinner-new-creature').hidden = true;
+                return;
+            }
             newCreatureList.sort((a, b) => a.objectName.localeCompare(b.objectName));
             var newCreatureMap = new Map(newCreatureList.map((obj) => [obj.objectId, obj]));
             this.dataStore.set([NEW_CREATURE_MAP_KEY], newCreatureMap);
@@ -334,20 +377,9 @@ const EMPTY_DATASTORE_STATE = {
                 var row = creatureBody.insertRow(-1);
                row.setAttribute('id', creature.objectId);
                row.setAttribute('data-id', creature.objectId);
-               var cell0 = row.insertCell(0);
-               var cell1 = row.insertCell(1);
-               var cell2 = row.insertCell(2);
-               var cell3 = row.insertCell(3);
-               var cell4 = row.insertCell(4);
-               var cell5 = row.insertCell(5);
-               cell0.innerHTML = creature.objectName;
-               cell1.innerHTML = creature.isPC
-                                   ? "Yes"
-                                   : "No";
-               cell2.innerHTML = creature.challengeRating;
-               cell3.innerHTML = creature.size;
-               cell4.innerHTML = creature.type;
-               cell5.innerHTML = creature.alignment;
+               renderLibraryRow(row.insertCell(), creature.objectName,
+                   [creature.isPC ? 'PC' : 'NPC', creature.size, creature.type,
+                       (creature.hitPoints ?? '—') + ' HP', 'AC ' + (creature.armorClass ?? '—')]);
 
                document.getElementById('spinner-new-creature').hidden = true;
                document.getElementById('add-creature-table').hidden = false;
@@ -366,21 +398,45 @@ const EMPTY_DATASTORE_STATE = {
         }
         document.getElementById(objectId).setAttribute('class','selectedRow');
         document.getElementById('new-creature-name').value = newCreature.objectName;
+        const quantity = document.getElementById('mc-roster-quantity');
+        quantity.disabled = Boolean(newCreature.isPC);
+        if (newCreature.isPC) quantity.value = '1';
     }
 
     async addCreatureFinishButton() {
-        var creatureMap = this.dataStore.get(CREATURE_MAP_KEY);
-        if (!creatureMap) { creatureMap = new Map() };
-        var newCreature = this.dataStore.get(SELECTED_NEW_CREATURE_KEY);
-        newCreature.encounterCreatureName = document.getElementById('new-creature-name').value
-        newCreature.encounterCreatureId  = uuidv4();
-        newCreature.knockedOut = false;
-        newCreature.dead = false;
-        newCreature.deathSaves = 3;
-        newCreature.currentHitPoints = newCreature.hitPoints;
-        creatureMap.set(newCreature.encounterCreatureId, newCreature);
-        this.dataStore.get(SELECTED_ENCOUNTER_KEY).creatureMap = this.mapToObj(creatureMap);
-        this.dataStore.set(CREATURE_MAP_KEY, creatureMap);
+        const template = this.dataStore.get(SELECTED_NEW_CREATURE_KEY);
+        const encounter = this.dataStore.get(SELECTED_ENCOUNTER_KEY);
+        if (this.savingEncounter || !encounter) return;
+        const feedback = document.getElementById('mc-roster-feedback');
+        if (!template) {
+            feedback.textContent = 'Select a creature first.';
+            return;
+        }
+        const quantity = document.getElementById('mc-roster-quantity');
+        if (!quantity.reportValidity()) return;
+        const count = template.isPC ? 1 : quantity.valueAsNumber;
+        const baseName = document.getElementById('new-creature-name').value.trim() || template.objectName;
+        const creatureMap = this.dataStore.get(CREATURE_MAP_KEY) || new Map();
+        const usedNames = new Set([...creatureMap.values()].map(creature => creature.encounterCreatureName));
+        let suffix = 1;
+        for (let copy = 0; copy < count; copy++) {
+            let name = count === 1 ? baseName : baseName + ' ' + suffix++;
+            while (usedNames.has(name)) name = baseName + ' ' + suffix++;
+            usedNames.add(name);
+            const creature = structuredClone(template);
+            Object.assign(creature, {
+                encounterCreatureName: name,
+                encounterCreatureId: uuidv4(),
+                knockedOut: false,
+                dead: false,
+                deathSaves: 3,
+                currentHitPoints: creature.hitPoints,
+            });
+            creatureMap.set(creature.encounterCreatureId, creature);
+        }
+        encounter.creatureMap = this.mapToObj(creatureMap);
+        this.dataStore.set([CREATURE_MAP_KEY], creatureMap);
+        this.markEncounterDirty();
         this.creatureTablePopulate();
         document.getElementById('close-new-creature-btn').click();
     }
@@ -392,9 +448,10 @@ const EMPTY_DATASTORE_STATE = {
             creature.encounterCreatureName = document.getElementById('edit-creature-name').value;
             document.getElementById('close-edit-creature-btn').click();
             creatureMap.set(creature.encounterCreatureId, creature);
-            this.dataStore.set(CREATURE_MAP_KEY);
+            this.dataStore.set(CREATURE_MAP_KEY, creatureMap);
             this.dataStore.get(SELECTED_ENCOUNTER_KEY).creatureMap = this.mapToObj(creatureMap);
-            this.creatureTablePopulate();
+            this.markEncounterDirty();
+        this.creatureTablePopulate();
             document.getElementById('edit-creature-name').value = '';
             document.getElementById('edit-creature-objectName').value = '';
             document.getElementById('edit-creature-hp').value = '';
@@ -409,8 +466,9 @@ const EMPTY_DATASTORE_STATE = {
         var creature = this.dataStore.get(SELECTED_CREATURE_KEY);
         document.getElementById('close-edit-creature-btn').click();
         creatureMap.delete(creature.encounterCreatureId);
-        this.dataStore.set(CREATURE_MAP_KEY);
+        this.dataStore.set(CREATURE_MAP_KEY, creatureMap);
         this.dataStore.get(SELECTED_ENCOUNTER_KEY).creatureMap = this.mapToObj(creatureMap);
+        this.markEncounterDirty();
         this.creatureTablePopulate();
         document.getElementById('edit-creature-name').value = '';
         document.getElementById('edit-creature-objectName').value = '';

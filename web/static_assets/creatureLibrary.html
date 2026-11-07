@@ -8,6 +8,7 @@
     <title>Creature Library - Beholder</title>
     <link rel="icon" type="image/x-icon" href="/images/favicon.ico">
     <script type="text/javascript" src="assets/creatureLibraryScripts.js"></script>
+    <link rel="stylesheet" href="css/mission-control.css">
 </head>
 <body>
 
@@ -20,20 +21,25 @@
     <div class="container-fluid p-3 align-items-center overflow-auto">
         <div id = "header-bar">
         </div>
-        <div class="row">
-            <div class="col-lg gx-5 align-items-center pad-up">
-                <h2 class="text-center align-self-center">Creature Library</h2>
+        <header class="mc-page-heading"><h1>Creature Library</h1><div class="mc-controls"><button type="button" class="btn mc-primary" id="create-btn">New Creature</button><button type="button" class="btn mc-secondary" id="import-btn">Import Creature</button></div></header>
+        <div class="mc-library">
+            <div class="mc-panel mc-list-pane"><h2 class="mc-panel-heading">Your creatures</h2>
                 <div class = "show-while-loading">
                     <div class="d-flex justify-content-center pad-up">
                        <div class="spinner-border show-while-loading" role="status" id = "spinner"></div>
                     </div>
                     <span class="d-flex justify-content-center show-while-loading">Loading...</span>
                 </div>
-                <form>
-                    <div class="row hide-while-loading pad-up" id="search-fields" hidden>
+                <div class="mc-search hide-while-loading" hidden>
+                    <label for="nameSearch" class="form-label">Search creatures</label>
+                    <input class="form-control" type="search" id="nameSearch">
+                </div>
+                <details class="mc-filter-panel hide-while-loading" hidden>
+                    <summary>Filters</summary>
+                    <form>
+                    <div class="row mc-filter-fields" id="search-fields">
                         <div class="mb-3 col">
-                            <label for="nameSearch" class="form-label">Name</label>
-                            <input class="form-control" id="nameSearch">
+                            <label for="mc-type" class="form-label mt-2">Creature type</label><input id="mc-type" class="form-control" placeholder="Any type">
                         </div>
                         <div class="mb-3 col">
                             <label for="pcSearch" class="form-label">PC/NPC</label>
@@ -45,11 +51,11 @@
                         </div>
                         <div class="mb-3 col">
                             <label for="crAboveSearch" class="form-label">CR &ge;</label>
-                            <input class="form-control" id="crAboveSearch" type="number" min="-1" data-bind="value:replyNumber">
+                            <input class="form-control" id="crAboveSearch" type="number" step="any" min="-1" data-bind="value:replyNumber">
                         </div>
                         <div class="mb-3 col">
                             <label for="crBelowSearch" class="form-label">CR &le;</label>
-                            <input class="form-control" id="crBelowSearch" type="number" min="-1" data-bind="value:replyNumber">
+                            <input class="form-control" id="crBelowSearch" type="number" step="any" min="-1" data-bind="value:replyNumber">
                         </div>
                         <div class="mb-3 col">
                             <label for="sizeSearch" class="form-label">Size</label>
@@ -65,10 +71,13 @@
                         </div>
                     </div>
                 </form>
-                <button type="button" class="btn btn-outline-dark hide-while-loading" id="filter-btn" hidden>Filter</button>
-                <button type="button" class="btn btn-outline-dark hide-while-loading" id="clear-btn" hidden>Clear</button>
+                <button type="button" class="btn btn-outline-dark hide-while-loading" id="filter-btn" hidden>Apply filters</button>
+                <button type="button" class="btn btn-outline-dark hide-while-loading" id="clear-btn" hidden>Clear filters</button>
+                </details>
+                <div class="d-flex flex-wrap gap-1 my-2" id="mc-active-filters" aria-label="Active filters"></div>
+                <p class="mc-muted" id="mc-result-count" role="status"></p>
                 <div class="table-responsive">
-                    <table id = "creature-table"  class="table table-striped hide-while-loading" hidden>
+                    <table id = "creature-table"  class="table table-striped mc-record-list hide-while-loading" hidden>
                         <thead>
                         <tr>
                             <th>Name</th>
@@ -84,24 +93,30 @@
                     </table>
                 </div>
             </div>
-    <div class="col-lg gx-5 align-items-center pad-up overflow-auto">
-        <h2 class="text-center align-self-center" id="creatureNameBig" pad-up>Creature</h2>
-        <button type="button" class="btn btn-outline-dark" id="update-btn">Save Changes</button>
-        <button type="button" class="btn btn-outline-dark" id="delete-btn">Delete Creature</button>
-        <button type="button" class="btn btn-outline-dark" id="clone-btn">Clone Creature</button>
-        <button type="button" class="btn btn-outline-dark" id="create-btn">New Creature</button>
-        <button type="button" class="btn btn-outline-dark" id="import-btn">Import Creature</button>
+    <div class="mc-panel mc-detail-pane">
+        <h2 class="mc-panel-heading">Stat block</h2>
+        <button type="button" class="btn mc-secondary mc-library-back" id="mc-library-back">← Back to creatures</button>
+        <h2 class="mc-record-title" id="creatureNameBig" pad-up>Creature</h2>
+
+        <details class="mb-2">
+            <summary class="mc-muted">More creature actions</summary>
+            <button type="button" class="btn btn-outline-dark mt-2" id="clone-btn">Clone Creature</button>
+            <button type="button" class="btn btn-outline-dark mt-2" id="delete-btn">Delete Creature</button>
+        </details>
         <hr/>
-        <form>
+        <button type="button" class="btn mc-secondary my-2" id="mc-edit-record" hidden>Edit creature</button>
+        <section id="mc-record-summary" aria-live="polite"><p class="mc-muted">Select a record to view its details.</p></section>
+        <p class="mc-feedback mt-2" id="mc-record-feedback" role="status"></p>
+        <form id="mc-record-editor" hidden>
             <ul class="nav nav-tabs"  role="tablist">
                 <li class="nav-item npc-tab" role="presentation">
-                    <button class="nav-link active link-dark" id="details-tab" data-bs-toggle="tab" data-bs-target="#details" type="button" role="tab" aria-controls="details" aria-selected="true">Details</button>
+                    <button class="nav-link active link-dark" id="details-tab" data-bs-toggle="tab" data-bs-target="#details" type="button" role="tab" aria-controls="details" aria-selected="true">Overview</button>
                 </li>
                 <li class="nav-item npc-tab" role="presentation">
-                    <button class="nav-link link-dark" id="stats-tab" data-bs-toggle="tab" data-bs-target="#stats" type="button" role="tab" aria-controls="stats" aria-selected="false">Stats</button>
+                    <button class="nav-link link-dark" id="stats-tab" data-bs-toggle="tab" data-bs-target="#stats" type="button" role="tab" aria-controls="stats" aria-selected="false">Stats &amp; defenses</button>
                 </li>
                 <li class="nav-item npc-tab" role="presentation">
-                    <button class="nav-link link-dark" id="skills-tab" data-bs-toggle="tab" data-bs-target="#skills" type="button" role="tab" aria-controls="skills" aria-selected="false">Skills</button>
+                    <button class="nav-link link-dark" id="skills-tab" data-bs-toggle="tab" data-bs-target="#skills" type="button" role="tab" aria-controls="skills" aria-selected="false">Skills &amp; saves</button>
                 </li>
                 <li class="nav-item npc-tab" role="presentation">
                     <button class="nav-link link-dark" id="actions-tab" data-bs-toggle="tab" data-bs-target="#actions" type="button" role="tab" aria-controls="actions" aria-selected="false">Actions</button>
@@ -111,6 +126,9 @@
                 </li>
                 <li class="nav-item pc-tab" role="presentation" hidden>
                     <button class="nav-link link-dark" id="pc-tab" data-bs-toggle="tab" data-bs-target="#pc" type="button" role="tab" aria-controls="pc" aria-selected="false">PC Details</button>
+                </li>
+                <li class="nav-item npc-tab" role="presentation">
+                    <button class="nav-link link-dark" id="mc-notes-tab" data-bs-toggle="tab" data-bs-target="#mc-notes" type="button" role="tab" aria-controls="mc-notes" aria-selected="false">Notes &amp; details</button>
                 </li>
             </ul>
             <div class="tab-content">
@@ -123,10 +141,7 @@
                         <label for="sourceBook" class="form-label">Source Book</label>
                         <input class="form-control" id="sourceBook">
                     </div>
-                    <div class="mb-3">
-                        <label for="creatureDescription" class="form-label">Description</label>
-                        <textarea class="form-control" id="creatureDescription" rows="3"></textarea>
-                    </div>
+
                     <div class="row">
                         <div class="mb-3 col">
                             <label for="size" class="form-label">Size</label>
@@ -160,6 +175,10 @@
                         </div>
                     </div>
                 </div>
+<div class="tab-pane fade" id="mc-notes" role="tabpanel" aria-labelledby="mc-notes-tab"><div class="mb-3">
+                        <label for="creatureDescription" class="form-label">Description</label>
+                        <textarea class="form-control" id="creatureDescription" rows="3"></textarea>
+                    </div></div>
                 <div class="tab-pane fade" id="stats" role="tabpanel" aria-labelledby="stats-tab">
                     <div class="row">
                         <div class="mb-3 col">
@@ -583,7 +602,11 @@
                     </div>
                 </div>
             </div>
-        </form>
+        <div class="mc-save-bar d-flex flex-wrap gap-2 align-items-center">
+        <button type="button" class="btn mc-primary" id="update-btn">Save changes</button>
+        <button type="button" class="btn btn-outline-dark" id="mc-cancel-edit">Cancel</button>
+        <span id="mc-draft-status" role="status" class="mc-feedback"></span>
+    </div></form>
     </div>
     <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasViewSpell" aria-labelledby="offcanvasViewSpellLabel">
         <div class="offcanvas-header">
@@ -885,7 +908,8 @@
             </select>
             <div class = "pad-up-mini">
                 <button type="button" class="btn btn-outline-dark" id="search-btn">Search</button>
-                <button type="button" class="btn btn-outline-dark" id="import-finish-btn">Import Selected</button>
+                <div id="mc-import-preview" class="mc-muted my-2" role="status">Select a result to preview it.</div>
+                <button type="button" class="btn btn-outline-dark" id="import-finish-btn" disabled>Import Selected</button>
             </div>
             <div class="table-responsive table-short pad-up-mini">
                 <table id = "template-table"  class="table table-striped">

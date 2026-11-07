@@ -118,6 +118,18 @@ export default class SpellClient extends BindingClass {
             }
         }
 
+    async getTemplate(slug) {
+        try {
+            const token = await this.getTokenOrThrow('Sign in to preview imports.');
+            const response = await this.axiosClient.get(`spellTemplate/${encodeURIComponent(slug)}`, {
+                headers: {Authorization: `Bearer ${token}`},
+            });
+            return response.data.templateSpell;
+        } catch (error) {
+            this.handleError(error);
+        }
+    }
+
     async createTemplate(slug, errorCallback) {
             try {
                 const token = await this.getTokenOrThrow("Encountered token error trying to call Spell Template endpoint.");

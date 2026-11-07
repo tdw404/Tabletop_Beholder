@@ -11,7 +11,6 @@ const COGNITO_NAME_KEY = 'cognito-name';
 const COGNITO_EMAIL_KEY = 'cognito-name-results';
 const SESSION_LIST_KEY = 'session-list-key';
 const SELECTED_SESSION_ID_KEY = 'selected-session-id-key';
-const ENCOUNTER_LIST_KEY = 'encounter-list-key';
 const SELECTED_ENCOUNTER_ID_KEY = 'selected-encounter-id-key';
 const ENCOUNTER_KEY = 'encounter-key';
 const CREATURE_MAP_KEY = 'creature-map-key';
@@ -23,7 +22,6 @@ const EMPTY_DATASTORE_STATE = {
     [COGNITO_EMAIL_KEY]: '',
     [SESSION_LIST_KEY]: '',
     [SELECTED_SESSION_ID_KEY]: '0',
-    [ENCOUNTER_LIST_KEY]: '',
     [SELECTED_ENCOUNTER_ID_KEY]: '',
     [ENCOUNTER_KEY]: '',
     [CREATURE_MAP_KEY]: '',
@@ -46,7 +44,7 @@ const EMPTY_DATASTORE_STATE = {
                                 'mapToObj', 'attachEventListeners',
                                 'populateEncounters', 'launchEncounter',
                                 'hideElementsPlay', 'showElementsPlay',
-                                'rollInitiative', 'assignInitiative',
+                                'assignInitiative',
                                 'goEncounter', 'populateAccordions',
                                 'nextTurn', 'viewStats',
                                 'modCalc', 'damageValue',
@@ -76,11 +74,14 @@ const EMPTY_DATASTORE_STATE = {
             this.populateSessions();
             this.attachEventListeners();
             this.showElements();
+            const encounterId = new URLSearchParams(location.search).get('encounter');
+            await this.populateEncounters(document.getElementById('session-list').value);
+            if (encounterId) await this.launchEncounter(encounterId);
         }
     }
 
     attachEventListeners() {
-    document.getElementById('launch-session-btn').addEventListener('click', this.launchEncounter);
+    document.getElementById('launch-session-btn').addEventListener('click', () => this.launchEncounter());
     document.getElementById('initiative-btn').addEventListener('click', this.assignInitiative);
     document.getElementById('go-btn').addEventListener('click', this.goEncounter);
     document.getElementById('next-turn-btn').addEventListener('click', this.nextTurn);
@@ -89,10 +90,30 @@ const EMPTY_DATASTORE_STATE = {
     document.getElementById('apply-effect-btn').addEventListener('click', this.addEffectFinish);
     document.getElementById('remove-effect-btn').addEventListener('click', this.removeEffect);
     document.getElementById('notifications-btn').addEventListener('click', this.showNotifications);
+    const saveDialog = document.getElementById('mc-save-dialog');
+    this.pendingSaves = [];
+    document.getElementById('mc-pending-saves').addEventListener('click', () => saveDialog.showModal());
+    document.getElementById('mc-save-later').addEventListener('click', () => saveDialog.close());
+    saveDialog.addEventListener('close', () => {
+        const pending = document.getElementById('mc-pending-saves');
+        (pending.hidden ? document.getElementById('next-turn-btn') : pending).focus();
+    });
+    const compact = window.matchMedia('(max-width: 700px)');
+    const order = document.getElementById('mc-turn-list');
+    const desktopOrder = order.parentElement;
+    const sheet = document.getElementById('mc-order-sheet');
+    const placeOrder = () => {
+        (compact.matches ? document.getElementById('mc-order-mobile') : desktopOrder).append(order);
+        if (!compact.matches) bootstrap.Offcanvas.getInstance(sheet)?.hide();
+    };
+    compact.addEventListener('change', placeOrder);
+    placeOrder();
     document.getElementById('session-list').addEventListener('change', (event) => {
                                                 if (event.target.closest('select')) {this.populateEncounters(event.target.value)}});
-    document.getElementById('offcanvas-init-body').addEventListener('click', (event) => {
-                                                    if (event.target.closest('button')) {this.rollInitiative(event.target.dataset.id)}});
+    document.getElementById('encounter-list').addEventListener('change', event => this.previewEncounter(event.target.value));
+    document.getElementById('mc-reassign').addEventListener('click', () => {
+        if (window.confirm('Replace the current turn order and restart at round 1?')) this.openInitiative();
+    });
     }
 
     populateSessions() {
@@ -111,153 +132,230 @@ const EMPTY_DATASTORE_STATE = {
     }
 
     async populateEncounters(sessionId) {
-        if(sessionId != this.dataStore.get(SELECTED_SESSION_ID_KEY)) {
-            var dropDown = document.getElementById("encounter-list");
-            this.dataStore.set([SELECTED_SESSION_ID_KEY], sessionId);
-            this.hideElements();
-            var encounterList = await this.runClient.getEncounterList(sessionId);
-            this.dataStore.set([ENCOUNTER_LIST_KEY], encounterList);
-            for (var i = dropDown.options.length; i > 0; i--) {
-                        dropDown.options.remove(i);
-                    }
-            for (var encounter of encounterList) {
-                var option = document.createElement('option');
-                    option.value = encounter.objectId;
-                    option.innerHTML = encounter.objectName;
-                    option.setAttribute('dataset-id', encounter.objectId);
-                    option.classList.add("encounter-dropdown");
-                    dropDown.appendChild(option);
-            };
-            this.showElements();
-        }
+        const picker = document.getElementById('encounter-list');
+        const feedback = document.getElementById('mc-launch-roster');
+        this.dataStore.set(SELECTED_SESSION_ID_KEY, sessionId);
+        picker.options.length = 1;
+        this.previewEncounter('0');
+        feedback.textContent = 'Loading encounters…';
+        const encounters = await this.runClient.getEncounterList(sessionId);
+        if (this.dataStore.get(SELECTED_SESSION_ID_KEY) !== sessionId) return;
+        for (const encounter of encounters || []) picker.add(new Option(encounter.objectName, encounter.objectId));
+        feedback.textContent = encounters?.length ? 'Select an encounter to see its roster.'
+            : encounters ? 'No encounters in this session.' : 'Could not load encounters.';
     }
 
-    async launchEncounter() {
-        if(document.getElementById('encounter-list').value != '0') {
-            this.hideElements();
-            var warned = false;
-            var encounter = await this.encounterClient.getSingleEncounter(document.getElementById('encounter-list').value, (error) => {
-               document.getElementById('offcanvas-warn-body').innerText = error.message;
-               var myOffcanvas = document.getElementById('offcanvasWarn');
-               var bsOffcanvas = new bootstrap.Offcanvas(myOffcanvas);
-               bsOffcanvas.show();
-               this.showElements();
-               warned = true;
-            });
-            if(!warned) {
-                this.dataStore.set([ENCOUNTER_KEY], encounter);
-                document.getElementById('encounterNameBig').innerHTML = encounter.objectName;
-                if(!encounter.turnQueue && encounter.creatureMap) {
-                    this.dataStore.set([CREATURE_MAP_KEY], new Map(Object.entries(encounter.creatureMap)));
-                    this.showElements();
-                    var myOffcanvas = document.getElementById('offcanvasInitiative');
-                    var initBody = document.getElementById('offcanvas-init-body');
-                    initBody.innerHTML = '';
-                    for(var [key, value] of new Map(Object.entries(encounter.creatureMap))) {
-                        var pcStatus = '';
-                        if (value.isPC) { pcStatus = 'PC'}
-                        const initRow = `
-                        <div class = "row">
-                                        <div class="col-sm-4 mb-3">
-                                            <label for="name_${value.encounterCreatureId}" class="form-label">Name</label>
-                                            <input class="form-control" id="name_${value.encounterCreatureId}" readonly value = "${value.encounterCreatureName}">
-                                        </div>
-                                        <div class="col-sm-2 mb-3">
-                                            <label for="roll_${value.encounterCreatureId}" class="form-label">Roll</label>
-                                            <input class="form-control initiative-roll" id="roll_${value.encounterCreatureId}" data-id = "${value.encounterCreatureId}" type="number" data-bind="value:replyNumber">
-                                        </div>
-                                        <div class="col-sm-2 mb-3">
-                                            <label for="init_${value.encounterCreatureId}" class="form-label">Initiative</label>
-                                            <input class="form-control initiative-rank" id="init_${value.encounterCreatureId}" data-id = "${value.encounterCreatureId}" type="number" min="1" data-bind="value:replyNumber">
-                                        </div>
-                                        <div class="col-sm-2 mb-3">
-                                            <label for="pc_${value.encounterCreatureId}" class="form-label">PC</label>
-                                            <div class = "row">
-                                                <div class = "col">
-                                                    <input class="form-control" id="pc_${value.encounterCreatureId}" readonly value = "${pcStatus}">
-                                                </div>
-                                                <div class = "col">
-                                                    <button type="button" class="btn btn-outline-dark align-bottom" data-id = "${value.encounterCreatureId}" id="roll-btn-_${value.encounterCreatureId}">Roll</button>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                        `
-                        initBody.insertAdjacentHTML('afterbegin', initRow);
-                    }
-                    var bsOffcanvas = new bootstrap.Offcanvas(myOffcanvas);
-                    bsOffcanvas.show();
-                } else if(encounter.turnQueue) {
-                    this.populateAccordions();
-                } else {
-                    this.showElements();
-                    document.getElementById('offcanvas-warn-body').innerText = "This encounter has no creatures. Please add some before trying to launch it.";
-                   var myOffcanvas = document.getElementById('offcanvasWarn');
-                   var bsOffcanvas = new bootstrap.Offcanvas(myOffcanvas);
-                   bsOffcanvas.show();
-                }
+    hasSavedOrder(encounter) {
+        const roster = Object.keys(encounter.creatureMap || {});
+        const order = encounter.turnQueue;
+        return Boolean(roster.length && order?.length === roster.length &&
+            new Set(order).size === roster.length && order.every(id => encounter.creatureMap[id]));
+    }
 
+    async previewEncounter(id) {
+        const version = this.previewVersion = (this.previewVersion || 0) + 1;
+        const button = document.getElementById('launch-session-btn');
+        const preview = document.getElementById('mc-launch-roster');
+        button.disabled = true;
+        button.textContent = 'Set initiative';
+        preview.textContent = '';
+        if (id === '0') return;
+        preview.textContent = 'Loading roster…';
+        const encounter = await this.encounterClient.getSingleEncounter(id);
+        if (version !== this.previewVersion) return;
+        const names = Object.values(encounter?.creatureMap || {}).map(creature => creature.encounterCreatureName);
+        preview.textContent = !encounter ? 'Could not load this encounter.'
+            : names.length ? names.join(' · ') : 'Add creatures in the Encounter Library before launching.';
+        if (!names.length) return;
+        button.textContent = this.hasSavedOrder(encounter) ? 'Resume combat' : 'Set initiative';
+        button.disabled = false;
+    }
+
+    async launchEncounter(encounterId = document.getElementById('encounter-list').value) {
+        if (!encounterId || encounterId === '0' || this.loadingEncounter) return;
+        this.loadingEncounter = true;
+        this.hideElements();
+        const feedback = document.getElementById('mc-combat-feedback');
+        feedback.textContent = '';
+        try {
+            const encounter = await this.encounterClient.getSingleEncounter(encounterId);
+            if (!encounter) {
+                feedback.textContent = 'Could not load this encounter. Choose another encounter or try again.';
+                return;
             }
+            const roster = Object.entries(encounter.creatureMap || {});
+            if (!roster.length) {
+                feedback.textContent = 'Add creatures in the Encounter Library before launching.';
+                return;
+            }
+            if (this.dataStore.get(ENCOUNTER_KEY)?.objectId !== encounter.objectId) {
+                this.pendingSaves = [];
+                this.renderSaveReminders();
+            }
+            this.dataStore.set([ENCOUNTER_KEY], encounter);
+            this.inspectId = null;
+            document.getElementById('encounterNameBig').textContent = encounter.objectName;
+            if (this.hasSavedOrder(encounter)) {
+                this.rememberEncounter(encounter);
+                this.populateAccordions();
+            } else {
+                this.openInitiative();
+            }
+        } finally {
+            this.loadingEncounter = false;
+            this.showElements();
+            if (!document.querySelector('.mc-combat-grid').hidden) this.hideElementsPlay();
         }
     }
 
-    rollInitiative(encounterCreatureId) {
-        var creature = this.dataStore.get(CREATURE_MAP_KEY).get(encounterCreatureId);
-        var target = 'roll_' + encounterCreatureId;
-        document.getElementById(target).value = Math.floor(Math.random() * (20) + 1) + this.modCalc(creature?.statMap?.dexterity);
+    rememberEncounter(encounter) {
+        const url = new URL(location.href);
+        url.searchParams.set('encounter', encounter.objectId);
+        history.replaceState(null, '', url);
+        try { localStorage.setItem('beholder:lastEncounter', encounter.objectId); } catch {}
+    }
+
+    openInitiative() {
+        const encounter = this.dataStore.get(ENCOUNTER_KEY);
+        const roster = Object.entries(encounter.creatureMap || {});
+        this.initiative = roster.map(([id, creature]) => ({
+            id,
+            name: creature.encounterCreatureName,
+            modifier: this.modCalc(creature.statMap?.dexterity),
+            total: NaN,
+        }));
+        const body = document.getElementById('offcanvas-init-body');
+        body.replaceChildren();
+        for (const entry of this.initiative) {
+            const row = document.createElement('div');
+            row.className = 'mc-initiative-row';
+            const name = document.createElement('strong');
+            name.textContent = entry.name;
+            const label = document.createElement('label');
+            label.textContent = 'Total';
+            const input = document.createElement('input');
+            input.type = 'number';
+            input.step = '1';
+            input.className = 'form-control';
+            input.setAttribute('aria-label', entry.name + ' initiative total');
+            input.addEventListener('input', () => {
+                entry.total = input.valueAsNumber;
+                this.previewInitiative();
+            });
+            entry.input = input;
+            label.append(input);
+            const roll = document.createElement('button');
+            roll.type = 'button';
+            roll.className = 'btn btn-outline-dark';
+            roll.textContent = 'Roll';
+            roll.setAttribute('aria-label', 'Roll initiative for ' + entry.name);
+            roll.addEventListener('click', () => {
+                this.rollInitiative(entry);
+                this.previewInitiative();
+            });
+            row.append(name, label, roll);
+            body.append(row);
+        }
+        this.previewInitiative();
+        bootstrap.Offcanvas.getOrCreateInstance(document.getElementById('offcanvasInitiative')).show();
+    }
+
+    rollInitiative(entry) {
+        entry.total = 1 + Math.floor(Math.random() * 20) + entry.modifier;
+        entry.input.value = entry.total;
     }
 
     assignInitiative() {
-        var initList = [];
-        for(var result of document.getElementsByClassName('initiative-roll')) {
-            var entry = {};
-            entry.roll = result.value;
-            entry.encounterCreatureId = result.dataset.id;
-            initList.push(entry);
+        this.initiative.forEach(entry => this.rollInitiative(entry));
+        this.previewInitiative();
+    }
+
+    previewInitiative(focusEntry) {
+        this.initiative.sort((a, b) => (b.total || 0) - (a.total || 0));
+        const ordered = this.initiative.filter(entry => Number.isSafeInteger(entry.total));
+        const list = document.getElementById('mc-initiative-preview');
+        list.replaceChildren();
+        for (const [index, entry] of ordered.entries()) {
+            const item = document.createElement('li');
+            item.className = 'my-2';
+            item.textContent = entry.name + ' · ' + entry.total + ' ';
+            const previous = ordered[index - 1];
+            if (previous?.total === entry.total) {
+                const up = document.createElement('button');
+                up.type = 'button';
+                up.className = 'btn btn-sm btn-outline-dark';
+                up.textContent = 'Move up in tie';
+                up.setAttribute('aria-label', 'Move ' + entry.name + ' ahead of ' + previous.name);
+                up.addEventListener('click', () => {
+                    const a = this.initiative.indexOf(previous);
+                    const b = this.initiative.indexOf(entry);
+                    [this.initiative[a], this.initiative[b]] = [this.initiative[b], this.initiative[a]];
+                    this.previewInitiative(entry);
+                });
+                item.append(up);
+                if (focusEntry === entry) queueMicrotask(() => up.focus());
+            } else if (focusEntry === entry) {
+                queueMicrotask(() => entry.input.focus());
+            }
+            list.append(item);
         }
-        initList = initList.sort(function(a,b) {
-            return b.roll - a.roll
-        });
-        var rollMap = new Map();
-        var i = 1;
-        for(var entry of initList) {
-            rollMap.set(entry.encounterCreatureId, i);
-            i ++;
-        }
-        for(var [key, value] of rollMap) {
-            document.getElementById('init_' + key).value = value;
-        }
+        this.initiativeOrder = ordered.map(entry => entry.id);
+        const complete = ordered.length > 0 && ordered.length === this.initiative.length;
+        document.getElementById('go-btn').disabled = !complete || this.combatPending;
+        document.getElementById('mc-initiative-feedback').textContent = complete ? '' : 'Enter a whole number for each combatant.';
     }
 
     async goEncounter() {
-        var initList = [];
-        for(var result of document.getElementsByClassName('initiative-rank')) {
-            var entry = {};
-            entry.rank = result.value;
-            entry.encounterCreatureId = result.dataset.id;
-            initList.push(entry);
+        const button = document.getElementById('go-btn');
+        if (button.disabled || this.combatPending) return;
+        const encounterId = this.dataStore.get(ENCOUNTER_KEY).objectId;
+        const saved = await this.saveCombat(
+            () => this.runClient.setInitiative(encounterId, this.initiativeOrder),
+            {followTurn:true, feedbackId:'mc-initiative-feedback'}
+        );
+        if (saved) {
+            bootstrap.Offcanvas.getInstance(document.getElementById('offcanvasInitiative')).hide();
+            this.rememberEncounter(this.dataStore.get(ENCOUNTER_KEY));
+        } else {
+            button.disabled = this.combatUncertain;
         }
-        initList = initList.sort(function(a,b) {
-                    return a.rank - b.rank
-                });
-        var queueList = [];
-        for(var element of initList) {
-            queueList.push(element.encounterCreatureId);
+    }
+
+    async saveCombat(request, {followTurn = false, feedbackId = 'mc-combat-feedback'} = {}) {
+        if (this.combatPending || this.combatUncertain) return false;
+        const feedback = document.getElementById(feedbackId);
+        const previous = this.dataStore.get(ENCOUNTER_KEY);
+        this.combatPending = true;
+        document.querySelectorAll('#next-turn-btn, #go-btn, #apply-damage-btn, #apply-heal-btn, #apply-effect-btn, #remove-effect-btn, .ko-btn, .kill-btn')
+            .forEach(button => {button.disabled = true;});
+        feedback.textContent = 'Saving…';
+        try {
+            const updated = await request();
+            if (!updated) {
+                const refreshed = await this.encounterClient.getSingleEncounter(previous.objectId);
+                if (!refreshed) this.combatUncertain = true;
+                if (refreshed?.turnQueue?.length && refreshed.turnQueue.every(id => refreshed.creatureMap?.[id])) {
+                    this.dataStore.set([ENCOUNTER_KEY], refreshed);
+                    this.populateAccordions();
+                }
+                feedback.textContent = refreshed
+                    ? 'Save was not confirmed. The saved encounter was reloaded. Check it before retrying.'
+                    : 'Could not confirm the save. Reload this page before trying again.';
+                return false;
+            }
+            if (followTurn) {
+                this.inspectId = null;
+                this.dataStore.set([SELECTED_CREATURE_ID_KEY], '');
+            }
+            this.dataStore.set([ENCOUNTER_KEY], updated);
+            this.populateAccordions();
+            feedback.textContent = 'Saved';
+            return true;
+        } finally {
+            this.combatPending = false;
+            document.querySelectorAll('#next-turn-btn, #apply-damage-btn, #apply-heal-btn, #apply-effect-btn, #remove-effect-btn, .ko-btn, .kill-btn')
+                .forEach(button => {button.disabled = Boolean(this.combatUncertain);});
         }
-        var warned = false;
-        var encounter = await this.runClient.setInitiative(this.dataStore.get(ENCOUNTER_KEY).objectId,
-                                                     queueList, (error) => {
-                           document.getElementById('offcanvas-warn-body').innerText = error.message;
-                           var myOffcanvas = document.getElementById('offcanvasWarn');
-                           var bsOffcanvas = new bootstrap.Offcanvas(myOffcanvas);
-                           bsOffcanvas.show();
-                           this.showElements();
-                           warned = true;
-        });
-        this.dataStore.set([ENCOUNTER_KEY], encounter);
-        this.hideElements();
-        document.getElementById('offcanvas-init-close').click();
-        this.populateAccordions();
     }
 
     populateAccordions() {
@@ -286,10 +384,10 @@ const EMPTY_DATASTORE_STATE = {
                 status = "Dead";
             };
             var accordionItem = `
-               <div class="accordion-item">
+               <div class="accordion-item" data-combatant-panel="${encounterCreatureId}">
                    <h2 class="accordion-header" id="heading_${encounterCreatureId}">
                        <button id="acc_button_${encounterCreatureId}" class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse_${encounterCreatureId}" aria-expanded="false" aria-controls="collapse_${encounterCreatureId}">
-                           ${creatureName}
+                           <span></span>
                        </button>
                    </h2>
                    <div id="collapse_${encounterCreatureId}" class="accordion-collapse collapse" aria-labelledby="heading_${encounterCreatureId}" data-bs-parent="#creatureAccordion">
@@ -376,31 +474,38 @@ const EMPTY_DATASTORE_STATE = {
                    </div>
                </div>`
                accordion.insertAdjacentHTML('afterbegin', accordionItem);
+               document.querySelector('#acc_button_' + CSS.escape(encounterCreatureId) + ' span').textContent = creatureName;
+               const body = document.getElementById('collapse_' + encounterCreatureId).firstElementChild;
+               const reminders = (encounter.messageQueue || []).filter(message => message.startsWith('[' + creature.encounterCreatureName + ']') || message.endsWith('for [' + creature.encounterCreatureName + '].'));
+               for (const message of reminders) {
+                   const notice = document.createElement('p');
+                   notice.className = 'mc-feedback';
+                   notice.textContent = message;
+                   body.prepend(notice);
+               }
                this.populateSpells(encounterCreatureId);
                this.populateActions(encounterCreatureId);
                this.populateEffects(encounterCreatureId);
         }
-         var notifications = document.getElementById('notification-list');
-         notifications.innerHTML = '';
-         if(encounter?.messageQueue?.length > 0) {
-            for(var message of encounter.messageQueue) {
-                var messageLine = `<li class="list-group-item">${message}</li>`
-            }
-            notifications.insertAdjacentHTML('afterbegin', messageLine);
-            document.getElementById('notifications-btn').innerHTML = "Notifications (" + encounter.messageQueue.length +")";
-             } else {
-            document.getElementById('notifications-btn').innerHTML = "Notifications";
-             }
+        const notifications = document.getElementById('notification-list');
+        const messages = encounter.messageQueue || [];
+        notifications.replaceChildren(...messages.map(message => {
+            const item = document.createElement('li');
+            item.className = 'list-group-item';
+            item.textContent = message;
+            return item;
+        }));
+        document.getElementById('notifications-btn').textContent = messages.length
+            ? 'Notifications (' + messages.length + ')' : 'Notifications';
+        document.getElementById('roundNumber').textContent = 'Round ' + encounter.encounterRound;
+        document.getElementById('mc-active').textContent = creatureMap.get(turnQueue[0]).encounterCreatureName;
+        document.getElementById('mc-current-card').replaceChildren(this.turnCard(creatureMap.get(turnQueue[0]), true));
+        const list = document.getElementById('mc-turn-list');
+        list.replaceChildren(...turnQueue.map((id, index) => {
+            return this.turnCard(creatureMap.get(id), index === 0, id);
+        }));
         accordion.hidden = false;
-        if(this.dataStore.get(SELECTED_CREATURE_ID_KEY)) {
-            document.getElementById('collapse_' + this.dataStore.get(SELECTED_CREATURE_ID_KEY)).classList.add('show');
-            document.getElementById('acc_button_' + this.dataStore.get(SELECTED_CREATURE_ID_KEY)).classList.remove('collapsed');
-            this.dataStore.set([SELECTED_CREATURE_ID_KEY], '');
-        } else {
-            document.getElementById('collapse_' + turnQueue[0]).classList.add('show');
-            document.getElementById('acc_button_' + turnQueue[0]).classList.remove('collapsed');
-        }
-        document.getElementById('roundNumber').innerHTML = `Round: ${encounter.encounterRound}`
+        this.inspectCombatant(turnQueue.includes(this.inspectId) ? this.inspectId : turnQueue[0]);
         for(var btn of document.getElementsByClassName('stats-btn')) {
             btn.addEventListener('click', (event) => {
                                     if (event.target.closest('button')) {this.viewStats(event.target.dataset.id)}});
@@ -574,17 +679,121 @@ const EMPTY_DATASTORE_STATE = {
       }
     }
 
+    turnCard(creature, current, id) {
+        const card = document.createElement('div');
+        card.className = 'mc-turn-card';
+        card.classList.toggle('mc-turn-current', current);
+        card.classList.toggle('mc-turn-dead', Boolean(creature.dead));
+        const title = document.createElement(id ? 'button' : 'div');
+        title.className = 'mc-turn-card-title';
+        if (id) {
+            title.type = 'button';
+            title.dataset.combatant = id;
+            if (current) title.setAttribute('aria-current', 'step');
+            title.addEventListener('click', () => {
+                this.inspectCombatant(id);
+                bootstrap.Offcanvas.getInstance(document.getElementById('mc-order-sheet'))?.hide();
+            });
+        }
+        const name = document.createElement('strong');
+        name.textContent = creature.encounterCreatureName;
+        const hp = document.createElement('small');
+        hp.textContent = (creature.currentHitPoints ?? '—') + ' / ' + (creature.hitPoints ?? '—') + ' HP';
+        title.append(name, hp);
+        card.append(title);
+        const tags = document.createElement('div');
+        tags.className = 'mc-turn-tags';
+        const badge = (label, style = '') => {
+            const element = document.createElement('span');
+            element.className = 'mc-status-tag ' + style;
+            element.textContent = label;
+            return element;
+        };
+        if (creature.dead) tags.append(badge('☠ Dead', 'mc-dead-tag'));
+        else if (creature.knockedOut) tags.append(badge('◐ Unconscious', 'mc-ko-tag'));
+        const effects = Object.values(creature.activeEffects || {}).filter(Boolean);
+        const effectTag = effect => badge(effect.effectName + (effect.turnDuration == null ? '' :
+            ' · ' + effect.turnDuration + (Number(effect.turnDuration) === 1 ? ' turn' : ' turns')));
+        tags.append(...effects.slice(0, 2).map(effectTag));
+        if (effects.length > 2) {
+            const extra = document.createElement('details');
+            const summary = document.createElement('summary');
+            summary.textContent = '+' + (effects.length - 2) + ' more';
+            extra.append(summary, ...effects.slice(2).map(effectTag));
+            tags.append(extra);
+        }
+        if (tags.childNodes.length) card.append(tags);
+        return card;
+    }
+
+    inspectCombatant(id) {
+        this.inspectId = id;
+        document.querySelectorAll('[data-combatant-panel]').forEach(panel => {
+            const selected = panel.dataset.combatantPanel === id;
+            panel.hidden = !selected;
+            panel.querySelector('.accordion-collapse').classList.toggle('show', selected);
+            const heading = panel.querySelector('.accordion-button');
+            heading.classList.remove('collapsed');
+            heading.setAttribute('aria-expanded', 'true');
+            heading.removeAttribute('data-bs-toggle');
+            heading.disabled = true;
+        });
+        document.querySelectorAll('[data-combatant]').forEach(button => {
+            button.setAttribute('aria-pressed', button.dataset.combatant === id);
+        });
+    }
+
     async nextTurn() {
-        document.getElementById('spinner').hidden = false;
-        document.getElementById('spinner-label').hidden = false;
-        document.getElementById('creatureAccordion').hidden = true;
-        var encounter = this.dataStore.get(ENCOUNTER_KEY);
-        encounter = await this.runClient.nextTurn(encounter.objectId);
-        this.dataStore.set([ENCOUNTER_KEY], encounter);
-        document.getElementById('spinner').hidden = true;
-        document.getElementById('spinner-label').hidden = true;
-        document.getElementById('creatureAccordion').hidden = false;
-        this.populateAccordions();
+        const encounter = this.dataStore.get(ENCOUNTER_KEY);
+        const previous = encounter.creatureMap[encounter.turnQueue[0]];
+        const saved = await this.saveCombat(() => this.runClient.nextTurn(encounter.objectId), {followTurn:true});
+        if (!saved) return;
+        const updated = this.dataStore.get(ENCOUNTER_KEY);
+        const current = updated.creatureMap[updated.turnQueue[0]];
+        const reminders = [];
+        for (const message of updated.messageQueue || []) {
+            const match = message.match(/^\[(.+?)\] needs to roll a \[(.*?)\] save versus \[([0-7]+)\], against \[(.*?)\]'s \[(.*?)\] effect\.$/);
+            if (!match) continue;
+            const [, name, ability, dc, , effect] = match;
+            const timing = previous.encounterCreatureName === current.encounterCreatureName ? '' :
+                name === current.encounterCreatureName ? 'Start of turn' :
+                name === previous.encounterCreatureName ? 'End of turn' : '';
+            // The legacy API serializes effect save DCs in octal.
+            reminders.push([name, effect, timing, ability + ' save DC ' + Number.parseInt(dc, 8)].filter(Boolean).join(' · '));
+        }
+        if (current.isPC && current.knockedOut && !current.dead && current.currentHitPoints === 0) {
+            reminders.push(current.encounterCreatureName + ' · Start of turn · Death saving throw');
+        }
+        this.pendingSaves.push(...reminders);
+        this.renderSaveReminders();
+        if (reminders.length) document.getElementById('mc-save-dialog').showModal();
+    }
+
+    renderSaveReminders() {
+        const pending = document.getElementById('mc-pending-saves');
+        const dialog = document.getElementById('mc-save-dialog');
+        pending.hidden = !this.pendingSaves.length;
+        pending.textContent = this.pendingSaves.length + (this.pendingSaves.length === 1 ? ' save pending' : ' saves pending');
+        const list = document.getElementById('mc-save-list');
+        list.replaceChildren(...this.pendingSaves.map((reminder, index) => {
+            const item = document.createElement('li');
+            item.className = 'list-group-item mc-controls justify-content-between';
+            const label = document.createElement('span');
+            label.textContent = reminder;
+            const handled = document.createElement('button');
+            handled.type = 'button';
+            handled.className = 'btn mc-primary';
+            handled.textContent = 'Mark handled';
+            handled.setAttribute('aria-label', 'Mark handled: ' + reminder);
+            handled.addEventListener('click', () => {
+                this.pendingSaves.splice(index, 1);
+                this.renderSaveReminders();
+                if (this.pendingSaves.length) list.querySelector('button')?.focus();
+                else dialog.close();
+            });
+            item.append(label, handled);
+            return item;
+        }));
     }
 
     async damageValue(targetID) {
@@ -596,22 +805,22 @@ const EMPTY_DATASTORE_STATE = {
     }
 
     async applyDamage() {
-        document.getElementById('spinner').hidden = false;
-        document.getElementById('spinner-label').hidden = false;
-        document.getElementById('creatureAccordion').hidden = true;
-        var encounter = this.dataStore.get(ENCOUNTER_KEY);
-        var damageValue = document.getElementById('damage-value').value;
-        if (damageValue == '' || damageValue < 0) {
-            damageValue = 0;
+        const field = document.getElementById('damage-value');
+        const amount = Number(field.value);
+        if (!field.value || !Number.isSafeInteger(amount) || amount < 1 || amount > 2147483647) {
+            field.setCustomValidity('Enter a positive whole number.');
+            field.reportValidity();
+            field.setCustomValidity('');
+            return;
         }
-        document.getElementById('offcanvas-damage-close').click();
-        encounter = await this.runClient.applyDamage(
-                encounter.objectId, this.dataStore.get(TARGET_CREATURE_ID_KEY), damageValue);
-        this.dataStore.set([ENCOUNTER_KEY], encounter);
-        document.getElementById('spinner').hidden = true;
-        document.getElementById('spinner-label').hidden = true;
-        document.getElementById('creatureAccordion').hidden = false;
-        this.populateAccordions();
+        const encounter = this.dataStore.get(ENCOUNTER_KEY);
+        const target = this.dataStore.get(TARGET_CREATURE_ID_KEY);
+        const saved = await this.saveCombat(() => this.runClient.applyDamage(encounter.objectId, target, amount),
+            {feedbackId:'mc-damage-feedback'});
+        if (saved) {
+            field.value = '';
+            document.getElementById('offcanvas-damage-close').click();
+        }
     }
 
     async healValue(targetID) {
@@ -623,54 +832,32 @@ const EMPTY_DATASTORE_STATE = {
     }
 
     async applyHeal() {
-        document.getElementById('spinner').hidden = false;
-        document.getElementById('spinner-label').hidden = false;
-        document.getElementById('creatureAccordion').hidden = true;
-        var encounter = this.dataStore.get(ENCOUNTER_KEY);
-        var damageValue = document.getElementById('heal-value').value;
-        if (damageValue == '' || damageValue < 0) {
-            damageValue = 0;
+        const field = document.getElementById('heal-value');
+        const amount = Number(field.value);
+        if (!field.value || !Number.isSafeInteger(amount) || amount < 1 || amount > 2147483647) {
+            field.setCustomValidity('Enter a positive whole number.');
+            field.reportValidity();
+            field.setCustomValidity('');
+            return;
         }
-        document.getElementById('offcanvas-heal-close').click();
-        encounter = await this.runClient.heal(
-                encounter.objectId, this.dataStore.get(TARGET_CREATURE_ID_KEY), damageValue);
-        this.dataStore.set([ENCOUNTER_KEY], encounter);
-        document.getElementById('spinner').hidden = true;
-        document.getElementById('spinner-label').hidden = true;
-        document.getElementById('creatureAccordion').hidden = false;
-        this.populateAccordions();
+        const encounter = this.dataStore.get(ENCOUNTER_KEY);
+        const target = this.dataStore.get(TARGET_CREATURE_ID_KEY);
+        const saved = await this.saveCombat(() => this.runClient.heal(encounter.objectId, target, amount),
+            {feedbackId:'mc-heal-feedback'});
+        if (saved) {
+            field.value = '';
+            document.getElementById('offcanvas-heal-close').click();
+        }
     }
 
     async knockOut(targetID) {
-        this.dataStore.set([SELECTED_CREATURE_ID_KEY], targetID);
-        this.dataStore.set([TARGET_CREATURE_ID_KEY], targetID);
-        document.getElementById('spinner').hidden = false;
-        document.getElementById('spinner-label').hidden = false;
-        document.getElementById('creatureAccordion').hidden = true;
-        var encounter = this.dataStore.get(ENCOUNTER_KEY);
-        encounter = await this.runClient.knockOut(
-                            encounter.objectId, this.dataStore.get(TARGET_CREATURE_ID_KEY));
-        this.dataStore.set([ENCOUNTER_KEY], encounter);
-        document.getElementById('spinner').hidden = true;
-        document.getElementById('spinner-label').hidden = true;
-        document.getElementById('creatureAccordion').hidden = false;
-        this.populateAccordions();
+        const encounter = this.dataStore.get(ENCOUNTER_KEY);
+        await this.saveCombat(() => this.runClient.knockOut(encounter.objectId, targetID));
     }
 
     async kill(targetID) {
-        this.dataStore.set([SELECTED_CREATURE_ID_KEY], targetID);
-        this.dataStore.set([TARGET_CREATURE_ID_KEY], targetID);
-        document.getElementById('spinner').hidden = false;
-        document.getElementById('spinner-label').hidden = false;
-        document.getElementById('creatureAccordion').hidden = true;
-        var encounter = this.dataStore.get(ENCOUNTER_KEY);
-        encounter = await this.runClient.kill(
-                            encounter.objectId, this.dataStore.get(TARGET_CREATURE_ID_KEY));
-        this.dataStore.set([ENCOUNTER_KEY], encounter);
-        document.getElementById('spinner').hidden = true;
-        document.getElementById('spinner-label').hidden = true;
-        document.getElementById('creatureAccordion').hidden = false;
-        this.populateAccordions();
+        const encounter = this.dataStore.get(ENCOUNTER_KEY);
+        await this.saveCombat(() => this.runClient.kill(encounter.objectId, targetID));
     }
 
     viewSpell(spellId, encounterCreatureId) {
@@ -866,9 +1053,6 @@ const EMPTY_DATASTORE_STATE = {
     }
 
     async addEffectFinish() {
-        document.getElementById('spinner').hidden = false;
-        document.getElementById('spinner-label').hidden = false;
-        document.getElementById('creatureAccordion').hidden = true;
         var encounter = this.dataStore.get(ENCOUNTER_KEY);
         var encounterCreatureId = this.dataStore.get(SELECTED_CREATURE_ID_KEY);
         var effect = {};
@@ -884,29 +1068,18 @@ const EMPTY_DATASTORE_STATE = {
                 effect.saveOn.push(option.value);
             }
         }
-       encounter = await this.runClient.addEffect(encounter.objectId, encounterCreatureId, effect);
-       this.dataStore.set([ENCOUNTER_KEY], encounter);
-       document.getElementById('offcanvas-effect-close').click()
-       document.getElementById('spinner').hidden = true;
-       document.getElementById('spinner-label').hidden = true;
-       document.getElementById('creatureAccordion').hidden = false;
-       this.populateAccordions();
+        const saved = await this.saveCombat(() => this.runClient.addEffect(encounter.objectId, encounterCreatureId, effect),
+            {feedbackId:'mc-effect-feedback'});
+        if (saved) document.getElementById('offcanvas-effect-close').click();
     }
     
     async removeEffect() {
-        document.getElementById('spinner').hidden = false;
-        document.getElementById('spinner-label').hidden = false;
-        document.getElementById('creatureAccordion').hidden = true;
         var encounterCreatureId = this.dataStore.get(SELECTED_CREATURE_ID_KEY);
         var effectId = this.dataStore.get(SELECTED_EFFECT_ID_KEY);
         var encounter = this.dataStore.get(ENCOUNTER_KEY);
-        encounter = await this.runClient.removeEffect(encounter.objectId, encounterCreatureId, effectId);
-        this.dataStore.set([ENCOUNTER_KEY], encounter);
-        document.getElementById('offcanvas-view-effect-close').click()
-        document.getElementById('spinner').hidden = true;
-        document.getElementById('spinner-label').hidden = true;
-        document.getElementById('creatureAccordion').hidden = false;
-        this.populateAccordions();
+        const saved = await this.saveCombat(() => this.runClient.removeEffect(encounter.objectId, encounterCreatureId, effectId),
+            {feedbackId:'mc-remove-effect-feedback'});
+        if (saved) document.getElementById('offcanvas-view-effect-close').click();
     }
 
     showNotifications() {

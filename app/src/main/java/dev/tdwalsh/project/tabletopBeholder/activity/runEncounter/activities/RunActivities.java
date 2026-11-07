@@ -28,7 +28,7 @@ public class RunActivities {
      */
     public Encounter setInitiative(Encounter encounter, JSONObject body) {
         JSONArray array = body.getJSONArray("queueList");
-        Queue<String> turnQueue = new PriorityQueue<>();
+        Queue<String> turnQueue = new ArrayDeque<>();
         array.forEach(arrayItem -> turnQueue.add(arrayItem.toString()));
         encounter.setTurnQueue(turnQueue);
         encounter.setEncounterRound(1);
