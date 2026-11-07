@@ -8,26 +8,18 @@ on:
 
 env:
 
-  # STUDENTS: Set these environment variables 
-  API_BASE_URL: https://vcvqkwla57.execute-api.us-east-2.amazonaws.com/Prod/
   COGNITO_DOMAIN: tabletop-beholder
-  COGNITO_REDIRECT_SIGNIN: https://df5r0wzha0bpp.cloudfront.net
-  COGNITO_REDIRECT_SIGNOUT: https://df5r0wzha0bpp.cloudfront.net
-
-  COGNITO_USER_POOL_ID: ${{ secrets.COGNITO_USER_POOL_ID }}
-  COGNITO_USER_POOL_CLIENT_ID: ${{ secrets.COGNITO_USER_POOL_CLIENT_ID }}
 
   GH_PACKAGE_REG_READ_USER: ${{ secrets.GH_PACKAGE_REG_READ_USER }}
   GH_PACKAGE_REG_READ_PASS: ${{ secrets.GH_PACKAGE_REG_READ_PASS }}
   
-  PIPELINE_USER_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-  PIPELINE_USER_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
   SAM_TEMPLATE: template.yaml
 
   STACK_NAME: project-tabletop-beholder
-  PIPELINE_EXECUTION_ROLE: arn:aws:iam::211125563089:role/aws-sam-cli-managed-TBService-PipelineExecutionRole-JKhstuQutVQK
-  CLOUDFORMATION_EXECUTION_ROLE: arn:aws:iam::211125563089:role/aws-sam-cli-managed-TBSer-CloudFormationExecutionRo-gRAEdNgVX2jq
-  ARTIFACTS_BUCKET: aws-sam-cli-managed-tbservice-pipe-artifactsbucket-lzsaji7dwcmf
+  PIPELINE_EXECUTION_ROLE: ${{ vars.AWS_PIPELINE_EXECUTION_ROLE }}
+  CLOUDFORMATION_EXECUTION_ROLE: ${{ vars.AWS_CLOUDFORMATION_EXECUTION_ROLE }}
+  ARTIFACTS_BUCKET: aws-sam-cli-managed-prod-pipeline--artifactsbucket-hoeaoa8f7op8
+  WEBSITE_BUCKET: tabletop-beholder
   REGION: us-east-2
 
 jobs:
@@ -43,24 +35,11 @@ jobs:
       - uses: aws-actions/setup-sam@v1
       - run: sam build --template ${SAM_TEMPLATE}
 
-      - name: Assume the pipeline user role
-        uses: aws-actions/configure-aws-credentials@v1
-        with:
-          aws-access-key-id: ${{ env.PIPELINE_USER_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ env.PIPELINE_USER_SECRET_ACCESS_KEY }}
-          aws-region: ${{ env.REGION }}
-          role-to-assume: ${{ env.PIPELINE_EXECUTION_ROLE }}
-          role-session-name: feature-deployment
-          role-duration-seconds: 3600
-          role-skip-session-tagging: true
-
-      - name: Build SAM resources
-        shell: bash
-        run: |
-          sam build --template ${SAM_TEMPLATE}
-
   build-and-package-main:
     if: github.ref == 'refs/heads/main'
+    permissions:
+      contents: read
+      id-token: write
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -72,27 +51,13 @@ jobs:
         run: |
           sam build --template ${SAM_TEMPLATE}
 
-      - name: Assume the pipeline user role
-        uses: aws-actions/configure-aws-credentials@v1
+      - name: Authenticate to AWS with GitHub OIDC
+        uses: aws-actions/configure-aws-credentials@v4
         with:
-          aws-access-key-id: ${{ env.PIPELINE_USER_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ env.PIPELINE_USER_SECRET_ACCESS_KEY }}
           aws-region: ${{ env.REGION }}
           role-to-assume: ${{ env.PIPELINE_EXECUTION_ROLE }}
-          role-session-name: testing-packaging
-          role-duration-seconds: 3600
-          role-skip-session-tagging: true
-
-      - name: Assume the pipeline user role
-        uses: aws-actions/configure-aws-credentials@v1
-        with:
-          aws-access-key-id: ${{ env.PIPELINE_USER_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ env.PIPELINE_USER_SECRET_ACCESS_KEY }}
-          aws-region: ${{ env.REGION }}
-          role-to-assume: ${{ env.PIPELINE_EXECUTION_ROLE }}
-          role-session-name: prod-packaging
-          role-duration-seconds: 3600
-          role-skip-session-tagging: true
+          role-session-name: beholder-package
+          allowed-account-ids: '010438496967'
 
       - name: Upload SAM artifacts to artifact buckets
         run: |
@@ -113,17 +78,17 @@ jobs:
       - name: Create .env file for npm build
         working-directory: web
         run: |
-          touch .env
-
-          echo API_BASE_URL=\"$API_BASE_URL\" >> .env
-
-          echo COGNITO_DOMAIN=\"${COGNITO_DOMAIN}.auth.us-east-2.amazoncognito.com\" >> .env
-
-          echo COGNITO_USER_POOL_ID=\"$COGNITO_USER_POOL_ID\" >> .env
-          echo COGNITO_USER_POOL_CLIENT_ID=\"$COGNITO_USER_POOL_CLIENT_ID\" >> .env
-
-          echo COGNITO_REDIRECT_SIGNIN=\"$COGNITO_REDIRECT_SIGNIN\" >> .env
-          echo COGNITO_REDIRECT_SIGNOUT=\"$COGNITO_REDIRECT_SIGNOUT\" >> .env
+          outputs=$(aws cloudformation describe-stacks --stack-name "$STACK_NAME" --region "$REGION" --query 'Stacks[0].Outputs' --output json)
+          jq -er '
+            map({key: .OutputKey, value: .OutputValue}) | from_entries |
+            "API_BASE_URL=\(.ApiBaseUrl | strings)",
+            "COGNITO_DOMAIN=\(.CognitoDomain | strings)",
+            "COGNITO_USER_POOL_ID=\(.CognitoUserPoolId | strings)",
+            "COGNITO_USER_POOL_CLIENT_ID=\(.CognitoUserPoolClientId | strings)",
+            "COGNITO_REDIRECT_SIGNIN=\(.CognitoRedirectSignin | strings)",
+            "COGNITO_REDIRECT_SIGNOUT=\(.CognitoRedirectSignout | strings)"
+          ' <<< "$outputs" > .env
+          test "$(wc -l < .env)" -eq 6
 
       - name: Build NPM static resources
         working-directory: web
@@ -137,6 +102,9 @@ jobs:
 
   deploy-to-aws:
     if: github.ref == 'refs/heads/main'
+    permissions:
+      contents: read
+      id-token: write
     needs: [build-and-package-main]
     runs-on: ubuntu-latest
     steps:
@@ -148,18 +116,15 @@ jobs:
         with:
           name: packaged-prod.yaml
 
-      - name: Assume the pipeline user role
-        uses: aws-actions/configure-aws-credentials@v1
+      - name: Authenticate to AWS with GitHub OIDC
+        uses: aws-actions/configure-aws-credentials@v4
         with:
-          aws-access-key-id: ${{ env.PIPELINE_USER_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ env.PIPELINE_USER_SECRET_ACCESS_KEY }}
           aws-region: ${{ env.REGION }}
           role-to-assume: ${{ env.PIPELINE_EXECUTION_ROLE }}
-          role-session-name: testing-deployment
-          role-duration-seconds: 3600
-          role-skip-session-tagging: true
+          role-session-name: beholder-deploy
+          allowed-account-ids: '010438496967'
 
-      - name: Deploy to testing account
+      - name: Deploy to the Beholder stack
         run: |
           sam deploy --stack-name ${STACK_NAME} \
             --template packaged-prod.yaml \
@@ -167,7 +132,7 @@ jobs:
             --region ${REGION} \
             --s3-bucket ${ARTIFACTS_BUCKET} \
             --no-fail-on-empty-changeset \
-            --parameter-overrides "S3Bucket=${ARTIFACTS_BUCKET} CognitoDomain=${COGNITO_DOMAIN}" \
+            --parameter-overrides "S3Bucket=${WEBSITE_BUCKET} CognitoDomain=${COGNITO_DOMAIN}" \
             --role-arn ${CLOUDFORMATION_EXECUTION_ROLE}
 
       - name: Download NPM static resources
@@ -180,5 +145,5 @@ jobs:
         run: |
           aws s3 cp \
             build/static \
-            s3://${ARTIFACTS_BUCKET}/static/ \
+            s3://${WEBSITE_BUCKET}/static/ \
             --recursive
