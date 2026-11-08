@@ -1,8 +1,5 @@
 package dev.tdwalsh.project.tabletopBeholder.templateApi;
 
-import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
-import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBQueryExpression;
-import com.amazonaws.services.dynamodbv2.datamodeling.PaginatedQueryList;
 import com.amazonaws.services.lambda.runtime.events.models.dynamodb.AttributeValue;
 import dev.tdwalsh.project.tabletopBeholder.dynamodb.dao.CreatureDao;
 import dev.tdwalsh.project.tabletopBeholder.dynamodb.models.Creature;

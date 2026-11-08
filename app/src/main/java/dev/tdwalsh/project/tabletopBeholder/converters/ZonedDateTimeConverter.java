@@ -1,11 +1,16 @@
 package dev.tdwalsh.project.tabletopBeholder.converters;
 
-import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBTypeConverter;
+import software.amazon.awssdk.enhanced.dynamodb.EnhancedType;
 
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 
-public class ZonedDateTimeConverter implements DynamoDBTypeConverter<String, ZonedDateTime> {
+public class ZonedDateTimeConverter implements StringAttributeConverter<ZonedDateTime> {
+    @Override
+    public EnhancedType<ZonedDateTime> type() {
+        return EnhancedType.of(ZonedDateTime.class);
+    }
+
 
     @Override
     public String convert(ZonedDateTime zonedDateTime) {

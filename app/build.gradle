@@ -41,8 +41,13 @@ dependencies {
 
     implementation 'com.amazonaws:aws-lambda-java-core:1.2.1'
     implementation 'com.amazonaws:aws-lambda-java-events:3.11.0'
-    implementation 'com.amazonaws:aws-java-sdk-cloudwatch:1.12.+'
-    implementation 'com.amazonaws:aws-java-sdk-dynamodb:1.12.+'
+    implementation platform('software.amazon.awssdk:bom:2.57.4')
+    implementation('software.amazon.awssdk:dynamodb-enhanced') {
+        exclude group: 'software.amazon.awssdk', module: 'apache-client'
+        exclude group: 'software.amazon.awssdk', module: 'apache5-client'
+        exclude group: 'software.amazon.awssdk', module: 'netty-nio-client'
+    }
+    implementation 'software.amazon.awssdk:url-connection-client'
 
     implementation 'javax.measure:unit-api:2.1.3'
 

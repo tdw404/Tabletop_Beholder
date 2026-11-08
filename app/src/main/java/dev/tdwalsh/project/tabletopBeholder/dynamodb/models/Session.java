@@ -2,20 +2,21 @@ package dev.tdwalsh.project.tabletopBeholder.dynamodb.models;
 
 import dev.tdwalsh.project.tabletopBeholder.converters.ZonedDateTimeConverter;
 
-import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBAttribute;
-import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBHashKey;
-import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBIndexHashKey;
-import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBIndexRangeKey;
-import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBRangeKey;
-import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBTable;
-import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBTypeConverted;
+import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbBean;
+import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbConvertedBy;
+import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbPartitionKey;
+import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbSecondaryPartitionKey;
+import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbSecondarySortKey;
+import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbSortKey;
+
 import org.apache.commons.text.WordUtils;
 
 import java.time.ZonedDateTime;
 import java.util.Objects;
 
-@DynamoDBTable(tableName = "TabletopBeholder_SessionTable")
+@DynamoDbBean
 public class Session implements BeholderObject {
+    public static final String TABLE_NAME = "TabletopBeholder_SessionTable";
     private String userEmail;
     private String objectId;
     private String objectName;
@@ -23,8 +24,8 @@ public class Session implements BeholderObject {
     private ZonedDateTime editDateTime;
 
     @Override
-    @DynamoDBHashKey(attributeName = "userEmail")
-    @DynamoDBIndexHashKey(globalSecondaryIndexName = "SessionsSortByNameIndex")
+    @DynamoDbPartitionKey
+    @DynamoDbSecondaryPartitionKey(indexNames = "SessionsSortByNameIndex")
     public String getUserEmail() {
         return userEmail;
     }
@@ -34,7 +35,7 @@ public class Session implements BeholderObject {
     }
 
     @Override
-    @DynamoDBRangeKey(attributeName = "objectId")
+    @DynamoDbSortKey
     public String getObjectId() {
         return objectId;
     }
@@ -44,17 +45,16 @@ public class Session implements BeholderObject {
     }
 
     @Override
-    @DynamoDBIndexRangeKey(globalSecondaryIndexName = "SessionsSortByNameIndex", attributeName = "objectName")
+    @DynamoDbSecondarySortKey(indexNames = "SessionsSortByNameIndex")
     public String getObjectName() {
         return objectName;
     }
 
     public void setObjectName(String objectName) {
-        this.objectName = WordUtils.capitalizeFully(objectName);
+        this.objectName = "".equals(objectName) ? null : WordUtils.capitalizeFully(objectName);
     }
 
-    @DynamoDBAttribute(attributeName = "createDateTime")
-    @DynamoDBTypeConverted(converter = ZonedDateTimeConverter.class)
+    @DynamoDbConvertedBy(ZonedDateTimeConverter.class)
     public ZonedDateTime getCreateDateTime() {
         return createDateTime;
     }
@@ -64,8 +64,7 @@ public class Session implements BeholderObject {
         this.createDateTime = createDateTime;
     }
 
-    @DynamoDBAttribute(attributeName = "editDateTime")
-    @DynamoDBTypeConverted(converter = ZonedDateTimeConverter.class)
+    @DynamoDbConvertedBy(ZonedDateTimeConverter.class)
     public ZonedDateTime getEditDateTime() {
         return editDateTime;
     }

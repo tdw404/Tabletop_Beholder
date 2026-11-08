@@ -2,7 +2,7 @@ package dev.tdwalsh.project.tabletopBeholder.activity.helpers;
 
 import dev.tdwalsh.project.tabletopBeholder.dynamodb.dao.BeholderDao;
 import dev.tdwalsh.project.tabletopBeholder.dynamodb.models.BeholderObject;
-import com.amazonaws.services.dynamodbv2.model.ConditionalCheckFailedException;
+import software.amazon.awssdk.services.dynamodb.model.ConditionalCheckFailedException;
 
 import java.time.ZonedDateTime;
 import java.util.UUID;

@@ -1,8 +1,5 @@
 package dev.tdwalsh.project.tabletopBeholder.lambda.spell;
 
-import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
-import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBQueryExpression;
-import com.amazonaws.services.dynamodbv2.datamodeling.PaginatedQueryList;
 import dev.tdwalsh.project.tabletopBeholder.activity.spell.GetSpellActivity;
 import dev.tdwalsh.project.tabletopBeholder.dynamodb.dao.SpellDao;
 import dev.tdwalsh.project.tabletopBeholder.dynamodb.models.Spell;

@@ -11,7 +11,7 @@ import dev.tdwalsh.project.tabletopBeholder.exceptions.MissingResourceException;
 import dev.tdwalsh.project.tabletopBeholder.exceptions.UnauthenticatedException;
 import dev.tdwalsh.project.tabletopBeholder.exceptions.resourceNotFoundExceptions.DBResourceNotFoundException;
 
-import com.amazonaws.services.dynamodbv2.model.ConditionalCheckFailedException;
+import software.amazon.awssdk.services.dynamodb.model.ConditionalCheckFailedException;
 
 import java.net.http.HttpTimeoutException;
 import java.util.Map;

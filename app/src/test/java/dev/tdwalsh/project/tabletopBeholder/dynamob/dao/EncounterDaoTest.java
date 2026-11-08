@@ -1,168 +1,146 @@
 package dev.tdwalsh.project.tabletopBeholder.dynamob.dao;
 
-import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
-import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapperConfig.ConsistentReads;
-import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBSaveExpression;
-import com.amazonaws.services.dynamodbv2.model.ConditionalCheckFailedException;
-import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBQueryExpression;
-import com.amazonaws.services.dynamodbv2.datamodeling.PaginatedQueryList;
-import com.amazonaws.services.lambda.runtime.events.models.dynamodb.AttributeValue;
 import dev.tdwalsh.project.tabletopBeholder.dynamodb.dao.EncounterDao;
 import dev.tdwalsh.project.tabletopBeholder.dynamodb.models.Encounter;
-import dev.tdwalsh.project.tabletopBeholder.resource.EncounterHelper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
+import software.amazon.awssdk.enhanced.dynamodb.DynamoDbEnhancedClient;
+import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
+import software.amazon.awssdk.services.dynamodb.model.AttributeValue;
+import software.amazon.awssdk.services.dynamodb.model.ConditionalCheckFailedException;
+import software.amazon.awssdk.services.dynamodb.model.DeleteItemRequest;
+import software.amazon.awssdk.services.dynamodb.model.DeleteItemResponse;
+import software.amazon.awssdk.services.dynamodb.model.GetItemRequest;
+import software.amazon.awssdk.services.dynamodb.model.GetItemResponse;
+import software.amazon.awssdk.services.dynamodb.model.PutItemRequest;
+import software.amazon.awssdk.services.dynamodb.model.PutItemResponse;
+import software.amazon.awssdk.services.dynamodb.model.QueryRequest;
+import software.amazon.awssdk.services.dynamodb.model.QueryResponse;
+import software.amazon.awssdk.services.dynamodb.model.ReturnValue;
+import software.amazon.awssdk.services.dynamodb.model.UpdateItemRequest;
+import software.amazon.awssdk.services.dynamodb.model.UpdateItemResponse;
+import software.amazon.awssdk.services.dynamodb.paginators.QueryIterable;
 
-import java.util.List;
+import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
-import static org.mockito.MockitoAnnotations.openMocks;
 
 public class EncounterDaoTest {
-    @InjectMocks
-    private EncounterDao dao;
-    @Mock
-    private DynamoDBMapper mapper;
-    private String userEmail;
-    private String objectId;
-    private Encounter encounter;
-    private String objectName;
-    @Mock
-    private PaginatedQueryList<Encounter> paginatedQueryList;
+    private final DynamoDbClient client = mock(DynamoDbClient.class);
+    private final EncounterDao dao = new EncounterDao(DynamoDbEnhancedClient.builder().dynamoDbClient(client).build());
+    private final Map<String, AttributeValue> key = Map.of(
+            "userEmail", AttributeValue.fromS("owner"), "objectId", AttributeValue.fromS("id"));
+    private final Map<String, AttributeValue> storedItem = Map.of(
+            "userEmail", AttributeValue.fromS("owner"), "objectId", AttributeValue.fromS("id"),
+            "objectName", AttributeValue.fromS("Creature Name"));
+    private final Encounter item = new Encounter();
 
     @BeforeEach
-    public void setup() {
-        openMocks(this);
-        encounter = EncounterHelper.provideEncounter(1);
-        userEmail = encounter.getUserEmail();
-        objectId = encounter.getObjectId();
-        objectName = encounter.getObjectName();
+    void setUp() {
+        item.setUserEmail("owner");
+        item.setObjectId("id");
+        item.setObjectName("Creature Name");
+        when(client.queryPaginator(any(QueryRequest.class)))
+                .thenAnswer(call -> new QueryIterable(client, call.getArgument(0)));
     }
 
     @Test
-    public void getSingle_encounterExists_returnsEncounter() {
-        //GIVEN
-        doReturn(encounter).when(mapper).load(eq(Encounter.class), eq(userEmail), eq(objectId),
-                argThat(config -> config.getConsistentReads() == ConsistentReads.CONSISTENT));
+    void readsExistingRecord() {
+        when(client.getItem(any(GetItemRequest.class))).thenReturn(GetItemResponse.builder().item(storedItem).build());
 
-        //WHEN
-        Encounter result = dao.getSingle(userEmail, objectId);
+        assertEquals("Creature Name", dao.getSingle("owner", "id").getObjectName());
 
-        //THEN
-        assertEquals(encounter, result, "Expected dao to return single result");
+        ArgumentCaptor<GetItemRequest> request = ArgumentCaptor.forClass(GetItemRequest.class);
+        verify(client).getItem(request.capture());
+        assertEquals(Encounter.TABLE_NAME, request.getValue().tableName());
+        assertEquals(key, request.getValue().key());
+        assertEquals(Boolean.TRUE, request.getValue().consistentRead());
     }
 
     @Test
-    public void getSingle_encounterDoesNotExist_returnsNull() {
-        //GIVEN
-        doReturn(null).when(mapper).load(eq(Encounter.class), eq(userEmail), eq(objectId),
-                argThat(config -> config.getConsistentReads() == ConsistentReads.CONSISTENT));
-
-        //WHEN
-        Encounter result = dao.getSingle(userEmail, objectId);
-
-        //THEN
-        assertEquals(null, result, "Expected dao to return null result");
+    void missingRecordReturnsNull() {
+        when(client.getItem(any(GetItemRequest.class))).thenReturn(GetItemResponse.builder().build());
+        assertNull(dao.getSingle("owner", "id"));
     }
 
     @Test
-    public void getMultiple_userExists_returnsListofEncounters() {
-        //GIVEN
-        ArgumentCaptor<DynamoDBQueryExpression<Encounter>> argumentCaptor = ArgumentCaptor.forClass(DynamoDBQueryExpression.class);
-        doReturn(paginatedQueryList).when(mapper).query(eq(Encounter.class), any(DynamoDBQueryExpression.class));
+    void listsRecordsForOwner() {
+        when(client.query(any(QueryRequest.class))).thenReturn(QueryResponse.builder().items(storedItem).build());
 
-        //WHEN
-        List<Encounter> result = (List<Encounter>) dao.getMultiple(userEmail);
-        verify(mapper).query(eq(Encounter.class), argumentCaptor.capture());
+        assertEquals("id", dao.getMultiple("owner").get(0).getObjectId());
 
-        //THEN
-        assertEquals(PaginatedQueryList.class, result.getClass(), "Expected dao to return list");
-        assertEquals(userEmail, argumentCaptor.getValue().getHashKeyValues().getUserEmail());
+        ArgumentCaptor<QueryRequest> request = ArgumentCaptor.forClass(QueryRequest.class);
+        verify(client).query(request.capture());
+        assertTrue(request.getValue().expressionAttributeValues().containsValue(AttributeValue.fromS("owner")));
     }
 
     @Test
-    public void writeObject_legacyEncounter_requiresExistingUnversionedRecord() {
-        ArgumentCaptor<DynamoDBSaveExpression> condition = ArgumentCaptor.forClass(DynamoDBSaveExpression.class);
+    void createsWithoutOverwritingExistingId() {
+        when(client.putItem(any(PutItemRequest.class))).thenReturn(PutItemResponse.builder().build());
 
-        dao.writeObject(encounter);
+        dao.createIfAbsent(item);
 
-        verify(mapper).save(same(encounter), condition.capture());
-        assertEquals(objectId, condition.getValue().getExpected().get("objectId").getValue().getS());
-        assertEquals(Boolean.FALSE, condition.getValue().getExpected().get("version").getExists());
-        assertEquals(1L, encounter.getVersion());
+        ArgumentCaptor<PutItemRequest> request = ArgumentCaptor.forClass(PutItemRequest.class);
+        verify(client).putItem(request.capture());
+        assertEquals("attribute_not_exists(objectId)", request.getValue().conditionExpression());
+        assertEquals(storedItem.get("objectName"), request.getValue().item().get("objectName"));
+        assertEquals(AttributeValue.fromN("1"), request.getValue().item().get("version"));
     }
 
     @Test
-    public void writeObject_versionedEncounter_checksSnapshotVersionAndIncrements() {
-        ArgumentCaptor<DynamoDBSaveExpression> condition = ArgumentCaptor.forClass(DynamoDBSaveExpression.class);
-        encounter.setVersion(4L);
+    void updatesExistingRecord() {
+        when(client.updateItem(any(UpdateItemRequest.class)))
+                .thenReturn(UpdateItemResponse.builder().attributes(storedItem).build());
 
-        dao.writeObject(encounter);
+        dao.writeObject(item);
 
-        verify(mapper).save(same(encounter), condition.capture());
-        assertEquals("4", condition.getValue().getExpected().get("version").getValue().getN());
-        assertEquals(5L, encounter.getVersion());
+        ArgumentCaptor<UpdateItemRequest> request = ArgumentCaptor.forClass(UpdateItemRequest.class);
+        verify(client).updateItem(request.capture());
+        assertEquals(key, request.getValue().key());
+        assertEquals(ReturnValue.NONE, request.getValue().returnValues());
+        assertEquals("attribute_exists(objectId) AND attribute_not_exists(#version)",
+                request.getValue().conditionExpression());
+        assertEquals(1L, item.getVersion());
     }
 
     @Test
-    public void writeObject_conflict_preservesSnapshotVersion() {
-        encounter.setVersion(4L);
-        doThrow(new ConditionalCheckFailedException("version changed"))
-                .when(mapper).save(same(encounter), any(DynamoDBSaveExpression.class));
+    void deletesByCompositeKey() {
+        when(client.deleteItem(any(DeleteItemRequest.class))).thenReturn(DeleteItemResponse.builder().build());
 
-        assertThrows(ConditionalCheckFailedException.class, () -> dao.writeObject(encounter));
-        assertEquals(4L, encounter.getVersion());
-        verify(mapper).save(same(encounter), any(DynamoDBSaveExpression.class));
+        dao.deleteObject("owner", "id");
+
+        ArgumentCaptor<DeleteItemRequest> request = ArgumentCaptor.forClass(DeleteItemRequest.class);
+        verify(client).deleteItem(request.capture());
+        assertEquals(key, request.getValue().key());
     }
 
     @Test
-    public void deleteObject_withObjectIdAndUserEmail_callsDynamoDBDelete() {
-        //GIVEN
-        ArgumentCaptor<Encounter> argumentCaptor = ArgumentCaptor.forClass(Encounter.class);
+    void checksForExistingName() {
+        when(client.query(any(QueryRequest.class)))
+                .thenReturn(QueryResponse.builder().items(storedItem).build(), QueryResponse.builder().build());
 
-        //WHEN
-        dao.deleteObject(userEmail, objectId);
+        assertTrue(dao.objectNameExists("owner", "Creature Name"));
+        assertFalse(dao.objectNameExists("owner", "Missing"));
 
-        //THEN
-        verify(mapper, times(1)).delete(argumentCaptor.capture());
-        assertEquals(encounter.getObjectId(), argumentCaptor.getValue().getObjectId());
-        assertEquals(encounter.getUserEmail(), argumentCaptor.getValue().getUserEmail());
+        ArgumentCaptor<QueryRequest> request = ArgumentCaptor.forClass(QueryRequest.class);
+        verify(client, times(2)).query(request.capture());
+        assertEquals(null, request.getAllValues().get(0).indexName());
     }
 
     @Test
-    public void objectNameExists_nameExists_returnsTrue() {
-        //GIVEN
-        ArgumentCaptor<DynamoDBQueryExpression> queryCaptor = ArgumentCaptor.forClass(DynamoDBQueryExpression.class);
-        doReturn(paginatedQueryList).when(mapper).query(eq(Encounter.class), any(DynamoDBQueryExpression.class));
-        doReturn(false).when(paginatedQueryList).isEmpty();
+    void versionConflictPreservesSnapshot() {
+        item.setVersion(4L);
+        when(client.updateItem(any(UpdateItemRequest.class)))
+                .thenThrow(ConditionalCheckFailedException.builder().message("stale").build());
 
-        //WHEN
-        //THEN
-        assertTrue(dao.objectNameExists(userEmail, objectName), "Expected method to return true if a matching name was found");
-        verify(mapper, times(1)).query(eq(Encounter.class), queryCaptor.capture());
-        System.out.println(queryCaptor.getValue().getExpressionAttributeValues().get(":objectName").equals(new AttributeValue(objectName)));
-        System.out.println(queryCaptor.getValue().getExpressionAttributeValues().get(":userEmail").equals(new AttributeValue(userEmail)));
-    }
+        assertThrows(ConditionalCheckFailedException.class, () -> dao.writeObject(item));
 
-    @Test
-    public void objectNameExists_nameDoesNotExist_returnsFalse() {
-        //GIVEN
-        ArgumentCaptor<DynamoDBQueryExpression> queryCaptor = ArgumentCaptor.forClass(DynamoDBQueryExpression.class);
-        doReturn(paginatedQueryList).when(mapper).query(eq(Encounter.class), any(DynamoDBQueryExpression.class));
-        doReturn(true).when(paginatedQueryList).isEmpty();
-
-        //WHEN
-
-        //THEN
-        assertFalse(dao.objectNameExists(userEmail, objectName), "Expected method to return true if a matching name was found");
-        verify(mapper, times(1)).query(eq(Encounter.class), queryCaptor.capture());
-        System.out.println(queryCaptor.getValue().getExpressionAttributeValues().get(":objectName").equals(new AttributeValue(objectName)));
-        System.out.println(queryCaptor.getValue().getExpressionAttributeValues().get(":userEmail").equals(new AttributeValue(userEmail)));
+        ArgumentCaptor<UpdateItemRequest> request = ArgumentCaptor.forClass(UpdateItemRequest.class);
+        verify(client).updateItem(request.capture());
+        assertEquals("attribute_exists(objectId) AND #version = :version", request.getValue().conditionExpression());
+        assertEquals(AttributeValue.fromN("4"), request.getValue().expressionAttributeValues().get(":version"));
+        assertEquals(4L, item.getVersion());
     }
 }

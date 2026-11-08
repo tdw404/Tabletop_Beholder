@@ -3,7 +3,7 @@ package dev.tdwalsh.project.tabletopBeholder.converters;
 import dev.tdwalsh.project.tabletopBeholder.dynamodb.models.Creature;
 import dev.tdwalsh.project.tabletopBeholder.exceptions.SerializationException;
 
-import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBTypeConverter;
+import software.amazon.awssdk.enhanced.dynamodb.EnhancedType;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -11,7 +11,12 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
 import java.util.Map;
 
-public class StringCreaturesMapConverter implements DynamoDBTypeConverter<String, Map<String, Creature>> {
+public class StringCreaturesMapConverter implements StringAttributeConverter<Map<String, Creature>> {
+    @Override
+    public EnhancedType<Map<String, Creature>> type() {
+        return new EnhancedType<Map<String, Creature>>() { };
+    }
+
     private JavaTimeModule javaTimeModule = new JavaTimeModule();
     private ObjectMapper objectMapper = new ObjectMapper().registerModule(javaTimeModule);
     @Override

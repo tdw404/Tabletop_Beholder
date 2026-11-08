@@ -1,18 +1,18 @@
 package dev.tdwalsh.project.tabletopBeholder.dynamodb.models;
 
 import dev.tdwalsh.project.tabletopBeholder.converters.CreatureQueueConverter;
+import dev.tdwalsh.project.tabletopBeholder.converters.StringSetListConverter;
 import dev.tdwalsh.project.tabletopBeholder.converters.StringCreaturesMapConverter;
 import dev.tdwalsh.project.tabletopBeholder.converters.ZonedDateTimeConverter;
 
-import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBAttribute;
-import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBHashKey;
-import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBIndexHashKey;
-import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBIndexRangeKey;
-import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapperFieldModel;
-import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBRangeKey;
-import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBTable;
-import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBTypeConverted;
-import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBTyped;
+import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbAttribute;
+import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbBean;
+import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbConvertedBy;
+import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbPartitionKey;
+import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbSecondaryPartitionKey;
+import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbSecondarySortKey;
+import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbSortKey;
+
 import org.apache.commons.text.WordUtils;
 
 import java.time.ZonedDateTime;
@@ -21,8 +21,9 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Queue;
 
-@DynamoDBTable(tableName = "TabletopBeholder_EncounterTable")
+@DynamoDbBean
 public class Encounter implements BeholderObject {
+    public static final String TABLE_NAME = "TabletopBeholder_EncounterTable";
     private String userEmail;
     private String objectId;
     private String objectName;
@@ -38,8 +39,8 @@ public class Encounter implements BeholderObject {
     private ZonedDateTime editDateTime;
 
     @Override
-    @DynamoDBHashKey(attributeName = "userEmail")
-    @DynamoDBIndexHashKey(globalSecondaryIndexName = "EncountersSortBySessionIndex")
+    @DynamoDbPartitionKey
+    @DynamoDbSecondaryPartitionKey(indexNames = "EncountersSortBySessionIndex")
     public String getUserEmail() {
         return userEmail;
     }
@@ -49,7 +50,7 @@ public class Encounter implements BeholderObject {
     }
 
     @Override
-    @DynamoDBRangeKey(attributeName = "objectId")
+    @DynamoDbSortKey
     public String getObjectId() {
         return objectId;
     }
@@ -58,7 +59,6 @@ public class Encounter implements BeholderObject {
         this.objectId = objectId;
     }
 
-    @DynamoDBAttribute(attributeName = "version")
     public Long getVersion() {
         return version;
     }
@@ -68,7 +68,6 @@ public class Encounter implements BeholderObject {
     }
 
     @Override
-    @DynamoDBAttribute(attributeName = "objectName")
     public String getObjectName() {
         return objectName;
     }
@@ -77,8 +76,7 @@ public class Encounter implements BeholderObject {
         this.objectName = WordUtils.capitalizeFully(objectName);
     }
 
-    @DynamoDBAttribute(attributeName = "creatureMap")
-    @DynamoDBTypeConverted(converter = StringCreaturesMapConverter.class)
+    @DynamoDbConvertedBy(StringCreaturesMapConverter.class)
     public Map<String, Creature> getCreatureMap() {
         return this.creatureMap;
     }
@@ -87,8 +85,7 @@ public class Encounter implements BeholderObject {
         this.creatureMap = creatureMap;
     }
 
-    @DynamoDBAttribute(attributeName = "createDateTime")
-    @DynamoDBTypeConverted(converter = ZonedDateTimeConverter.class)
+    @DynamoDbConvertedBy(ZonedDateTimeConverter.class)
     public ZonedDateTime getCreateDateTime() {
         return createDateTime;
     }
@@ -98,8 +95,7 @@ public class Encounter implements BeholderObject {
         this.createDateTime = createDateTime;
     }
 
-    @DynamoDBAttribute(attributeName = "editDateTime")
-    @DynamoDBTypeConverted(converter = ZonedDateTimeConverter.class)
+    @DynamoDbConvertedBy(ZonedDateTimeConverter.class)
     public ZonedDateTime getEditDateTime() {
         return editDateTime;
     }
@@ -109,8 +105,7 @@ public class Encounter implements BeholderObject {
         this.editDateTime = editDateTime;
     }
 
-    @DynamoDBAttribute(attributeName = "turnQueue")
-    @DynamoDBTypeConverted(converter = CreatureQueueConverter.class)
+    @DynamoDbConvertedBy(CreatureQueueConverter.class)
     public Queue<String> getTurnQueue() {
         return this.turnQueue;
     }
@@ -119,7 +114,7 @@ public class Encounter implements BeholderObject {
         this.turnQueue = turnQueue;
     }
 
-    @DynamoDBAttribute(attributeName = "encounterTurn")
+    @DynamoDbAttribute("encounterTurn")
     public Integer getEncounterRound() {
         return encounterRound;
     }
@@ -128,7 +123,6 @@ public class Encounter implements BeholderObject {
         this.encounterRound = encounterRound;
     }
 
-    @DynamoDBAttribute(attributeName = "topOfOrder")
     public String getTopOfOrder() {
         return topOfOrder;
     }
@@ -137,8 +131,7 @@ public class Encounter implements BeholderObject {
         this.topOfOrder = topOfOrder;
     }
 
-    @DynamoDBAttribute(attributeName = "turnOrder")
-    @DynamoDBTyped(DynamoDBMapperFieldModel.DynamoDBAttributeType.SS)
+    @DynamoDbConvertedBy(StringSetListConverter.class)
     public List<String> getTurnOrder() {
         return turnOrder;
     }
@@ -147,8 +140,7 @@ public class Encounter implements BeholderObject {
         this.turnOrder = turnOrder;
     }
 
-    @DynamoDBAttribute(attributeName = "messageQueue")
-    @DynamoDBTypeConverted(converter = CreatureQueueConverter.class)
+    @DynamoDbConvertedBy(CreatureQueueConverter.class)
     public Queue<String> getMessageQueue() {
         return messageQueue;
     }
@@ -157,13 +149,13 @@ public class Encounter implements BeholderObject {
         this.messageQueue = messageQueue;
     }
 
-    @DynamoDBIndexRangeKey(globalSecondaryIndexName = "EncountersSortBySessionIndex", attributeName = "sessionId")
+    @DynamoDbSecondarySortKey(indexNames = "EncountersSortBySessionIndex")
     public String getSessionId() {
         return sessionId;
     }
 
     public void setSessionId(String sessionId) {
-        this.sessionId = sessionId;
+        this.sessionId = "".equals(sessionId) ? null : sessionId;
     }
 
     @Override
