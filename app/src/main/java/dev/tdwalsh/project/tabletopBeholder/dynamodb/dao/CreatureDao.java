@@ -4,6 +4,7 @@ import dev.tdwalsh.project.tabletopBeholder.dynamodb.models.BeholderObject;
 import dev.tdwalsh.project.tabletopBeholder.dynamodb.models.Creature;
 
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapperConfig.SaveBehavior;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBQueryExpression;
 import com.amazonaws.services.dynamodbv2.model.AttributeValue;
 
@@ -70,6 +71,11 @@ public class CreatureDao implements BeholderDao {
     @Override
     public void writeObject(BeholderObject beholderObject) {
         mapper.save((Creature) beholderObject);
+    }
+
+    @Override
+    public void createIfAbsent(BeholderObject beholderObject) {
+        mapper.save((Creature) beholderObject, BeholderDao.requireNewObjectId(), SaveBehavior.PUT.config());
     }
 
     /**

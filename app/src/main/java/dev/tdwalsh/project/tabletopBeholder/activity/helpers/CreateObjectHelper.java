@@ -2,7 +2,7 @@ package dev.tdwalsh.project.tabletopBeholder.activity.helpers;
 
 import dev.tdwalsh.project.tabletopBeholder.dynamodb.dao.BeholderDao;
 import dev.tdwalsh.project.tabletopBeholder.dynamodb.models.BeholderObject;
-import dev.tdwalsh.project.tabletopBeholder.dynamodb.models.Spell;
+import com.amazonaws.services.dynamodbv2.model.ConditionalCheckFailedException;
 
 import java.time.ZonedDateTime;
 import java.util.UUID;
@@ -11,6 +11,7 @@ import java.util.UUID;
  * This is a helper class to allow multiple activities to create a {@link BeholderObject} using the same method.
  */
 public class CreateObjectHelper {
+    private static final int MAX_CREATE_ATTEMPTS = 3;
 
     /**
      * This method takes in a {@link BeholderObject} object, gives it a unique ID, then writes it to the database.
@@ -18,18 +19,25 @@ public class CreateObjectHelper {
      * It then returns the created object.
      *
      * @param dao the DAO to use in the static method
-     * @param beholderObject the {@link Spell} object to process and write
-     * @return {@link Spell} the updated created object
+     * @param beholderObject the {@link BeholderObject} object to process and write
+     * @return {@link BeholderObject} the updated created object
      */
     public static BeholderObject createObject(BeholderDao dao, BeholderObject beholderObject) {
-        beholderObject.setObjectId(UUID.randomUUID().toString());
-        while (dao.getSingle(beholderObject.getUserEmail(), beholderObject.getObjectId()) != null) {
-            beholderObject.setObjectId(UUID.randomUUID().toString());
-        }
         ZonedDateTime now = ZonedDateTime.now();
         beholderObject.setCreateDateTime(now);
         beholderObject.setEditDateTime(now);
-        dao.writeObject(beholderObject);
-        return beholderObject;
+        int attempt = 1;
+        while (true) {
+            beholderObject.setObjectId(UUID.randomUUID().toString());
+            try {
+                dao.createIfAbsent(beholderObject);
+                return beholderObject;
+            } catch (ConditionalCheckFailedException collision) {
+                if (attempt == MAX_CREATE_ATTEMPTS) {
+                    throw collision;
+                }
+                attempt++;
+            }
+        }
     }
 }

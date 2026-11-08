@@ -62,7 +62,7 @@ public class CreateTemplateCreatureActivityTest {
         CreateTemplateCreatureResult result = createTemplateCreatureActivity.handleRequest(createTemplateCreatureRequest);
 
         //THEN
-        verify(creatureDao, times(1)).writeObject(any(Creature.class));
+        verify(creatureDao, times(1)).createIfAbsent(any(Creature.class));
         assertEquals(creature.getObjectName().toLowerCase(), result.getCreature().getObjectName().toLowerCase(), "Expected details of created object to match template");
     }
 

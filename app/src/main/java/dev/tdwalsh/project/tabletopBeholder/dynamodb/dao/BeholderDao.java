@@ -2,6 +2,9 @@ package dev.tdwalsh.project.tabletopBeholder.dynamodb.dao;
 
 import dev.tdwalsh.project.tabletopBeholder.dynamodb.models.BeholderObject;
 
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBSaveExpression;
+import com.amazonaws.services.dynamodbv2.model.ExpectedAttributeValue;
+
 import java.util.List;
 
 public interface BeholderDao {
@@ -25,6 +28,14 @@ public interface BeholderDao {
      * @param object - object to save.
      */
     void writeObject(BeholderObject object);
+
+    /** Saves a new record or throws if its primary key already exists. */
+    void createIfAbsent(BeholderObject object);
+
+    static DynamoDBSaveExpression requireNewObjectId() {
+        return new DynamoDBSaveExpression()
+                .withExpectedEntry("objectId", new ExpectedAttributeValue().withExists(false));
+    }
 
     /**
      * Generic method for deleting object.

@@ -4,6 +4,7 @@ import dev.tdwalsh.project.tabletopBeholder.dynamodb.models.BeholderObject;
 import dev.tdwalsh.project.tabletopBeholder.dynamodb.models.Encounter;
 
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapperConfig.SaveBehavior;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBQueryExpression;
 import com.amazonaws.services.dynamodbv2.model.AttributeValue;
 
@@ -70,6 +71,11 @@ public class EncounterDao implements BeholderDao {
     @Override
     public void writeObject(BeholderObject beholderObject) {
         mapper.save((Encounter) beholderObject);
+    }
+
+    @Override
+    public void createIfAbsent(BeholderObject beholderObject) {
+        mapper.save((Encounter) beholderObject, BeholderDao.requireNewObjectId(), SaveBehavior.PUT.config());
     }
 
     /**
