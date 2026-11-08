@@ -3,23 +3,22 @@ package dev.tdwalsh.project.tabletopBeholder.dynamodb.models;
 import dev.tdwalsh.project.tabletopBeholder.converters.EffectConverter;
 import dev.tdwalsh.project.tabletopBeholder.converters.ZonedDateTimeConverter;
 
-import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBAttribute;
-import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBHashKey;
-import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBIndexHashKey;
-import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBIndexRangeKey;
-import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapperFieldModel;
-import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBRangeKey;
-import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBTable;
-import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBTypeConverted;
-import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBTyped;
+import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbBean;
+import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbConvertedBy;
+import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbPartitionKey;
+import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbSecondaryPartitionKey;
+import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbSecondarySortKey;
+import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbSortKey;
+
 import org.apache.commons.text.WordUtils;
 
 import java.time.ZonedDateTime;
 import java.util.Map;
 import java.util.Objects;
 
-@DynamoDBTable(tableName = "TabletopBeholder_SpellTable")
+@DynamoDbBean
 public class Spell implements BeholderObject {
+    public static final String TABLE_NAME = "TabletopBeholder_SpellTable";
     private String userEmail;
     private String objectId;
     private String objectName;
@@ -40,8 +39,8 @@ public class Spell implements BeholderObject {
     private ZonedDateTime editDateTime;
 
     @Override
-    @DynamoDBHashKey(attributeName = "userEmail")
-    @DynamoDBIndexHashKey(globalSecondaryIndexName = "SpellsSortByNameIndex")
+    @DynamoDbPartitionKey
+    @DynamoDbSecondaryPartitionKey(indexNames = "SpellsSortByNameIndex")
     public String getUserEmail() {
         return userEmail;
     }
@@ -51,7 +50,7 @@ public class Spell implements BeholderObject {
     }
 
     @Override
-    @DynamoDBRangeKey(attributeName = "objectId")
+    @DynamoDbSortKey
     public String getObjectId() {
         return objectId;
     }
@@ -61,16 +60,15 @@ public class Spell implements BeholderObject {
     }
 
     @Override
-    @DynamoDBIndexRangeKey(globalSecondaryIndexName = "SpellsSortByNameIndex", attributeName = "objectName")
+    @DynamoDbSecondarySortKey(indexNames = "SpellsSortByNameIndex")
     public String getObjectName() {
         return objectName;
     }
 
     public void setObjectName(String objectName) {
-        this.objectName = WordUtils.capitalizeFully(objectName);
+        this.objectName = "".equals(objectName) ? null : WordUtils.capitalizeFully(objectName);
     }
 
-    @DynamoDBAttribute(attributeName = "spellDescription")
     public String getSpellDescription() {
         return spellDescription;
     }
@@ -79,7 +77,6 @@ public class Spell implements BeholderObject {
         this.spellDescription = spellDescription;
     }
 
-    @DynamoDBAttribute(attributeName = "spellHigherLevel")
     public String getSpellHigherLevel() {
         return spellHigherLevel;
     }
@@ -88,7 +85,6 @@ public class Spell implements BeholderObject {
         this.spellHigherLevel = spellHigherLevel;
     }
 
-    @DynamoDBAttribute(attributeName = "spellRange")
     public String getSpellRange() {
         return spellRange;
     }
@@ -97,7 +93,6 @@ public class Spell implements BeholderObject {
         this.spellRange = spellRange;
     }
 
-    @DynamoDBAttribute(attributeName = "spellComponents")
     public String getSpellComponents() {
         return spellComponents;
     }
@@ -106,7 +101,6 @@ public class Spell implements BeholderObject {
         this.spellComponents = spellComponents;
     }
 
-    @DynamoDBAttribute(attributeName = "spellMaterial")
     public String getSpellMaterial() {
         return spellMaterial;
     }
@@ -115,7 +109,6 @@ public class Spell implements BeholderObject {
         this.spellMaterial = spellMaterial;
     }
 
-    @DynamoDBAttribute(attributeName = "reaction")
     public String getReaction() {
         return reaction;
     }
@@ -124,8 +117,6 @@ public class Spell implements BeholderObject {
         this.reaction = reaction;
     }
 
-    @DynamoDBAttribute(attributeName = "ritualCast")
-    @DynamoDBTyped(DynamoDBMapperFieldModel.DynamoDBAttributeType.BOOL)
     public Boolean getRitualCast() {
         return ritualCast;
     }
@@ -134,7 +125,6 @@ public class Spell implements BeholderObject {
         this.ritualCast = ritualCast;
     }
 
-    @DynamoDBAttribute(attributeName = "castingTime")
     public String getCastingTime() {
         return castingTime;
     }
@@ -143,7 +133,6 @@ public class Spell implements BeholderObject {
         this.castingTime = castingTime;
     }
 
-    @DynamoDBAttribute(attributeName = "castingTurns")
     public Integer getCastingTurns() {
         return castingTurns;
     }
@@ -152,7 +141,6 @@ public class Spell implements BeholderObject {
         this.castingTurns = castingTurns;
     }
 
-    @DynamoDBAttribute(attributeName = "spellLevel")
     public Integer getSpellLevel() {
         return spellLevel;
     }
@@ -161,7 +149,6 @@ public class Spell implements BeholderObject {
         this.spellLevel = spellLevel;
     }
 
-    @DynamoDBAttribute(attributeName = "spellSchool")
     public String getSpellSchool() {
         return spellSchool;
     }
@@ -170,7 +157,6 @@ public class Spell implements BeholderObject {
         this.spellSchool = spellSchool;
     }
 
-    @DynamoDBAttribute(attributeName = "innateCasts")
     public Integer getInnateCasts() {
         return innateCasts;
     }
@@ -179,8 +165,7 @@ public class Spell implements BeholderObject {
         this.innateCasts = innateCasts;
     }
 
-    @DynamoDBAttribute(attributeName = "appliesEffects")
-    @DynamoDBTypeConverted(converter = EffectConverter.class)
+    @DynamoDbConvertedBy(EffectConverter.class)
     public Map<String, Effect> getAppliesEffects() {
         return appliesEffects;
     }
@@ -188,8 +173,7 @@ public class Spell implements BeholderObject {
     public void setAppliesEffects(Map<String, Effect> appliesEffects) {
         this.appliesEffects = appliesEffects;
     }
-    @DynamoDBAttribute(attributeName = "createDateTime")
-    @DynamoDBTypeConverted(converter = ZonedDateTimeConverter.class)
+    @DynamoDbConvertedBy(ZonedDateTimeConverter.class)
     public ZonedDateTime getCreateDateTime() {
         return createDateTime;
     }
@@ -199,8 +183,7 @@ public class Spell implements BeholderObject {
         this.createDateTime = createDateTime;
     }
 
-    @DynamoDBAttribute(attributeName = "editDateTime")
-    @DynamoDBTypeConverted(converter = ZonedDateTimeConverter.class)
+    @DynamoDbConvertedBy(ZonedDateTimeConverter.class)
     public ZonedDateTime getEditDateTime() {
         return editDateTime;
     }

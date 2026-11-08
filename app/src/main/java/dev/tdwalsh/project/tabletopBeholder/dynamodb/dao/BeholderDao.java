@@ -2,6 +2,7 @@ package dev.tdwalsh.project.tabletopBeholder.dynamodb.dao;
 
 import dev.tdwalsh.project.tabletopBeholder.dynamodb.models.BeholderObject;
 
+
 import java.util.List;
 
 public interface BeholderDao {
@@ -25,6 +26,9 @@ public interface BeholderDao {
      * @param object - object to save.
      */
     void writeObject(BeholderObject object);
+
+    /** Saves a new record or throws if its primary key already exists. */
+    void createIfAbsent(BeholderObject object);
 
     /**
      * Generic method for deleting object.

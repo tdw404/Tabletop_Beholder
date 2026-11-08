@@ -17,9 +17,9 @@ public class GetCreatureLambda
     public LambdaResponse handleRequest(AuthenticatedLambdaRequest<GetCreatureRequest> input, Context context) {
         return super.runActivity(
             () -> {
-                GetCreatureRequest stageRequest = input.fromUserClaims(claims ->
+                GetCreatureRequest stageRequest = input.fromOwnerId(ownerId ->
                         GetCreatureRequest.builder()
-                                .withUserEmail(claims.get("email"))
+                                .withUserEmail(ownerId)
                                 .build());
 
                 return input.fromPath(path ->

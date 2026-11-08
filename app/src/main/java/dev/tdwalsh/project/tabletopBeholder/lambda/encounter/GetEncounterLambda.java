@@ -17,9 +17,9 @@ public class GetEncounterLambda
     public LambdaResponse handleRequest(AuthenticatedLambdaRequest<GetEncounterRequest> input, Context context) {
         return super.runActivity(
             () -> {
-                GetEncounterRequest stageRequest = input.fromUserClaims(claims ->
+                GetEncounterRequest stageRequest = input.fromOwnerId(ownerId ->
                         GetEncounterRequest.builder()
-                                .withUserEmail(claims.get("email"))
+                                .withUserEmail(ownerId)
                                 .build());
 
                 return input.fromPath(path ->

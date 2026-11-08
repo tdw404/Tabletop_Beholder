@@ -22,9 +22,9 @@ public class CreateTemplateCreatureLambda
                                 .withSlug(path.get("slug"))
                                 .build());
 
-                return input.fromUserClaims(claims ->
+                return input.fromOwnerId(ownerId ->
                         CreateTemplateCreatureRequest.builder()
-                                .withUserEmail(claims.get("email"))
+                                .withUserEmail(ownerId)
                                 .withSlug(stageRequest.getSlug())
                                 .build());
             },

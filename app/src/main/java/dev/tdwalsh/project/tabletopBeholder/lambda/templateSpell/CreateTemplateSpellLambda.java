@@ -22,9 +22,9 @@ public class CreateTemplateSpellLambda
                                 .withSlug(path.get("slug"))
                                 .build());
 
-                return input.fromUserClaims(claims ->
+                return input.fromOwnerId(ownerId ->
                         CreateTemplateSpellRequest.builder()
-                                .withUserEmail(claims.get("email"))
+                                .withUserEmail(ownerId)
                                 .withSlug(stageRequest.getSlug())
                                 .build());
             },

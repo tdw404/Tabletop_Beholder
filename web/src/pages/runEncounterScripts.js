@@ -333,12 +333,14 @@ const EMPTY_DATASTORE_STATE = {
             const updated = await request();
             if (!updated) {
                 const refreshed = await this.encounterClient.getSingleEncounter(previous.objectId);
-                if (!refreshed) this.combatUncertain = true;
-                if (refreshed?.turnQueue?.length && refreshed.turnQueue.every(id => refreshed.creatureMap?.[id])) {
+                const canResume = refreshed?.turnQueue?.length
+                    && refreshed.turnQueue.every(id => refreshed.creatureMap?.[id]);
+                this.combatUncertain = !canResume;
+                if (canResume) {
                     this.dataStore.set([ENCOUNTER_KEY], refreshed);
                     this.populateAccordions();
                 }
-                feedback.textContent = refreshed
+                feedback.textContent = canResume
                     ? 'Save was not confirmed. The saved encounter was reloaded. Check it before retrying.'
                     : 'Could not confirm the save. Reload this page before trying again.';
                 return false;

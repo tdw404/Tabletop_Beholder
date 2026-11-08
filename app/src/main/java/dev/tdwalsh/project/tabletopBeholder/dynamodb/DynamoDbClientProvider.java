@@ -1,39 +1,32 @@
 package dev.tdwalsh.project.tabletopBeholder.dynamodb;
 
-import com.amazonaws.auth.DefaultAWSCredentialsProviderChain;
-import com.amazonaws.regions.Regions;
-import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
-import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClientBuilder;
+import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
+import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
+import software.amazon.awssdk.http.urlconnection.UrlConnectionHttpClient;
+import software.amazon.awssdk.regions.Region;
+import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
+import software.amazon.awssdk.services.dynamodb.DynamoDbClientBuilder;
 
-/**
- * Provides an {@code AmazonDynamoDB} client using default AWS credentials provider chain.
- */
+import java.net.URI;
+import java.util.Set;
+
 public class DynamoDbClientProvider {
+    public static DynamoDbClient getDynamoDBClient() {
+        DynamoDbClientBuilder builder = DynamoDbClient.builder()
+                .httpClientBuilder(UrlConnectionHttpClient.builder());
 
-    /**
-     * Returns DynamoDB client using default region.
-     * @return AmazonDynamoDB
-     */
-    public static AmazonDynamoDB getDynamoDBClient() {
-        return getDynamoDBClient(Regions.US_EAST_2);
-    }
-
-    /**
-     * Returns DynamoDB client using default region.
-     * @param region If present, will be used as the region for the DynamoDB client
-     * @return AmazonDynamoDB
-     */
-    public static AmazonDynamoDB getDynamoDBClient(Regions region) {
-        if (null == region) {
-            throw new IllegalArgumentException("region cannot be null");
+        String localEndpoint = System.getenv("DYNAMODB_ENDPOINT");
+        if (localEndpoint != null && !localEndpoint.isBlank()) {
+            URI endpoint = URI.create(localEndpoint);
+            if (!"http".equals(endpoint.getScheme()) || endpoint.getHost() == null
+                    || !Set.of("localhost", "127.0.0.1", "[::1]").contains(endpoint.getHost())) {
+                throw new IllegalArgumentException("DYNAMODB_ENDPOINT must use HTTP on loopback.");
+            }
+            builder.endpointOverride(endpoint)
+                    .region(Region.US_EAST_2)
+                    .credentialsProvider(StaticCredentialsProvider.create(AwsBasicCredentials.create("local", "local")));
         }
 
-        return AmazonDynamoDBClientBuilder
-                .standard()
-                // this will use multiple providers to look for AWS credentials
-                .withCredentials(DefaultAWSCredentialsProviderChain.getInstance())
-                // This should be the same region the CloudFormation stack with tables was deployed in
-                .withRegion(region)
-                .build();
+        return builder.build();
     }
 }

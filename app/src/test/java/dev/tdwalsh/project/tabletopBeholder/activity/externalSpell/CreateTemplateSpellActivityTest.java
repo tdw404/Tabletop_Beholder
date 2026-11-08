@@ -58,7 +58,7 @@ public class CreateTemplateSpellActivityTest {
         CreateTemplateSpellResult result = createTemplateSpellActivity.handleRequest(createTemplateSpellRequest);
 
         //THEN
-        verify(spellDao, times(1)).writeObject(any(Spell.class));
+        verify(spellDao, times(1)).createIfAbsent(any(Spell.class));
         assertEquals(templateSpell.getName().toLowerCase(), result.getSpell().getObjectName().toLowerCase(), "Expected details of created object to match template");
     }
 

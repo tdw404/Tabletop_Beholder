@@ -11,6 +11,8 @@ import com.amazonaws.services.lambda.runtime.RequestHandler;
 
 import org.json.JSONObject;
 
+import java.util.Map;
+
 public class RunEncounterLambda
         extends LambdaActivityRunner<RunEncounterRequest, RunEncounterResult>
         implements RequestHandler<AuthenticatedLambdaRequest<RunEncounterRequest>, LambdaResponse> {
@@ -19,9 +21,9 @@ public class RunEncounterLambda
     public LambdaResponse handleRequest(AuthenticatedLambdaRequest<RunEncounterRequest> input, Context context) {
         return super.runActivity(
             () -> {
-                RunEncounterRequest claimsRequest = input.fromUserClaims(claims ->
+                RunEncounterRequest claimsRequest = input.fromOwnerId(ownerId ->
                         RunEncounterRequest.builder()
-                                .withUserEmail(claims.get("email"))
+                                .withUserEmail(ownerId)
                                 .build());
                 RunEncounterRequest queryRequest = input.fromQuery(query ->
                         RunEncounterRequest.builder()
@@ -32,7 +34,7 @@ public class RunEncounterLambda
                             .withUserEmail(claimsRequest.getUserEmail())
                             .withEncounterId(path.get("encounterId"))
                             .withActivity(queryRequest.getActivity())
-                            .withBody(new JSONObject(input.getBody()))
+                            .withBody(new JSONObject(input.readJsonBody(Map.class)))
                             .build());
             },
             (request, serviceComponent) ->

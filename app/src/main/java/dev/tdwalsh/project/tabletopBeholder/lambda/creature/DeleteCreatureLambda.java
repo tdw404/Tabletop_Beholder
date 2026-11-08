@@ -17,9 +17,9 @@ public class DeleteCreatureLambda
     public LambdaResponse handleRequest(AuthenticatedLambdaRequest<DeleteCreatureRequest> input, Context context) {
         return super.runActivity(
             () -> {
-                DeleteCreatureRequest stageRequest = input.fromUserClaims(claims ->
+                DeleteCreatureRequest stageRequest = input.fromOwnerId(ownerId ->
                         DeleteCreatureRequest.builder()
-                                .withUserEmail(claims.get("email"))
+                                .withUserEmail(ownerId)
                                 .build());
 
                 return input.fromPath(path ->

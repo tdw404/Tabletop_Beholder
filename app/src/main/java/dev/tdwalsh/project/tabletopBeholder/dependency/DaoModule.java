@@ -2,8 +2,7 @@ package dev.tdwalsh.project.tabletopBeholder.dependency;
 
 import dev.tdwalsh.project.tabletopBeholder.dynamodb.DynamoDbClientProvider;
 
-import com.amazonaws.regions.Regions;
-import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
+import software.amazon.awssdk.enhanced.dynamodb.DynamoDbEnhancedClient;
 import dagger.Module;
 import dagger.Provides;
 
@@ -15,13 +14,15 @@ import javax.inject.Singleton;
 @Module
 public class DaoModule {
     /**
-     * Provides a DynamoDBMapper singleton instance.
+     * Provides a DynamoDbEnhancedClient singleton instance.
      *
-     * @return DynamoDBMapper object
+     * @return DynamoDbEnhancedClient object
      */
     @Singleton
     @Provides
-    public DynamoDBMapper provideDynamoDBMapper() {
-        return new DynamoDBMapper(DynamoDbClientProvider.getDynamoDBClient(Regions.US_EAST_2));
+    public DynamoDbEnhancedClient provideDynamoDbEnhancedClient() {
+        return DynamoDbEnhancedClient.builder()
+                .dynamoDbClient(DynamoDbClientProvider.getDynamoDBClient())
+                .build();
     }
 }

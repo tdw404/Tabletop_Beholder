@@ -2,126 +2,75 @@ package dev.tdwalsh.project.tabletopBeholder.dynamodb.dao;
 
 import dev.tdwalsh.project.tabletopBeholder.dynamodb.models.BeholderObject;
 import dev.tdwalsh.project.tabletopBeholder.dynamodb.models.Encounter;
+import software.amazon.awssdk.enhanced.dynamodb.DynamoDbEnhancedClient;
+import software.amazon.awssdk.enhanced.dynamodb.Expression;
+import software.amazon.awssdk.enhanced.dynamodb.Key;
+import software.amazon.awssdk.enhanced.dynamodb.model.QueryConditional;
+import software.amazon.awssdk.services.dynamodb.model.AttributeValue;
+import software.amazon.awssdk.services.dynamodb.model.ReturnValue;
 
-import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
-import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBQueryExpression;
-import com.amazonaws.services.dynamodbv2.model.AttributeValue;
-
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
+
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
-/**
- * Stores, reads, updates, or deletes Encounter models in DynamoDB using {@link Encounter}.
- */
-
 @Singleton
-public class EncounterDao implements BeholderDao {
-    private final DynamoDBMapper mapper;
-
-    /**
-     * Instantiates a EncounterDao object.
-     *
-     * @param mapper the {@link DynamoDBMapper} used to interact with the Organizations table
-     */
-
+public class EncounterDao extends DynamoDbDao<Encounter> {
     @Inject
-    public EncounterDao(DynamoDBMapper mapper) {
-        this.mapper = mapper;
+    public EncounterDao(DynamoDbEnhancedClient client) {
+        super(client, Encounter.TABLE_NAME, Encounter.class, null);
     }
-
-    /**
-     * Retrieves a encounter by objectId and userEmail.
-     *
-     * @param objectId The objectId to search
-     * @param userEmail The userEmail to search
-     * @return A single {@link Encounter} if found, or null if none found
-     */
 
     @Override
     public Encounter getSingle(String userEmail, String objectId) {
-        return mapper.load(Encounter.class, userEmail, objectId);
+        return table.getItem(request -> request.key(key(userEmail, objectId)).consistentRead(true));
     }
-
-    /**
-     * Retrieves all encounters in database belonging to the provided userEmail.
-     *
-     * @param userEmail The userEmail to search by
-     * @return A list of {@link Encounter}, or an empty list if none found
-     */
 
     @Override
-    public List<? extends BeholderObject> getMultiple(String userEmail) {
-        Encounter encounter = new Encounter();
-        encounter.setUserEmail(userEmail);
-        DynamoDBQueryExpression<Encounter> queryExpression = new DynamoDBQueryExpression<Encounter>()
-                .withHashKeyValues(encounter);
-        return mapper.query(Encounter.class, queryExpression);
-    }
+    public void writeObject(BeholderObject object) {
+        Encounter encounter = (Encounter) object;
+        Long version = encounter.getVersion();
+        Expression.Builder condition = Expression.builder();
+        if (version == null) {
+            condition.expression("attribute_exists(objectId) AND attribute_not_exists(#version)");
+        } else {
+            condition.expression("attribute_exists(objectId) AND #version = :version")
+                    .putExpressionValue(":version", AttributeValue.fromN(version.toString()));
+        }
+        Expression expectedVersion = condition.putExpressionName("#version", "version").build();
 
-    /**
-     * Updates a DynamoDB Encounter record with provided {@link Encounter} object, or creates a new record if one does not exist.
-     *
-     * @param beholderObject The {@link Encounter} to be saved
-     */
+        encounter.setVersion(version == null ? 1L : version + 1);
+        try {
+            table.updateItem(request -> request.item(encounter)
+                    .conditionExpression(expectedVersion).returnValues(ReturnValue.NONE));
+        } catch (RuntimeException exception) {
+            encounter.setVersion(version);
+            throw exception;
+        }
+    }
 
     @Override
-    public void writeObject(BeholderObject beholderObject) {
-        mapper.save((Encounter) beholderObject);
+    public void createIfAbsent(BeholderObject object) {
+        ((Encounter) object).setVersion(1L);
+        super.createIfAbsent(object);
     }
 
-    /**
-     * Removes a DynamoDB Encounter record matching provided userEmail and objectId.
-     *
-     * @param objectId The objectId to search
-     * @param userEmail The userEmail to search
-     */
-
-    @Override
-    public void deleteObject(String userEmail, String objectId) {
-        Encounter encounter = new Encounter();
-        encounter.setUserEmail(userEmail);
-        encounter.setObjectId(objectId);
-        mapper.delete(encounter);
-    }
-
-    /**
-     * Searches to determine whether a name exists already.
-     *
-     * @param userEmail The userEmail to search
-     * @param objectName The objectName to search
-     */
     @Override
     public Boolean objectNameExists(String userEmail, String objectName) {
-        Map<String, AttributeValue> valueMap = new HashMap<>();
-        valueMap.put(":userEmail", new AttributeValue(userEmail));
-        valueMap.put(":objectName", new AttributeValue(objectName));
-        DynamoDBQueryExpression<Encounter> queryExpression = new DynamoDBQueryExpression<Encounter>()
-                .withIndexName("EncountersSortByNameIndex")
-                .withConsistentRead(false)
-                .withKeyConditionExpression("userEmail = :userEmail and objectName = :objectName")
-                .withExpressionAttributeValues(valueMap);
-        return !mapper.query(Encounter.class, queryExpression).isEmpty();
+        // The encounter table has a session index but no name index.
+        Key owner = Key.builder().partitionValue(userEmail).build();
+        Expression nameMatches = Expression.builder()
+                .expression("objectName = :name")
+                .expressionValues(Map.of(":name", AttributeValue.fromS(objectName)))
+                .build();
+        return table.query(request -> request.queryConditional(QueryConditional.keyEqualTo(owner))
+                .filterExpression(nameMatches)).items().iterator().hasNext();
     }
 
-    /**
-     * Searches for all encounters belonging to a session.
-     *
-     * @param userEmail The userEmail to search
-     * @param sessionId The session to search
-     * @return List of encounters.
-     */
     public List<Encounter> getEncounterBySession(String userEmail, String sessionId) {
-        Map<String, AttributeValue> valueMap = new HashMap<>();
-        valueMap.put(":userEmail", new AttributeValue(userEmail));
-        valueMap.put(":sessionId", new AttributeValue(sessionId));
-        DynamoDBQueryExpression<Encounter> queryExpression = new DynamoDBQueryExpression<Encounter>()
-                .withIndexName("EncountersSortBySessionIndex")
-                .withConsistentRead(false)
-                .withKeyConditionExpression("userEmail = :userEmail and sessionId = :sessionId")
-                .withExpressionAttributeValues(valueMap);
-        return mapper.query(Encounter.class, queryExpression);
+        return queryIndex("EncountersSortBySessionIndex", userEmail, sessionId)
+                .items().stream().collect(Collectors.toList());
     }
 }

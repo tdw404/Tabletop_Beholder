@@ -2,14 +2,19 @@ package dev.tdwalsh.project.tabletopBeholder.converters;
 
 import dev.tdwalsh.project.tabletopBeholder.exceptions.SerializationException;
 
-import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBTypeConverter;
+import software.amazon.awssdk.enhanced.dynamodb.EnhancedType;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.util.Map;
 
-public class IntIntMapConverter implements DynamoDBTypeConverter<String, Map<Integer, Integer>> {
+public class IntIntMapConverter implements StringAttributeConverter<Map<Integer, Integer>> {
+    @Override
+    public EnhancedType<Map<Integer, Integer>> type() {
+        return new EnhancedType<Map<Integer, Integer>>() { };
+    }
+
     private ObjectMapper objectMapper = new ObjectMapper();
     @Override
     public String convert(Map<Integer, Integer> integerIntegerMap) {

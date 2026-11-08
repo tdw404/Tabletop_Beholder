@@ -19,9 +19,9 @@ public class CreateCreatureLambda
             () -> {
                 CreateCreatureRequest stageRequest = input.fromBody(CreateCreatureRequest.class);
 
-                return input.fromUserClaims(claims ->
+                return input.fromOwnerId(ownerId ->
                         CreateCreatureRequest.builder()
-                                .withUserEmail(claims.get("email"))
+                                .withUserEmail(ownerId)
                                 .withCreature(stageRequest.getCreature())
                                 .build());
             },

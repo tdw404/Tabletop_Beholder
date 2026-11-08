@@ -7,23 +7,23 @@ import dev.tdwalsh.project.tabletopBeholder.converters.SpellConverter;
 import dev.tdwalsh.project.tabletopBeholder.converters.StringIntMapConverter;
 import dev.tdwalsh.project.tabletopBeholder.converters.ZonedDateTimeConverter;
 
-import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBAttribute;
-import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBHashKey;
-import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBIndexHashKey;
-import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBIndexRangeKey;
-import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapperFieldModel;
-import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBRangeKey;
-import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBTable;
-import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBTypeConverted;
-import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBTyped;
+import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbAttribute;
+import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbBean;
+import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbConvertedBy;
+import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbPartitionKey;
+import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbSecondaryPartitionKey;
+import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbSecondarySortKey;
+import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbSortKey;
+
 import org.apache.commons.text.WordUtils;
 
 import java.time.ZonedDateTime;
 import java.util.Map;
 import java.util.Objects;
 
-@DynamoDBTable(tableName = "TabletopBeholder_CreatureTable")
+@DynamoDbBean
 public class Creature implements BeholderObject {
+    public static final String TABLE_NAME = "TabletopBeholder_CreatureTable";
     private String userEmail;
     private String objectId;
     private String encounterCreatureId;
@@ -72,8 +72,8 @@ public class Creature implements BeholderObject {
     private ZonedDateTime editDateTime;
 
     @Override
-    @DynamoDBHashKey(attributeName = "userEmail")
-    @DynamoDBIndexHashKey(globalSecondaryIndexName = "CreaturesSortByNameIndex")
+    @DynamoDbPartitionKey
+    @DynamoDbSecondaryPartitionKey(indexNames = "CreaturesSortByNameIndex")
     public String getUserEmail() {
         return userEmail;
     }
@@ -83,7 +83,7 @@ public class Creature implements BeholderObject {
     }
 
     @Override
-    @DynamoDBRangeKey(attributeName = "objectId")
+    @DynamoDbSortKey
     public String getObjectId() {
         return objectId;
     }
@@ -93,16 +93,15 @@ public class Creature implements BeholderObject {
     }
 
     @Override
-    @DynamoDBIndexRangeKey(globalSecondaryIndexName = "CreaturesSortByNameIndex", attributeName = "objectName")
+    @DynamoDbSecondarySortKey(indexNames = "CreaturesSortByNameIndex")
     public String getObjectName() {
         return objectName;
     }
 
     public void setObjectName(String objectName) {
-        this.objectName = WordUtils.capitalizeFully(objectName);
+        this.objectName = "".equals(objectName) ? null : WordUtils.capitalizeFully(objectName);
     }
 
-    @DynamoDBAttribute(attributeName = "encounterCreatureId")
     public String getEncounterCreatureId() {
         return encounterCreatureId;
     }
@@ -111,7 +110,6 @@ public class Creature implements BeholderObject {
         this.encounterCreatureId = encounterCreatureId;
     }
 
-    @DynamoDBAttribute(attributeName = "encounterCreatureName")
     public String getEncounterCreatureName() {
         return encounterCreatureName;
     }
@@ -120,8 +118,6 @@ public class Creature implements BeholderObject {
         this.encounterCreatureName = encounterCreatureName;
     }
 
-    @DynamoDBAttribute(attributeName = "draftStatus")
-    @DynamoDBTyped(DynamoDBMapperFieldModel.DynamoDBAttributeType.BOOL)
     public Boolean getDraftStatus() {
         return draftStatus;
     }
@@ -130,8 +126,6 @@ public class Creature implements BeholderObject {
         this.draftStatus = draftStatus;
     }
 
-    @DynamoDBAttribute(attributeName = "isPC")
-    @DynamoDBTyped(DynamoDBMapperFieldModel.DynamoDBAttributeType.BOOL)
     public Boolean getIsPC() {
         return isPC;
     }
@@ -140,7 +134,6 @@ public class Creature implements BeholderObject {
         this.isPC = isPC;
     }
 
-    @DynamoDBAttribute(attributeName = "pcLevel")
     public Integer getPcLevel() {
         return pcLevel;
     }
@@ -149,7 +142,6 @@ public class Creature implements BeholderObject {
         this.pcLevel = pcLevel;
     }
 
-    @DynamoDBAttribute(attributeName = "sourceBook")
     public String getSourceBook() {
         return sourceBook;
     }
@@ -158,7 +150,6 @@ public class Creature implements BeholderObject {
         this.sourceBook = sourceBook;
     }
 
-    @DynamoDBAttribute(attributeName = "creatureDescription")
     public String getCreatureDescription() {
         return creatureDescription;
     }
@@ -167,7 +158,6 @@ public class Creature implements BeholderObject {
         this.creatureDescription = creatureDescription;
     }
 
-    @DynamoDBAttribute(attributeName = "size")
     public String getSize() {
         return size;
     }
@@ -176,7 +166,6 @@ public class Creature implements BeholderObject {
         this.size = size;
     }
 
-    @DynamoDBAttribute(attributeName = "type")
     public String getType() {
         return type;
     }
@@ -185,7 +174,6 @@ public class Creature implements BeholderObject {
         this.type = type;
     }
 
-    @DynamoDBAttribute(attributeName = "subType")
     public String getSubType() {
         return subType;
     }
@@ -194,7 +182,6 @@ public class Creature implements BeholderObject {
         this.subType = subType;
     }
 
-    @DynamoDBAttribute(attributeName = "group")
     public String getGroup() {
         return group;
     }
@@ -203,7 +190,7 @@ public class Creature implements BeholderObject {
         this.group = group;
     }
 
-    @DynamoDBAttribute(attributeName = "creatureAlignment")
+    @DynamoDbAttribute("creatureAlignment")
     public String getAlignment() {
         return alignment;
     }
@@ -212,7 +199,7 @@ public class Creature implements BeholderObject {
         this.alignment = alignment;
     }
 
-    @DynamoDBAttribute(attributeName = "creatureAC")
+    @DynamoDbAttribute("creatureAC")
     public Integer getArmorClass() {
         return armorClass;
     }
@@ -221,7 +208,7 @@ public class Creature implements BeholderObject {
         this.armorClass = armorClass;
     }
 
-    @DynamoDBAttribute(attributeName = "creatureArmor")
+    @DynamoDbAttribute("creatureArmor")
     public String getArmorType() {
         return armorType;
     }
@@ -230,8 +217,7 @@ public class Creature implements BeholderObject {
         this.armorType = armorType;
     }
 
-    @DynamoDBAttribute(attributeName = "activeEffects")
-    @DynamoDBTypeConverted(converter = EffectConverter.class)
+    @DynamoDbConvertedBy(EffectConverter.class)
     public Map<String, Effect> getActiveEffects() {
         return activeEffects;
     }
@@ -240,8 +226,6 @@ public class Creature implements BeholderObject {
         this.activeEffects = activeEffects;
     }
 
-    @DynamoDBAttribute(attributeName = "knockedOut")
-    @DynamoDBTyped(DynamoDBMapperFieldModel.DynamoDBAttributeType.BOOL)
     public Boolean getKnockedOut() {
         return knockedOut;
     }
@@ -250,8 +234,6 @@ public class Creature implements BeholderObject {
         this.knockedOut = knockedOut;
     }
 
-    @DynamoDBAttribute(attributeName = "dead")
-    @DynamoDBTyped(DynamoDBMapperFieldModel.DynamoDBAttributeType.BOOL)
     public Boolean getDead() {
         return dead;
     }
@@ -260,7 +242,6 @@ public class Creature implements BeholderObject {
         this.dead = dead;
     }
 
-    @DynamoDBAttribute(attributeName = "deathSaves")
     public Integer getDeathSaves() {
         return deathSaves;
     }
@@ -269,7 +250,6 @@ public class Creature implements BeholderObject {
         this.deathSaves = deathSaves;
     }
 
-    @DynamoDBAttribute(attributeName = "hitPoints")
     public Integer getHitPoints() {
         return hitPoints;
     }
@@ -278,7 +258,6 @@ public class Creature implements BeholderObject {
         this.hitPoints = hitPoints;
     }
 
-    @DynamoDBAttribute(attributeName = "currentHitPoints")
     public Integer getCurrentHitPoints() {
         return currentHitPoints;
     }
@@ -287,7 +266,6 @@ public class Creature implements BeholderObject {
         this.currentHitPoints = currentHitPoints;
     }
 
-    @DynamoDBAttribute(attributeName = "hitDice")
     public String getHitDice() {
         return hitDice;
     }
@@ -296,7 +274,6 @@ public class Creature implements BeholderObject {
         this.hitDice = hitDice;
     }
 
-    @DynamoDBAttribute(attributeName = "currentHitDice")
     public Integer getCurrentHitDice() {
         return currentHitDice;
     }
@@ -305,8 +282,7 @@ public class Creature implements BeholderObject {
         this.currentHitDice = currentHitDice;
     }
 
-    @DynamoDBAttribute(attributeName = "speedMap")
-    @DynamoDBTypeConverted(converter = StringIntMapConverter.class)
+    @DynamoDbConvertedBy(StringIntMapConverter.class)
     public Map<String, Integer> getSpeedMap() {
         return speedMap;
     }
@@ -315,8 +291,7 @@ public class Creature implements BeholderObject {
         this.speedMap = speedMap;
     }
 
-    @DynamoDBAttribute(attributeName = "statMap")
-    @DynamoDBTypeConverted(converter = StringIntMapConverter.class)
+    @DynamoDbConvertedBy(StringIntMapConverter.class)
     public Map<String, Integer> getStatMap() {
         return statMap;
     }
@@ -325,8 +300,7 @@ public class Creature implements BeholderObject {
         this.statMap = statMap;
     }
 
-    @DynamoDBAttribute(attributeName = "saveMap")
-    @DynamoDBTypeConverted(converter = StringIntMapConverter.class)
+    @DynamoDbConvertedBy(StringIntMapConverter.class)
     public Map<String, Integer> getSaveMap() {
         return saveMap;
     }
@@ -335,7 +309,6 @@ public class Creature implements BeholderObject {
         this.saveMap = saveMap;
     }
 
-    @DynamoDBAttribute(attributeName = "passivePerception")
     public Integer getPassivePerception() {
         return passivePerception;
     }
@@ -344,8 +317,7 @@ public class Creature implements BeholderObject {
         this.passivePerception = passivePerception;
     }
 
-    @DynamoDBAttribute(attributeName = "skillsMap")
-    @DynamoDBTypeConverted(converter = StringIntMapConverter.class)
+    @DynamoDbConvertedBy(StringIntMapConverter.class)
     public Map<String, Integer> getSkillsMap() {
         return skillsMap;
     }
@@ -354,7 +326,6 @@ public class Creature implements BeholderObject {
         this.skillsMap = skillsMap;
     }
 
-    @DynamoDBAttribute(attributeName = "vulnerabilities")
     public String getVulnerabilities() {
         return vulnerabilities;
     }
@@ -363,7 +334,6 @@ public class Creature implements BeholderObject {
         this.vulnerabilities = vulnerabilities;
     }
 
-    @DynamoDBAttribute(attributeName = "resistances")
     public String getResistances() {
         return resistances;
     }
@@ -372,7 +342,6 @@ public class Creature implements BeholderObject {
         this.resistances = resistances;
     }
 
-    @DynamoDBAttribute(attributeName = "immunities")
     public String getImmunities() {
         return immunities;
     }
@@ -381,7 +350,6 @@ public class Creature implements BeholderObject {
         this.immunities = immunities;
     }
 
-    @DynamoDBAttribute(attributeName = "conditionImmunities")
     public String getConditionImmunities() {
         return conditionImmunities;
     }
@@ -390,7 +358,6 @@ public class Creature implements BeholderObject {
         this.conditionImmunities = conditionImmunities;
     }
 
-    @DynamoDBAttribute(attributeName = "senses")
     public String getSenses() {
         return senses;
     }
@@ -399,7 +366,6 @@ public class Creature implements BeholderObject {
         this.senses = senses;
     }
 
-    @DynamoDBAttribute(attributeName = "languages")
     public String getLanguages() {
         return languages;
     }
@@ -408,7 +374,6 @@ public class Creature implements BeholderObject {
         this.languages = languages;
     }
 
-    @DynamoDBAttribute(attributeName = "challengeRating")
     public Double getChallengeRating() {
         return challengeRating;
     }
@@ -417,8 +382,7 @@ public class Creature implements BeholderObject {
         this.challengeRating = challengeRating;
     }
 
-    @DynamoDBAttribute(attributeName = "actionMap")
-    @DynamoDBTypeConverted(converter = ActionConverter.class)
+    @DynamoDbConvertedBy(ActionConverter.class)
     public Map<String, Action> getActionMap() {
         return actionMap;
     }
@@ -427,7 +391,6 @@ public class Creature implements BeholderObject {
         this.actionMap = actionMap;
     }
 
-    @DynamoDBAttribute(attributeName = "legendaryDesc")
     public String getLegendaryDesc() {
         return legendaryDesc;
     }
@@ -436,8 +399,7 @@ public class Creature implements BeholderObject {
         this.legendaryDesc = legendaryDesc;
     }
 
-    @DynamoDBAttribute(attributeName = "spellMap")
-    @DynamoDBTypeConverted(converter = SpellConverter.class)
+    @DynamoDbConvertedBy(SpellConverter.class)
     public Map<String, Spell> getSpellMap() {
         return spellMap;
     }
@@ -446,8 +408,7 @@ public class Creature implements BeholderObject {
         this.spellMap = spellMap;
     }
 
-    @DynamoDBAttribute(attributeName = "spellSlots")
-    @DynamoDBTypeConverted(converter =  IntIntMapConverter.class)
+    @DynamoDbConvertedBy(IntIntMapConverter.class)
     public Map<Integer, Integer> getSpellSlots() {
         return spellSlots;
     }
@@ -456,7 +417,6 @@ public class Creature implements BeholderObject {
         this.spellSlots = spellSlots;
     }
 
-    @DynamoDBAttribute(attributeName = "spellcastingAbility")
     public String getSpellcastingAbility() {
         return spellcastingAbility;
     }
@@ -465,7 +425,6 @@ public class Creature implements BeholderObject {
         this.spellcastingAbility = spellcastingAbility;
     }
 
-    @DynamoDBAttribute(attributeName = "spellSaveDC")
     public String getSpellSaveDC() {
         return spellSaveDC;
     }
@@ -474,7 +433,6 @@ public class Creature implements BeholderObject {
         this.spellSaveDC = spellSaveDC;
     }
 
-    @DynamoDBAttribute(attributeName = "spellAttackModifier")
     public String getSpellAttackModifier() {
         return spellAttackModifier;
     }
@@ -482,8 +440,7 @@ public class Creature implements BeholderObject {
     public void setSpellAttackModifier(String spellAttackModifier) {
         this.spellAttackModifier = spellAttackModifier;
     }
-    @DynamoDBAttribute(attributeName = "createDateTime")
-    @DynamoDBTypeConverted(converter = ZonedDateTimeConverter.class)
+    @DynamoDbConvertedBy(ZonedDateTimeConverter.class)
     public ZonedDateTime getCreateDateTime() {
         return createDateTime;
     }
@@ -493,8 +450,7 @@ public class Creature implements BeholderObject {
         this.createDateTime = createDateTime;
     }
 
-    @DynamoDBAttribute(attributeName = "editDateTime")
-    @DynamoDBTypeConverted(converter = ZonedDateTimeConverter.class)
+    @DynamoDbConvertedBy(ZonedDateTimeConverter.class)
     public ZonedDateTime getEditDateTime() {
         return editDateTime;
     }

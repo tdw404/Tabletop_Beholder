@@ -17,9 +17,9 @@ public class GetSpellLambda
     public LambdaResponse handleRequest(AuthenticatedLambdaRequest<GetSpellRequest> input, Context context) {
         return super.runActivity(
             () -> {
-                GetSpellRequest stageRequest = input.fromUserClaims(claims ->
+                GetSpellRequest stageRequest = input.fromOwnerId(ownerId ->
                         GetSpellRequest.builder()
-                        .withUserEmail(claims.get("email"))
+                        .withUserEmail(ownerId)
                         .build());
 
                 return input.fromPath(path ->

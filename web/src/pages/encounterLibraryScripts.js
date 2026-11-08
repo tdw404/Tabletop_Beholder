@@ -276,14 +276,20 @@ const EMPTY_DATASTORE_STATE = {
         this.savingEncounter = true;
         feedback.textContent = 'Saving…';
         let saved;
+        let conflict = false;
         try {
-            saved = await this.encounterClient.updateEncounter({...encounter, objectName: name.value.trim(), sessionId: session});
+            saved = await this.encounterClient.updateEncounter(
+                {...encounter, objectName: name.value.trim(), sessionId: session},
+                error => { conflict = error.response?.status === 409; }
+            );
         } finally {
             this.savingEncounter = false;
             controls.forEach(control => {control.disabled = false;});
         }
         if (!saved) {
-            feedback.textContent = 'Save failed. Your edits are still here.';
+            feedback.textContent = conflict
+                ? 'This encounter changed. Your edits are still here. Reload the page to review the saved encounter before editing again.'
+                : 'Save failed. Your edits are still here.';
             return;
         }
         this.encounterDirty = false;

@@ -17,9 +17,9 @@ public class GetTemplateSpellLambda
     public LambdaResponse handleRequest(AuthenticatedLambdaRequest<GetTemplateSpellRequest> input, Context context) {
         return super.runActivity(
             () -> {
-                GetTemplateSpellRequest stageRequest = input.fromUserClaims(claims ->
+                GetTemplateSpellRequest stageRequest = input.fromOwnerId(ownerId ->
                             GetTemplateSpellRequest.builder()
-                            .withUserEmail(claims.get("email"))
+                            .withUserEmail(ownerId)
                             .build());
 
                 return input.fromPath(path ->

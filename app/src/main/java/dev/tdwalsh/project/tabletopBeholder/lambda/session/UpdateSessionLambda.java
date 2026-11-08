@@ -19,9 +19,9 @@ public class UpdateSessionLambda
             () -> {
                 UpdateSessionRequest stageRequest = input.fromBody(UpdateSessionRequest.class);
 
-                return input.fromUserClaims(claims ->
+                return input.fromOwnerId(ownerId ->
                         UpdateSessionRequest.builder()
-                                .withUserEmail(claims.get("email"))
+                                .withUserEmail(ownerId)
                                 .withSession(stageRequest.getSession())
                                 .build());
             },

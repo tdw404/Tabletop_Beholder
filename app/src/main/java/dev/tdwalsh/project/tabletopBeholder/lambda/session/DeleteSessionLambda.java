@@ -17,9 +17,9 @@ public class DeleteSessionLambda
     public LambdaResponse handleRequest(AuthenticatedLambdaRequest<DeleteSessionRequest> input, Context context) {
         return super.runActivity(
             () -> {
-                DeleteSessionRequest stageRequest = input.fromUserClaims(claims ->
+                DeleteSessionRequest stageRequest = input.fromOwnerId(ownerId ->
                         DeleteSessionRequest.builder()
-                                .withUserEmail(claims.get("email"))
+                                .withUserEmail(ownerId)
                                 .build());
 
                 return input.fromPath(path ->

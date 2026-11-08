@@ -3,7 +3,7 @@ package dev.tdwalsh.project.tabletopBeholder.converters;
 import dev.tdwalsh.project.tabletopBeholder.dynamodb.models.Spell;
 import dev.tdwalsh.project.tabletopBeholder.exceptions.SerializationException;
 
-import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBTypeConverter;
+import software.amazon.awssdk.enhanced.dynamodb.EnhancedType;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -11,7 +11,12 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
 import java.util.Map;
 
-public class SpellConverter implements DynamoDBTypeConverter<String, Map<String, Spell>> {
+public class SpellConverter implements StringAttributeConverter<Map<String, Spell>> {
+    @Override
+    public EnhancedType<Map<String, Spell>> type() {
+        return new EnhancedType<Map<String, Spell>>() { };
+    }
+
     private JavaTimeModule javaTimeModule = new JavaTimeModule();
     private ObjectMapper objectMapper = new ObjectMapper().registerModule(javaTimeModule);
     @Override

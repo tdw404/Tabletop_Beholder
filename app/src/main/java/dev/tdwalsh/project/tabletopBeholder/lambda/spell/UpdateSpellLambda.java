@@ -19,9 +19,9 @@ public class UpdateSpellLambda
             () -> {
                 UpdateSpellRequest stageRequest = input.fromBody(UpdateSpellRequest.class);
 
-                return input.fromUserClaims(claims ->
+                return input.fromOwnerId(ownerId ->
                         UpdateSpellRequest.builder()
-                                .withUserEmail(claims.get("email"))
+                                .withUserEmail(ownerId)
                                 .withSpell(stageRequest.getSpell())
                                 .build());
             },
