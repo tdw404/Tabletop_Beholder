@@ -24,7 +24,7 @@ import javax.inject.Singleton;
  */
 @Singleton
 public class TemplateCreatureDao {
-    private static final String URI_PATH = "https://api.open5e.com/monsters/";
+    private static final String URI_PATH = "https://api.open5e.com/v1/monsters/";
     private final ObjectMapper objectMapper;
     private final Open5EClient open5EClient;
 
@@ -50,7 +50,7 @@ public class TemplateCreatureDao {
         //Then, converts the result to a model object and returns it
 
         try {
-            HttpResponse<String> response = open5EClient.call(URI_PATH + creatureSlug);
+            HttpResponse<String> response = open5EClient.call(URI_PATH + creatureSlug + "/");
             switch (response.statusCode()) {
                 case 404:
                     throw new MissingResourceException("5E API could not return resource: " + creatureSlug);

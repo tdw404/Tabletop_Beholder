@@ -15,6 +15,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.anyString;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.verify;
 import static org.mockito.MockitoAnnotations.openMocks;
 
 public class TemplateSpellDaoTest {
@@ -40,6 +41,7 @@ public class TemplateSpellDaoTest {
         doReturn("{\"name\": \"testName\"}").when(response).body();
         //WHEN
         TemplateSpell result = dao.getSingle("slug");
+        verify(open5EClient).call("https://api.open5e.com/v1/spells/slug/");
 
         //THEN
         assertEquals("testName", result.getName(), "Expected dao to return single matching result");
@@ -83,7 +85,8 @@ public class TemplateSpellDaoTest {
         doReturn(200).when(response).statusCode();
         doReturn("{\"results\": [{\"name\": \"testName\"}]}").when(response).body();
         //WHEN
-        List<TemplateSpell> result = dao.getMultiple("slug");
+        List<TemplateSpell> result = dao.getMultiple("search=wind dragon&limit=50");
+        verify(open5EClient).call("https://api.open5e.com/v1/spells/?search=wind%20dragon&limit=50");
 
         //THEN
         assertEquals("testName", result.get(0).getName(), "Expected dao to return single matching result");
