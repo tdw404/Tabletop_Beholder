@@ -3,6 +3,8 @@ package dev.tdwalsh.project.tabletopBeholder.activity.runEncounter.activities;
 import dev.tdwalsh.project.tabletopBeholder.dynamodb.models.Creature;
 import dev.tdwalsh.project.tabletopBeholder.dynamodb.models.Effect;
 import dev.tdwalsh.project.tabletopBeholder.dynamodb.models.Encounter;
+import dev.tdwalsh.project.tabletopBeholder.exceptions.MalformedInputException;
+
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.w3c.dom.ls.LSOutput;
@@ -28,7 +30,17 @@ public class RunActivities {
     public Encounter setInitiative(Encounter encounter, JSONObject body) {
         JSONArray array = body.getJSONArray("queueList");
         Queue<String> turnQueue = new ArrayDeque<>();
-        array.forEach(arrayItem -> turnQueue.add(arrayItem.toString()));
+        Set<String> seen = new HashSet<>();
+        for (int index = 0; index < array.length(); index++) {
+            String id = array.getString(index);
+            if (encounter.getCreatureMap() == null || encounter.getCreatureMap().get(id) == null || !seen.add(id)) {
+                throw new MalformedInputException("Initiative must contain distinct creatures in this encounter.");
+            }
+            turnQueue.add(id);
+        }
+        if (turnQueue.isEmpty()) {
+            throw new MalformedInputException("Initiative must contain at least one creature.");
+        }
         encounter.setTurnQueue(turnQueue);
         encounter.setEncounterRound(1);
         encounter.setTopOfOrder(turnQueue.peek());
@@ -44,6 +56,11 @@ public class RunActivities {
     public Encounter nextTurn(Encounter encounter) {
         Queue<String> messageQueue = new PriorityQueue<>();
         Queue<String> turnQueue = encounter.getTurnQueue();
+        if (turnQueue == null || turnQueue.isEmpty() || encounter.getTopOfOrder() == null
+                || encounter.getCreatureMap() == null
+                || turnQueue.stream().anyMatch(id -> encounter.getCreatureMap().get(id) == null)) {
+            throw new MalformedInputException("Set initiative with the current roster before advancing the turn.");
+        }
         String exitingCreatureId = turnQueue.peek();
         turnQueue.add(turnQueue.remove());
         String enteringCreatureId = turnQueue.peek();
@@ -119,11 +136,12 @@ public class RunActivities {
      */
     public Encounter applyDamage(Encounter encounter, JSONObject body) {
         Map<String, Creature> creatureMap = encounter.getCreatureMap();
-        Creature creature = creatureMap.get(body.getString("targetId"));
-        int damageValue = Integer.parseInt(body.getString("damageValue"));
+        Creature creature = requireTarget(creatureMap, body);
+        int damageValue = nonnegativeInteger(body, "damageValue", "Amount");
         if (!creature.getIsPC()) {
-            creature.setCurrentHitPoints(creature.getCurrentHitPoints() - damageValue);
-            if (creature.getCurrentHitPoints() + creature.getHitPoints() < 0) {
+            creature.setCurrentHitPoints((int) Math.max(Integer.MIN_VALUE,
+                    (long) creature.getCurrentHitPoints() - damageValue));
+            if ((long) creature.getCurrentHitPoints() + creature.getHitPoints() < 0) {
                 creature.setKnockedOut(false);
                 creature.setDead(true);
                 creature.setCurrentHitPoints(0);
@@ -145,11 +163,11 @@ public class RunActivities {
      */
     public Encounter heal(Encounter encounter, JSONObject body) {
         Map<String, Creature> creatureMap = encounter.getCreatureMap();
-        Creature creature = creatureMap.get(body.getString("targetId"));
-        int damageValue = Integer.parseInt(body.getString("damageValue"));
+        Creature creature = requireTarget(creatureMap, body);
+        int damageValue = nonnegativeInteger(body, "damageValue", "Amount");
         if (!creature.getIsPC()) {
-            creature.setCurrentHitPoints(Math.min(
-                    creature.getCurrentHitPoints() + damageValue,
+            creature.setCurrentHitPoints((int) Math.min(
+                    (long) creature.getCurrentHitPoints() + damageValue,
                     creature.getHitPoints()));
             creature.setDead(false);
             creature.setKnockedOut(false);
@@ -167,7 +185,7 @@ public class RunActivities {
      */
     public Encounter knockOut(Encounter encounter, JSONObject body) {
         Map<String, Creature> creatureMap = encounter.getCreatureMap();
-        Creature creature = creatureMap.get(body.getString("targetId"));
+        Creature creature = requireTarget(creatureMap, body);
         creature.setKnockedOut(true);
         creature.setDead(false);
         creature.setCurrentHitPoints(0);
@@ -184,7 +202,7 @@ public class RunActivities {
      */
     public Encounter kill(Encounter encounter, JSONObject body) {
         Map<String, Creature> creatureMap = encounter.getCreatureMap();
-        Creature creature = creatureMap.get(body.getString("targetId"));
+        Creature creature = requireTarget(creatureMap, body);
         creature.setKnockedOut(false);
         creature.setDead(true);
         creature.setCurrentHitPoints(0);
@@ -201,18 +219,37 @@ public class RunActivities {
      */
     public Encounter addEffect(Encounter encounter, JSONObject body) {
         Map<String, Creature> creatureMap = encounter.getCreatureMap();
-        Creature creature = creatureMap.get(body.getString("targetId"));
+        Creature creature = requireTarget(creatureMap, body);
         Effect effect = new Effect();
         JSONObject jsonEffect = body.getJSONObject("effect");
-        effect.setObjectId(jsonEffect.getString("objectId"));
-        effect.setEffectName(jsonEffect.getString("effectName"));
-        effect.setTurnDuration(Integer.parseInt(jsonEffect.getString("turnDuration")));
-        effect.setBlameCreatureId(jsonEffect.getString("blameCreatureId"));
+        String effectId = jsonEffect.getString("objectId");
+        String effectName = jsonEffect.getString("effectName");
+        if (effectId.isBlank() || effectName.isBlank()) {
+            throw new MalformedInputException("An effect ID and name are required.");
+        }
+        effect.setObjectId(effectId);
+        effect.setEffectName(effectName);
+        int duration = nonnegativeInteger(jsonEffect, "turnDuration", "Effect duration");
+        if (duration == 0) {
+            throw new MalformedInputException("Effect duration must be at least one turn.");
+        }
+        effect.setTurnDuration(duration);
+        String sourceId = jsonEffect.getString("blameCreatureId");
+        if (!"0".equals(sourceId) && creatureMap.get(sourceId) == null) {
+            throw new MalformedInputException("The effect source must be a creature in this encounter.");
+        }
+        effect.setBlameCreatureId(sourceId);
         effect.setSaveType(jsonEffect.getString("saveType"));
-        effect.setSaveDC(Integer.parseInt(jsonEffect.getString("saveDC")));
+        effect.setSaveDC(nonnegativeInteger(jsonEffect, "saveDC", "Save DC"));
         JSONArray array = jsonEffect.getJSONArray("saveOn");
         Set<String> stringSet = new HashSet<>();
-        array.forEach(arrayItem -> stringSet.add(arrayItem.toString()));
+        for (int index = 0; index < array.length(); index++) {
+            String timing = array.getString(index);
+            if (!Set.of("start", "end", "damage").contains(timing)) {
+                throw new MalformedInputException("Choose a supported saving throw timing.");
+            }
+            stringSet.add(timing);
+        }
         effect.setSaveOn(stringSet);
         Map<String, Effect> activeEffects = Optional.ofNullable(creature.getActiveEffects()).orElse(new HashMap<>());
         activeEffects.put(effect.getObjectId(), effect);
@@ -230,12 +267,32 @@ public class RunActivities {
      */
     public Encounter removeEffect(Encounter encounter, JSONObject body) {
         Map<String, Creature> creatureMap = encounter.getCreatureMap();
-        Creature creature = creatureMap.get(body.getString("targetId"));
+        Creature creature = requireTarget(creatureMap, body);
         Map<String, Effect> activeEffects = Optional.ofNullable(creature.getActiveEffects()).orElse(new HashMap<>());
         activeEffects.remove(body.getString("effectId"));
         creature.setActiveEffects(activeEffects);
         creatureMap.put(creature.getEncounterCreatureId(), creature);
         encounter.setCreatureMap(creatureMap);
         return encounter;
+    }
+    private static Creature requireTarget(Map<String, Creature> creatures, JSONObject body) {
+        String id = body.getString("targetId");
+        Creature target = creatures == null ? null : creatures.get(id);
+        if (target == null) {
+            throw new MalformedInputException("Choose a target in this encounter.");
+        }
+        return target;
+    }
+
+    private static int nonnegativeInteger(JSONObject body, String key, String label) {
+        try {
+            int value = Integer.parseInt(body.getString(key));
+            if (value >= 0) {
+                return value;
+            }
+        } catch (NumberFormatException exception) {
+            throw new MalformedInputException(label + " must be a nonnegative whole number.", exception);
+        }
+        throw new MalformedInputException(label + " must be a nonnegative whole number.");
     }
 }

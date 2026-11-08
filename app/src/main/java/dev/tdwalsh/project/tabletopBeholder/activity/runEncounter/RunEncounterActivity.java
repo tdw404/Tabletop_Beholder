@@ -5,7 +5,11 @@ import dev.tdwalsh.project.tabletopBeholder.activity.runEncounter.request.RunEnc
 import dev.tdwalsh.project.tabletopBeholder.activity.runEncounter.result.RunEncounterResult;
 import dev.tdwalsh.project.tabletopBeholder.dynamodb.dao.EncounterDao;
 import dev.tdwalsh.project.tabletopBeholder.dynamodb.models.Encounter;
+import dev.tdwalsh.project.tabletopBeholder.exceptions.MalformedInputException;
 import dev.tdwalsh.project.tabletopBeholder.exceptions.MissingResourceException;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.Optional;
 import javax.inject.Inject;
@@ -38,37 +42,43 @@ public class RunEncounterActivity {
      */
 
     public RunEncounterResult handleRequest(RunEncounterRequest runEncounterRequest) {
+        String action = runEncounterRequest.getActivity();
+        if (action == null || action.isBlank()) {
+            throw new MalformedInputException("Choose a supported encounter action.");
+        }
         Encounter encounter = Optional.ofNullable(encounterDao.getSingle(
                 runEncounterRequest.getUserEmail(), runEncounterRequest.getEncounterId()))
-                .orElseThrow(() -> new MissingResourceException(
-                        String.format("Could not find encounter with id %s", runEncounterRequest.getEncounterId())));
-        if (runEncounterRequest.getActivity().equals("setInitiative")) {
-            encounter = this.runActivities.setInitiative(encounter, runEncounterRequest.getBody());
-        }
-        if (runEncounterRequest.getActivity().equals("nextTurn")) {
-            encounter = this.runActivities.nextTurn(encounter);
-        }
-        if (runEncounterRequest.getActivity().equals("applyDamage")) {
-            encounter = this.runActivities.applyDamage(encounter, runEncounterRequest.getBody());
-        }
-        if (runEncounterRequest.getActivity().equals("heal")) {
-            encounter = this.runActivities.heal(encounter, runEncounterRequest.getBody());
-        }
-        if (runEncounterRequest.getActivity().equals("knockOut")) {
-            encounter = this.runActivities.knockOut(encounter, runEncounterRequest.getBody());
-        }
-        if (runEncounterRequest.getActivity().equals("kill")) {
-            encounter = this.runActivities.kill(encounter, runEncounterRequest.getBody());
-        }
-        if (runEncounterRequest.getActivity().equals("addEffect")) {
-            encounter = this.runActivities.addEffect(encounter, runEncounterRequest.getBody());
-        }
-        if (runEncounterRequest.getActivity().equals("removeEffect")) {
-            encounter = this.runActivities.removeEffect(encounter, runEncounterRequest.getBody());
+                .orElseThrow(() -> new MissingResourceException("Encounter not found."));
+        try {
+            encounter = applyAction(action, encounter, runEncounterRequest.getBody());
+        } catch (JSONException exception) {
+            throw new MalformedInputException("The encounter action has missing or invalid fields.", exception);
         }
         encounterDao.writeObject(encounter);
         return RunEncounterResult.builder()
                 .withEncounter(encounter)
                 .build();
+    }
+    private Encounter applyAction(String action, Encounter encounter, JSONObject body) {
+        switch (action) {
+            case "setInitiative":
+                return runActivities.setInitiative(encounter, body);
+            case "nextTurn":
+                return runActivities.nextTurn(encounter);
+            case "applyDamage":
+                return runActivities.applyDamage(encounter, body);
+            case "heal":
+                return runActivities.heal(encounter, body);
+            case "knockOut":
+                return runActivities.knockOut(encounter, body);
+            case "kill":
+                return runActivities.kill(encounter, body);
+            case "addEffect":
+                return runActivities.addEffect(encounter, body);
+            case "removeEffect":
+                return runActivities.removeEffect(encounter, body);
+            default:
+                throw new MalformedInputException("Choose a supported encounter action.");
+        }
     }
 }

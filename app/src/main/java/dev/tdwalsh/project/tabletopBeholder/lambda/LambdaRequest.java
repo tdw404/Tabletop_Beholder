@@ -1,7 +1,12 @@
 package dev.tdwalsh.project.tabletopBeholder.lambda;
 
+import dev.tdwalsh.project.tabletopBeholder.exceptions.MalformedInputException;
+
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent;
+import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.StreamReadConstraints;
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
@@ -16,7 +21,16 @@ import java.util.function.Function;
  */
 public class LambdaRequest<T> extends APIGatewayProxyRequestEvent {
 
-    protected static final ObjectMapper MAPPER = new ObjectMapper().registerModule(new JavaTimeModule());
+    private static final int MAX_BODY_LENGTH = 2 * 1024 * 1024;
+    protected static final ObjectMapper MAPPER = new ObjectMapper(JsonFactory.builder()
+            .streamReadConstraints(StreamReadConstraints.builder()
+                    .maxNestingDepth(64)
+                    .maxStringLength(MAX_BODY_LENGTH)
+                    .maxNumberLength(128)
+                    .build())
+            .build())
+            .registerModule(new JavaTimeModule())
+            .enable(DeserializationFeature.FAIL_ON_TRAILING_TOKENS);
 
     /**
      * Dserialize a T (aka 'requestClass`) from the body of the request.
@@ -24,12 +38,31 @@ public class LambdaRequest<T> extends APIGatewayProxyRequestEvent {
      * @return A new instance of T that contains data from the request body
      */
     public T fromBody(Class<T> requestClass) {
+        return readJsonBody(requestClass);
+    }
+
+    /**
+     * Parse a bounded JSON body using the request parser.
+     * @param type expected JSON value type
+     * @param <V> Java type of the parsed value
+     * @return parsed request body
+     */
+    public <V> V readJsonBody(Class<V> type) {
+        String body = getBody();
+        if (body == null || body.isBlank()) {
+            throw new MalformedInputException("A JSON request body is required.");
+        }
+        if (body.length() > MAX_BODY_LENGTH) {
+            throw new MalformedInputException("The request body is too large.");
+        }
         try {
-            return MAPPER.readValue(super.getBody(), requestClass);
-        } catch (JsonProcessingException e) {
-            throw new RuntimeException(
-                    String.format("Unable to deserialize object from request body (%s).", requestClass.getSimpleName()),
-                    e);
+            V value = MAPPER.readValue(body, type);
+            if (value == null) {
+                throw new MalformedInputException("A JSON request body is required.");
+            }
+            return value;
+        } catch (JsonProcessingException exception) {
+            throw new MalformedInputException("The request body contains invalid JSON.", exception);
         }
     }
 
