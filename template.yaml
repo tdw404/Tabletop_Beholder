@@ -169,89 +169,19 @@ Resources:
 
 
   #-----------------------------------------------------
-  # Role/Permissions/Policy Configuration
-  #-----------------------------------------------------
-
-  AccessRole:
-    Type: AWS::IAM::Role
-    Properties:
-      ManagedPolicyArns:
-        - 'arn:aws:iam::aws:policy/service-role/AWSLambdaRole'
-        - 'arn:aws:iam::aws:policy/AWSLambdaExecute'
-      AssumeRolePolicyDocument:
-        Version: "2012-10-17"
-        Statement:
-          - Effect: Allow
-            Principal:
-              Service:
-                - lambda.amazonaws.com
-            Action:
-              - 'sts:AssumeRole'
-      Policies:
-        - PolicyName: 'WriteToCloudWatch'
-          PolicyDocument:
-            Version: '2012-10-17'
-            Statement:
-            - Effect: Allow
-              Action:
-                - logs:CreateLogGroup
-                - logs:CreateLogStream
-                - logs:PutLogEvents
-                - cloudwatch:PutMetricData
-              Resource: '*'
-
-        - PolicyName: 'AccessEncounterTable'
-          PolicyDocument:
-            Version: '2012-10-17'
-            Statement:
-            - Effect: Allow
-              Action: dynamodb:*
-              Resource: !Sub "arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/TabletopBeholder_EncounterTable"
-            - Effect: Allow
-              Action: dynamodb:query
-              Resource: !Sub "arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/TabletopBeholder_EncounterTable/index/EncountersSortBySessionIndex"
-
-        - PolicyName: 'AccessSessionTable'
-          PolicyDocument:
-            Version: '2012-10-17'
-            Statement:
-              - Effect: Allow
-                Action: dynamodb:*
-                Resource: !Sub "arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/TabletopBeholder_SessionTable"
-              - Effect: Allow
-                Action: dynamodb:query
-                Resource: !Sub "arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/TabletopBeholder_SessionTable/index/SessionsSortByNameIndex"
-
-        - PolicyName: 'AccessCreatureTable'
-          PolicyDocument:
-            Version: '2012-10-17'
-            Statement:
-              - Effect: Allow
-                Action: dynamodb:*
-                Resource: !Sub "arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/TabletopBeholder_CreatureTable"
-              - Effect: Allow
-                Action: dynamodb:query
-                Resource: !Sub "arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/TabletopBeholder_CreatureTable/index/CreaturesSortByNameIndex"
-
-        - PolicyName: 'AccessSpellTable'
-          PolicyDocument:
-            Version: '2012-10-17'
-            Statement:
-              - Effect: Allow
-                Action: dynamodb:*
-                Resource: !Sub "arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/TabletopBeholder_SpellTable"
-              - Effect: Allow
-                Action: dynamodb:query
-                Resource: !Sub "arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/TabletopBeholder_SpellTable/index/SpellsSortByNameIndex"
-
-  #-----------------------------------------------------
   # Lambda Functions Configuration
   #-----------------------------------------------------
 
   GetSpellLambda:
     Type: AWS::Serverless::Function
     Properties:
-      Role: !GetAtt AccessRole.Arn
+      Policies:
+        - Version: '2012-10-17'
+          Statement:
+            - Effect: Allow
+              Action:
+                - dynamodb:GetItem
+              Resource: !GetAtt SpellTable.Arn
       CodeUri: app
       Handler: dev.tdwalsh.project.tabletopBeholder.lambda.spell.GetSpellLambda::handleRequest
       Runtime: java11
@@ -271,7 +201,13 @@ Resources:
   GetAllSpellsLambda:
     Type: AWS::Serverless::Function
     Properties:
-      Role: !GetAtt AccessRole.Arn
+      Policies:
+        - Version: '2012-10-17'
+          Statement:
+            - Effect: Allow
+              Action:
+                - dynamodb:Query
+              Resource: !GetAtt SpellTable.Arn
       CodeUri: app
       Handler: dev.tdwalsh.project.tabletopBeholder.lambda.spell.GetAllSpellsLambda::handleRequest
       Runtime: java11
@@ -291,7 +227,19 @@ Resources:
   CreateSpellLambda:
     Type: AWS::Serverless::Function
     Properties:
-      Role: !GetAtt AccessRole.Arn
+      Policies:
+        - Version: '2012-10-17'
+          Statement:
+            - Effect: Allow
+              Action:
+                - dynamodb:GetItem
+                - dynamodb:PutItem
+                - dynamodb:UpdateItem
+              Resource: !GetAtt SpellTable.Arn
+            - Effect: Allow
+              Action:
+                - dynamodb:Query
+              Resource: !Sub '${SpellTable.Arn}/index/SpellsSortByNameIndex'
       CodeUri: app
       Handler: dev.tdwalsh.project.tabletopBeholder.lambda.spell.CreateSpellLambda::handleRequest
       Runtime: java11
@@ -311,7 +259,19 @@ Resources:
   UpdateSpellLambda:
     Type: AWS::Serverless::Function
     Properties:
-      Role: !GetAtt AccessRole.Arn
+      Policies:
+        - Version: '2012-10-17'
+          Statement:
+            - Effect: Allow
+              Action:
+                - dynamodb:GetItem
+                - dynamodb:PutItem
+                - dynamodb:UpdateItem
+              Resource: !GetAtt SpellTable.Arn
+            - Effect: Allow
+              Action:
+                - dynamodb:Query
+              Resource: !Sub '${SpellTable.Arn}/index/SpellsSortByNameIndex'
       CodeUri: app
       Handler: dev.tdwalsh.project.tabletopBeholder.lambda.spell.UpdateSpellLambda::handleRequest
       Runtime: java11
@@ -331,7 +291,13 @@ Resources:
   DeleteSpellLambda:
     Type: AWS::Serverless::Function
     Properties:
-      Role: !GetAtt AccessRole.Arn
+      Policies:
+        - Version: '2012-10-17'
+          Statement:
+            - Effect: Allow
+              Action:
+                - dynamodb:DeleteItem
+              Resource: !GetAtt SpellTable.Arn
       CodeUri: app
       Handler: dev.tdwalsh.project.tabletopBeholder.lambda.spell.DeleteSpellLambda::handleRequest
       Runtime: java11
@@ -351,7 +317,13 @@ Resources:
   GetCreatureLambda:
     Type: AWS::Serverless::Function
     Properties:
-      Role: !GetAtt AccessRole.Arn
+      Policies:
+        - Version: '2012-10-17'
+          Statement:
+            - Effect: Allow
+              Action:
+                - dynamodb:GetItem
+              Resource: !GetAtt CreatureTable.Arn
       CodeUri: app
       Handler: dev.tdwalsh.project.tabletopBeholder.lambda.creature.GetCreatureLambda::handleRequest
       Runtime: java11
@@ -371,7 +343,13 @@ Resources:
   GetAllCreaturesLambda:
     Type: AWS::Serverless::Function
     Properties:
-      Role: !GetAtt AccessRole.Arn
+      Policies:
+        - Version: '2012-10-17'
+          Statement:
+            - Effect: Allow
+              Action:
+                - dynamodb:Query
+              Resource: !GetAtt CreatureTable.Arn
       CodeUri: app
       Handler: dev.tdwalsh.project.tabletopBeholder.lambda.creature.GetAllCreaturesLambda::handleRequest
       Runtime: java11
@@ -391,7 +369,19 @@ Resources:
   CreateCreatureLambda:
     Type: AWS::Serverless::Function
     Properties:
-      Role: !GetAtt AccessRole.Arn
+      Policies:
+        - Version: '2012-10-17'
+          Statement:
+            - Effect: Allow
+              Action:
+                - dynamodb:GetItem
+                - dynamodb:PutItem
+                - dynamodb:UpdateItem
+              Resource: !GetAtt CreatureTable.Arn
+            - Effect: Allow
+              Action:
+                - dynamodb:Query
+              Resource: !Sub '${CreatureTable.Arn}/index/CreaturesSortByNameIndex'
       CodeUri: app
       Handler: dev.tdwalsh.project.tabletopBeholder.lambda.creature.CreateCreatureLambda::handleRequest
       Runtime: java11
@@ -411,7 +401,19 @@ Resources:
   UpdateCreatureLambda:
     Type: AWS::Serverless::Function
     Properties:
-      Role: !GetAtt AccessRole.Arn
+      Policies:
+        - Version: '2012-10-17'
+          Statement:
+            - Effect: Allow
+              Action:
+                - dynamodb:GetItem
+                - dynamodb:PutItem
+                - dynamodb:UpdateItem
+              Resource: !GetAtt CreatureTable.Arn
+            - Effect: Allow
+              Action:
+                - dynamodb:Query
+              Resource: !Sub '${CreatureTable.Arn}/index/CreaturesSortByNameIndex'
       CodeUri: app
       Handler: dev.tdwalsh.project.tabletopBeholder.lambda.creature.UpdateCreatureLambda::handleRequest
       Runtime: java11
@@ -431,7 +433,13 @@ Resources:
   DeleteCreatureLambda:
     Type: AWS::Serverless::Function
     Properties:
-      Role: !GetAtt AccessRole.Arn
+      Policies:
+        - Version: '2012-10-17'
+          Statement:
+            - Effect: Allow
+              Action:
+                - dynamodb:DeleteItem
+              Resource: !GetAtt CreatureTable.Arn
       CodeUri: app
       Handler: dev.tdwalsh.project.tabletopBeholder.lambda.creature.DeleteCreatureLambda::handleRequest
       Runtime: java11
@@ -451,7 +459,13 @@ Resources:
   GetEncounterLambda:
     Type: AWS::Serverless::Function
     Properties:
-      Role: !GetAtt AccessRole.Arn
+      Policies:
+        - Version: '2012-10-17'
+          Statement:
+            - Effect: Allow
+              Action:
+                - dynamodb:GetItem
+              Resource: !GetAtt EncounterTable.Arn
       CodeUri: app
       Handler: dev.tdwalsh.project.tabletopBeholder.lambda.encounter.GetEncounterLambda::handleRequest
       Runtime: java11
@@ -471,7 +485,13 @@ Resources:
   GetAllEncountersLambda:
     Type: AWS::Serverless::Function
     Properties:
-      Role: !GetAtt AccessRole.Arn
+      Policies:
+        - Version: '2012-10-17'
+          Statement:
+            - Effect: Allow
+              Action:
+                - dynamodb:Query
+              Resource: !GetAtt EncounterTable.Arn
       CodeUri: app
       Handler: dev.tdwalsh.project.tabletopBeholder.lambda.encounter.GetAllEncountersLambda::handleRequest
       Runtime: java11
@@ -491,7 +511,15 @@ Resources:
   CreateEncounterLambda:
     Type: AWS::Serverless::Function
     Properties:
-      Role: !GetAtt AccessRole.Arn
+      Policies:
+        - Version: '2012-10-17'
+          Statement:
+            - Effect: Allow
+              Action:
+                - dynamodb:GetItem
+                - dynamodb:PutItem
+                - dynamodb:UpdateItem
+              Resource: !GetAtt EncounterTable.Arn
       CodeUri: app
       Handler: dev.tdwalsh.project.tabletopBeholder.lambda.encounter.CreateEncounterLambda::handleRequest
       Runtime: java11
@@ -511,7 +539,15 @@ Resources:
   UpdateEncounterLambda:
     Type: AWS::Serverless::Function
     Properties:
-      Role: !GetAtt AccessRole.Arn
+      Policies:
+        - Version: '2012-10-17'
+          Statement:
+            - Effect: Allow
+              Action:
+                - dynamodb:GetItem
+                - dynamodb:PutItem
+                - dynamodb:UpdateItem
+              Resource: !GetAtt EncounterTable.Arn
       CodeUri: app
       Handler: dev.tdwalsh.project.tabletopBeholder.lambda.encounter.UpdateEncounterLambda::handleRequest
       Runtime: java11
@@ -531,7 +567,13 @@ Resources:
   DeleteEncounterLambda:
     Type: AWS::Serverless::Function
     Properties:
-      Role: !GetAtt AccessRole.Arn
+      Policies:
+        - Version: '2012-10-17'
+          Statement:
+            - Effect: Allow
+              Action:
+                - dynamodb:DeleteItem
+              Resource: !GetAtt EncounterTable.Arn
       CodeUri: app
       Handler: dev.tdwalsh.project.tabletopBeholder.lambda.encounter.DeleteEncounterLambda::handleRequest
       Runtime: java11
@@ -551,7 +593,13 @@ Resources:
   GetSessionLambda:
     Type: AWS::Serverless::Function
     Properties:
-      Role: !GetAtt AccessRole.Arn
+      Policies:
+        - Version: '2012-10-17'
+          Statement:
+            - Effect: Allow
+              Action:
+                - dynamodb:GetItem
+              Resource: !GetAtt SessionTable.Arn
       CodeUri: app
       Handler: dev.tdwalsh.project.tabletopBeholder.lambda.session.GetSessionLambda::handleRequest
       Runtime: java11
@@ -571,7 +619,13 @@ Resources:
   GetAllSessionsLambda:
     Type: AWS::Serverless::Function
     Properties:
-      Role: !GetAtt AccessRole.Arn
+      Policies:
+        - Version: '2012-10-17'
+          Statement:
+            - Effect: Allow
+              Action:
+                - dynamodb:Query
+              Resource: !GetAtt SessionTable.Arn
       CodeUri: app
       Handler: dev.tdwalsh.project.tabletopBeholder.lambda.session.GetAllSessionsLambda::handleRequest
       Runtime: java11
@@ -591,7 +645,19 @@ Resources:
   CreateSessionLambda:
     Type: AWS::Serverless::Function
     Properties:
-      Role: !GetAtt AccessRole.Arn
+      Policies:
+        - Version: '2012-10-17'
+          Statement:
+            - Effect: Allow
+              Action:
+                - dynamodb:GetItem
+                - dynamodb:PutItem
+                - dynamodb:UpdateItem
+              Resource: !GetAtt SessionTable.Arn
+            - Effect: Allow
+              Action:
+                - dynamodb:Query
+              Resource: !Sub '${SessionTable.Arn}/index/SessionsSortByNameIndex'
       CodeUri: app
       Handler: dev.tdwalsh.project.tabletopBeholder.lambda.session.CreateSessionLambda::handleRequest
       Runtime: java11
@@ -611,7 +677,19 @@ Resources:
   UpdateSessionLambda:
     Type: AWS::Serverless::Function
     Properties:
-      Role: !GetAtt AccessRole.Arn
+      Policies:
+        - Version: '2012-10-17'
+          Statement:
+            - Effect: Allow
+              Action:
+                - dynamodb:GetItem
+                - dynamodb:PutItem
+                - dynamodb:UpdateItem
+              Resource: !GetAtt SessionTable.Arn
+            - Effect: Allow
+              Action:
+                - dynamodb:Query
+              Resource: !Sub '${SessionTable.Arn}/index/SessionsSortByNameIndex'
       CodeUri: app
       Handler: dev.tdwalsh.project.tabletopBeholder.lambda.session.UpdateSessionLambda::handleRequest
       Runtime: java11
@@ -631,7 +709,21 @@ Resources:
   DeleteSessionLambda:
     Type: AWS::Serverless::Function
     Properties:
-      Role: !GetAtt AccessRole.Arn
+      Policies:
+        - Version: '2012-10-17'
+          Statement:
+            - Effect: Allow
+              Action:
+                - dynamodb:DeleteItem
+              Resource: !GetAtt SessionTable.Arn
+            - Effect: Allow
+              Action:
+                - dynamodb:DeleteItem
+              Resource: !GetAtt EncounterTable.Arn
+            - Effect: Allow
+              Action:
+                - dynamodb:Query
+              Resource: !Sub '${EncounterTable.Arn}/index/EncountersSortBySessionIndex'
       CodeUri: app
       Handler: dev.tdwalsh.project.tabletopBeholder.lambda.session.DeleteSessionLambda::handleRequest
       Runtime: java11
@@ -651,7 +743,19 @@ Resources:
   CreateTemplateSpellLambda:
     Type: AWS::Serverless::Function
     Properties:
-      Role: !GetAtt AccessRole.Arn
+      Policies:
+        - Version: '2012-10-17'
+          Statement:
+            - Effect: Allow
+              Action:
+                - dynamodb:GetItem
+                - dynamodb:PutItem
+                - dynamodb:UpdateItem
+              Resource: !GetAtt SpellTable.Arn
+            - Effect: Allow
+              Action:
+                - dynamodb:Query
+              Resource: !Sub '${SpellTable.Arn}/index/SpellsSortByNameIndex'
       CodeUri: app
       Handler: dev.tdwalsh.project.tabletopBeholder.lambda.templateSpell.CreateTemplateSpellLambda::handleRequest
       Runtime: java11
@@ -671,7 +775,13 @@ Resources:
   GetTemplateSpellLambda:
     Type: AWS::Serverless::Function
     Properties:
-      Role: !GetAtt AccessRole.Arn
+      Policies:
+        - Version: '2012-10-17'
+          Statement:
+            - Effect: Allow
+              Action:
+                - dynamodb:Query
+              Resource: !Sub '${SpellTable.Arn}/index/SpellsSortByNameIndex'
       CodeUri: app
       Handler: dev.tdwalsh.project.tabletopBeholder.lambda.templateSpell.GetTemplateSpellLambda::handleRequest
       Runtime: java11
@@ -691,7 +801,13 @@ Resources:
   SearchTemplateSpellsLambda:
     Type: AWS::Serverless::Function
     Properties:
-      Role: !GetAtt AccessRole.Arn
+      Policies:
+        - Version: '2012-10-17'
+          Statement:
+            - Effect: Allow
+              Action:
+                - dynamodb:Query
+              Resource: !Sub '${SpellTable.Arn}/index/SpellsSortByNameIndex'
       CodeUri: app
       Handler: dev.tdwalsh.project.tabletopBeholder.lambda.templateSpell.SearchTemplateSpellsLambda::handleRequest
       Runtime: java11
@@ -711,7 +827,13 @@ Resources:
   GetTemplateCreatureLambda:
     Type: AWS::Serverless::Function
     Properties:
-      Role: !GetAtt AccessRole.Arn
+      Policies:
+        - Version: '2012-10-17'
+          Statement:
+            - Effect: Allow
+              Action:
+                - dynamodb:Query
+              Resource: !Sub '${CreatureTable.Arn}/index/CreaturesSortByNameIndex'
       CodeUri: app
       Handler: dev.tdwalsh.project.tabletopBeholder.lambda.templateCreature.GetTemplateCreatureLambda::handleRequest
       Runtime: java11
@@ -731,7 +853,13 @@ Resources:
   SearchTemplateCreaturesLambda:
     Type: AWS::Serverless::Function
     Properties:
-      Role: !GetAtt AccessRole.Arn
+      Policies:
+        - Version: '2012-10-17'
+          Statement:
+            - Effect: Allow
+              Action:
+                - dynamodb:Query
+              Resource: !Sub '${CreatureTable.Arn}/index/CreaturesSortByNameIndex'
       CodeUri: app
       Handler: dev.tdwalsh.project.tabletopBeholder.lambda.templateCreature.SearchTemplateCreaturesLambda::handleRequest
       Runtime: java11
@@ -751,7 +879,19 @@ Resources:
   CreateTemplateCreatureLambda:
     Type: AWS::Serverless::Function
     Properties:
-      Role: !GetAtt AccessRole.Arn
+      Policies:
+        - Version: '2012-10-17'
+          Statement:
+            - Effect: Allow
+              Action:
+                - dynamodb:GetItem
+                - dynamodb:PutItem
+                - dynamodb:UpdateItem
+              Resource: !GetAtt CreatureTable.Arn
+            - Effect: Allow
+              Action:
+                - dynamodb:Query
+              Resource: !Sub '${CreatureTable.Arn}/index/CreaturesSortByNameIndex'
       CodeUri: app
       Handler: dev.tdwalsh.project.tabletopBeholder.lambda.templateCreature.CreateTemplateCreatureLambda::handleRequest
       Runtime: java11
@@ -771,7 +911,13 @@ Resources:
   GetEncounterListLambda:
     Type: AWS::Serverless::Function
     Properties:
-      Role: !GetAtt AccessRole.Arn
+      Policies:
+        - Version: '2012-10-17'
+          Statement:
+            - Effect: Allow
+              Action:
+                - dynamodb:Query
+              Resource: !Sub '${EncounterTable.Arn}/index/EncountersSortBySessionIndex'
       CodeUri: app
       Handler: dev.tdwalsh.project.tabletopBeholder.lambda.runEncounter.GetEncounterListLambda::handleRequest
       Runtime: java11
@@ -791,7 +937,15 @@ Resources:
   RunEncounterLambda:
     Type: AWS::Serverless::Function
     Properties:
-      Role: !GetAtt AccessRole.Arn
+      Policies:
+        - Version: '2012-10-17'
+          Statement:
+            - Effect: Allow
+              Action:
+                - dynamodb:GetItem
+                - dynamodb:PutItem
+                - dynamodb:UpdateItem
+              Resource: !GetAtt EncounterTable.Arn
       CodeUri: app
       Handler: dev.tdwalsh.project.tabletopBeholder.lambda.runEncounter.RunEncounterLambda::handleRequest
       Runtime: java11
