@@ -8,6 +8,7 @@ import dev.tdwalsh.project.tabletopBeholder.templateApi.TemplateCreatureDao;
 import dev.tdwalsh.project.tabletopBeholder.templateApi.model.TemplateCreature;
 
 import java.util.List;
+import java.util.Set;
 import javax.inject.Inject;
 
 /**
@@ -41,12 +42,10 @@ public class SearchTemplateCreaturesActivity {
 
     public SearchTemplateCreaturesResult handleRequest(SearchTemplateCreaturesRequest getMultipleTemplateCreaturesRequest) {
         List<TemplateCreature> templateCreatureList = templateCreatureDao.getMultiple(getMultipleTemplateCreaturesRequest.getSearchTerms());
-        templateCreatureList
-                .forEach(templateCreature -> {
-                    if (creatureDao.objectNameExists(getMultipleTemplateCreaturesRequest.getUserEmail(), templateCreature.getName())) {
-                        templateCreature.setResourceExists(true);
-                    }
-                });
+        if (!templateCreatureList.isEmpty()) {
+            Set<String> savedNames = creatureDao.getSavedNames(getMultipleTemplateCreaturesRequest.getUserEmail());
+            templateCreatureList.forEach(template -> template.setResourceExists(savedNames.contains(template.getName())));
+        }
         return SearchTemplateCreaturesResult.builder()
                 .withTemplateCreatureList(templateCreatureList)
                 .build();

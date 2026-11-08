@@ -130,4 +130,31 @@ public class TemplateCreatureDaoTest {
     }
 
 
+
+    @Test
+    public void getMultiple_invalidJson_reportsUpstreamFailure() {
+        doReturn(response).when(open5EClient).call(anyString());
+        doReturn(200).when(response).statusCode();
+        doReturn("<html>Temporary error</html>").when(response).body();
+
+        assertThrows(CurlException.class, () -> dao.getMultiple("search=dragon&limit=50"));
+    }
+
+    @Test
+    public void searchAndDetail_acceptOpen5eActionExtrasAndHoverFlag() {
+        String json = "{\"name\":\"Dragon\",\"speed\":{\"fly\":80,\"hover\":true},"
+                + "\"actions\":[{\"name\":\"Bite\",\"damage_dice\":\"2d10\",\"damage_bonus\":6}]}";
+        doReturn(response).when(open5EClient).call(anyString());
+        doReturn(200).when(response).statusCode();
+        doReturn("{\"results\":[" + json + "]}", json).when(response).body();
+
+        TemplateCreature searchResult = dao.getMultiple("search=dragon&limit=50").get(0);
+        TemplateCreature detail = dao.getSingle("dragon");
+
+        for (TemplateCreature creature : List.of(searchResult, detail)) {
+            assertEquals(java.util.Map.of("fly", 80), creature.getSpeed());
+            assertEquals("Bite", creature.getActions().get(0).getName());
+            assertEquals("2d10", creature.getActions().get(0).getDamage_dice());
+        }
+    }
 }

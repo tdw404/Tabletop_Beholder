@@ -14,6 +14,7 @@ import org.mockito.Mock;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.doReturn;
@@ -53,7 +54,7 @@ public class SearchTemplateCreaturesActivityTest {
     public void handleRequest_templateNameExists_returnsResult() {
         //GIVEN
         doReturn(templateCreatureList).when(templateCreatureDao).getMultiple(searchTerms);
-        doReturn(true).when(creatureDao).objectNameExists(email, templateCreature.getName());
+        doReturn(Set.of(templateCreature.getName())).when(creatureDao).getSavedNames(email);
         //WHEN
         SearchTemplateCreaturesResult result = searchTemplateCreaturesActivity.handleRequest(searchTemplateCreaturesRequest);
 
@@ -66,7 +67,7 @@ public class SearchTemplateCreaturesActivityTest {
     public void handleRequest_templateNameDoesNotExist_returnsResult() {
         //GIVEN
         doReturn(templateCreatureList).when(templateCreatureDao).getMultiple(searchTerms);
-        doReturn(false).when(creatureDao).objectNameExists(email, templateCreature.getName());
+        doReturn(Set.of()).when(creatureDao).getSavedNames(email);
         //WHEN
         SearchTemplateCreaturesResult result = searchTemplateCreaturesActivity.handleRequest(searchTemplateCreaturesRequest);
 

@@ -1,7 +1,10 @@
 package dev.tdwalsh.project.tabletopBeholder.templateApi.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import java.util.Objects;
 
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class TemplateAction {
     private String name;
     private String desc;
