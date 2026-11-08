@@ -3,7 +3,6 @@ package dev.tdwalsh.project.tabletopBeholder.activity.runEncounter.activities;
 import dev.tdwalsh.project.tabletopBeholder.dynamodb.models.Creature;
 import dev.tdwalsh.project.tabletopBeholder.dynamodb.models.Effect;
 import dev.tdwalsh.project.tabletopBeholder.dynamodb.models.Encounter;
-import org.apache.logging.log4j.core.util.JsonUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.w3c.dom.ls.LSOutput;
