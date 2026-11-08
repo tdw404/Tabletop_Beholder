@@ -17,6 +17,11 @@ group 'dev.tdwalsh.project.tabletopBeholder'
 version '1.0.0'
 defaultTasks 'clean', 'build'
 
+// Match the Java 11 runtime declared in template.yaml.
+tasks.withType(JavaCompile).configureEach {
+    options.release = 11
+}
+
 repositories {
     // Use Maven Central for resolving dependencies.
     mavenCentral()
