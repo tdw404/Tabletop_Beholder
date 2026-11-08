@@ -91,7 +91,6 @@ Resources:
             - !Ref "AWS::NoValue"
       AllowedOAuthFlows:
         - code
-        - implicit
       AllowedOAuthScopes:
         - phone
         - email
