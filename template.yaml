@@ -353,6 +353,10 @@ Resources:
       CodeUri: app
       Handler: dev.tdwalsh.project.tabletopBeholder.lambda.creature.GetAllCreaturesLambda::handleRequest
       Runtime: java11
+      AutoPublishAlias: live
+      AutoPublishAliasAllProperties: true
+      SnapStart:
+        ApplyOn: PublishedVersions
       Architectures:
         - x86_64
       MemorySize: 512

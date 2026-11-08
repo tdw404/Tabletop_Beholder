@@ -42,7 +42,7 @@ public class LambdaActivityRunner<TRequest, TResult> {
         }
     }
 
-    private ServiceComponent getService() {
+    protected final ServiceComponent getService() {
         if (service == null) {
             service = DaggerServiceComponent.create();
         }
