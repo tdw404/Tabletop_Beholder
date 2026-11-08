@@ -1,6 +1,9 @@
 package dev.tdwalsh.project.tabletopBeholder.dynamob.dao;
 
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapperConfig.ConsistentReads;
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBSaveExpression;
+import com.amazonaws.services.dynamodbv2.model.ConditionalCheckFailedException;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBQueryExpression;
 import com.amazonaws.services.dynamodbv2.datamodeling.PaginatedQueryList;
 import com.amazonaws.services.lambda.runtime.events.models.dynamodb.AttributeValue;
@@ -45,7 +48,8 @@ public class EncounterDaoTest {
     @Test
     public void getSingle_encounterExists_returnsEncounter() {
         //GIVEN
-        doReturn(encounter).when(mapper).load(Encounter.class, userEmail, objectId);
+        doReturn(encounter).when(mapper).load(eq(Encounter.class), eq(userEmail), eq(objectId),
+                argThat(config -> config.getConsistentReads() == ConsistentReads.CONSISTENT));
 
         //WHEN
         Encounter result = dao.getSingle(userEmail, objectId);
@@ -57,7 +61,8 @@ public class EncounterDaoTest {
     @Test
     public void getSingle_encounterDoesNotExist_returnsNull() {
         //GIVEN
-        doReturn(null).when(mapper).load(Encounter.class, userEmail, objectId);
+        doReturn(null).when(mapper).load(eq(Encounter.class), eq(userEmail), eq(objectId),
+                argThat(config -> config.getConsistentReads() == ConsistentReads.CONSISTENT));
 
         //WHEN
         Encounter result = dao.getSingle(userEmail, objectId);
@@ -82,17 +87,38 @@ public class EncounterDaoTest {
     }
 
     @Test
-    public void writeObject_withEncounter_callsDynamoDBSave() {
-        //GIVEN
-        ArgumentCaptor<Encounter> argumentCaptor = ArgumentCaptor.forClass(Encounter.class);
+    public void writeObject_legacyEncounter_requiresExistingUnversionedRecord() {
+        ArgumentCaptor<DynamoDBSaveExpression> condition = ArgumentCaptor.forClass(DynamoDBSaveExpression.class);
 
-        //WHEN
         dao.writeObject(encounter);
 
-        //THEN
-        verify(mapper, times(1)).save(argumentCaptor.capture());
-        assertEquals(encounter.getObjectId(), argumentCaptor.getValue().getObjectId());
-        assertEquals(encounter.getUserEmail(), argumentCaptor.getValue().getUserEmail());
+        verify(mapper).save(same(encounter), condition.capture());
+        assertEquals(objectId, condition.getValue().getExpected().get("objectId").getValue().getS());
+        assertEquals(Boolean.FALSE, condition.getValue().getExpected().get("version").getExists());
+        assertEquals(1L, encounter.getVersion());
+    }
+
+    @Test
+    public void writeObject_versionedEncounter_checksSnapshotVersionAndIncrements() {
+        ArgumentCaptor<DynamoDBSaveExpression> condition = ArgumentCaptor.forClass(DynamoDBSaveExpression.class);
+        encounter.setVersion(4L);
+
+        dao.writeObject(encounter);
+
+        verify(mapper).save(same(encounter), condition.capture());
+        assertEquals("4", condition.getValue().getExpected().get("version").getValue().getN());
+        assertEquals(5L, encounter.getVersion());
+    }
+
+    @Test
+    public void writeObject_conflict_preservesSnapshotVersion() {
+        encounter.setVersion(4L);
+        doThrow(new ConditionalCheckFailedException("version changed"))
+                .when(mapper).save(same(encounter), any(DynamoDBSaveExpression.class));
+
+        assertThrows(ConditionalCheckFailedException.class, () -> dao.writeObject(encounter));
+        assertEquals(4L, encounter.getVersion());
+        verify(mapper).save(same(encounter), any(DynamoDBSaveExpression.class));
     }
 
     @Test

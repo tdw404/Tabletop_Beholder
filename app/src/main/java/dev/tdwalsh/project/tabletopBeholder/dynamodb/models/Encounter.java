@@ -26,6 +26,7 @@ public class Encounter implements BeholderObject {
     private String userEmail;
     private String objectId;
     private String objectName;
+    private Long version;
     private Map<String, Creature> creatureMap;
     private Queue<String> turnQueue;
     private Integer encounterRound;
@@ -55,6 +56,15 @@ public class Encounter implements BeholderObject {
 
     public void setObjectId(String objectId) {
         this.objectId = objectId;
+    }
+
+    @DynamoDBAttribute(attributeName = "version")
+    public Long getVersion() {
+        return version;
+    }
+
+    public void setVersion(Long version) {
+        this.version = version;
     }
 
     @Override

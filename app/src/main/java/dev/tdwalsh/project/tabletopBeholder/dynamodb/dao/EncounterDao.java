@@ -4,9 +4,12 @@ import dev.tdwalsh.project.tabletopBeholder.dynamodb.models.BeholderObject;
 import dev.tdwalsh.project.tabletopBeholder.dynamodb.models.Encounter;
 
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapperConfig.ConsistentReads;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapperConfig.SaveBehavior;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBQueryExpression;
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBSaveExpression;
 import com.amazonaws.services.dynamodbv2.model.AttributeValue;
+import com.amazonaws.services.dynamodbv2.model.ExpectedAttributeValue;
 
 import java.util.HashMap;
 import java.util.List;
@@ -43,7 +46,7 @@ public class EncounterDao implements BeholderDao {
 
     @Override
     public Encounter getSingle(String userEmail, String objectId) {
-        return mapper.load(Encounter.class, userEmail, objectId);
+        return mapper.load(Encounter.class, userEmail, objectId, ConsistentReads.CONSISTENT.config());
     }
 
     /**
@@ -63,19 +66,36 @@ public class EncounterDao implements BeholderDao {
     }
 
     /**
-     * Updates a DynamoDB Encounter record with provided {@link Encounter} object, or creates a new record if one does not exist.
+     * Updates an existing encounter only if its stored version matches the snapshot.
      *
      * @param beholderObject The {@link Encounter} to be saved
      */
 
     @Override
     public void writeObject(BeholderObject beholderObject) {
-        mapper.save((Encounter) beholderObject);
+        Encounter encounter = (Encounter) beholderObject;
+        Long expectedVersion = encounter.getVersion();
+        ExpectedAttributeValue versionCondition = expectedVersion == null
+                ? new ExpectedAttributeValue().withExists(false)
+                : new ExpectedAttributeValue(new AttributeValue().withN(expectedVersion.toString()));
+        DynamoDBSaveExpression condition = new DynamoDBSaveExpression()
+                .withExpectedEntry("objectId", new ExpectedAttributeValue(new AttributeValue(encounter.getObjectId())))
+                .withExpectedEntry("version", versionCondition);
+
+        encounter.setVersion(expectedVersion == null ? 1L : expectedVersion + 1);
+        try {
+            mapper.save(encounter, condition);
+        } catch (RuntimeException exception) {
+            encounter.setVersion(expectedVersion);
+            throw exception;
+        }
     }
 
     @Override
     public void createIfAbsent(BeholderObject beholderObject) {
-        mapper.save((Encounter) beholderObject, BeholderDao.requireNewObjectId(), SaveBehavior.PUT.config());
+        Encounter encounter = (Encounter) beholderObject;
+        encounter.setVersion(1L);
+        mapper.save(encounter, BeholderDao.requireNewObjectId(), SaveBehavior.PUT.config());
     }
 
     /**
