@@ -191,7 +191,7 @@ Resources:
       Runtime: java11
       Architectures:
         - x86_64
-      MemorySize: 512
+      MemorySize: 1024
       Environment:
         Variables:
           JAVA_TOOL_OPTIONS: -XX:+TieredCompilation -XX:TieredStopAtLevel=1
@@ -217,7 +217,7 @@ Resources:
       Runtime: java11
       Architectures:
         - x86_64
-      MemorySize: 512
+      MemorySize: 1024
       Environment:
         Variables:
           JAVA_TOOL_OPTIONS: -XX:+TieredCompilation -XX:TieredStopAtLevel=1
@@ -249,7 +249,7 @@ Resources:
       Runtime: java11
       Architectures:
         - x86_64
-      MemorySize: 512
+      MemorySize: 1024
       Environment:
         Variables:
           JAVA_TOOL_OPTIONS: -XX:+TieredCompilation -XX:TieredStopAtLevel=1
@@ -281,7 +281,7 @@ Resources:
       Runtime: java11
       Architectures:
         - x86_64
-      MemorySize: 512
+      MemorySize: 1024
       Environment:
         Variables:
           JAVA_TOOL_OPTIONS: -XX:+TieredCompilation -XX:TieredStopAtLevel=1
@@ -307,7 +307,7 @@ Resources:
       Runtime: java11
       Architectures:
         - x86_64
-      MemorySize: 512
+      MemorySize: 1024
       Environment:
         Variables:
           JAVA_TOOL_OPTIONS: -XX:+TieredCompilation -XX:TieredStopAtLevel=1
@@ -333,7 +333,7 @@ Resources:
       Runtime: java11
       Architectures:
         - x86_64
-      MemorySize: 512
+      MemorySize: 1024
       Environment:
         Variables:
           JAVA_TOOL_OPTIONS: -XX:+TieredCompilation -XX:TieredStopAtLevel=1
@@ -391,7 +391,7 @@ Resources:
       Runtime: java11
       Architectures:
         - x86_64
-      MemorySize: 512
+      MemorySize: 1024
       Environment:
         Variables:
           JAVA_TOOL_OPTIONS: -XX:+TieredCompilation -XX:TieredStopAtLevel=1
@@ -423,7 +423,7 @@ Resources:
       Runtime: java11
       Architectures:
         - x86_64
-      MemorySize: 512
+      MemorySize: 1024
       Environment:
         Variables:
           JAVA_TOOL_OPTIONS: -XX:+TieredCompilation -XX:TieredStopAtLevel=1
@@ -449,7 +449,7 @@ Resources:
       Runtime: java11
       Architectures:
         - x86_64
-      MemorySize: 512
+      MemorySize: 1024
       Environment:
         Variables:
           JAVA_TOOL_OPTIONS: -XX:+TieredCompilation -XX:TieredStopAtLevel=1
@@ -475,7 +475,7 @@ Resources:
       Runtime: java11
       Architectures:
         - x86_64
-      MemorySize: 512
+      MemorySize: 1024
       Environment:
         Variables:
           JAVA_TOOL_OPTIONS: -XX:+TieredCompilation -XX:TieredStopAtLevel=1
@@ -501,7 +501,7 @@ Resources:
       Runtime: java11
       Architectures:
         - x86_64
-      MemorySize: 512
+      MemorySize: 1024
       Environment:
         Variables:
           JAVA_TOOL_OPTIONS: -XX:+TieredCompilation -XX:TieredStopAtLevel=1
@@ -529,7 +529,7 @@ Resources:
       Runtime: java11
       Architectures:
         - x86_64
-      MemorySize: 512
+      MemorySize: 1024
       Environment:
         Variables:
           JAVA_TOOL_OPTIONS: -XX:+TieredCompilation -XX:TieredStopAtLevel=1
@@ -557,7 +557,7 @@ Resources:
       Runtime: java11
       Architectures:
         - x86_64
-      MemorySize: 512
+      MemorySize: 1024
       Environment:
         Variables:
           JAVA_TOOL_OPTIONS: -XX:+TieredCompilation -XX:TieredStopAtLevel=1
@@ -583,7 +583,7 @@ Resources:
       Runtime: java11
       Architectures:
         - x86_64
-      MemorySize: 512
+      MemorySize: 1024
       Environment:
         Variables:
           JAVA_TOOL_OPTIONS: -XX:+TieredCompilation -XX:TieredStopAtLevel=1
@@ -609,7 +609,7 @@ Resources:
       Runtime: java11
       Architectures:
         - x86_64
-      MemorySize: 512
+      MemorySize: 1024
       Environment:
         Variables:
           JAVA_TOOL_OPTIONS: -XX:+TieredCompilation -XX:TieredStopAtLevel=1
@@ -635,7 +635,7 @@ Resources:
       Runtime: java11
       Architectures:
         - x86_64
-      MemorySize: 512
+      MemorySize: 1024
       Environment:
         Variables:
           JAVA_TOOL_OPTIONS: -XX:+TieredCompilation -XX:TieredStopAtLevel=1
@@ -667,7 +667,7 @@ Resources:
       Runtime: java11
       Architectures:
         - x86_64
-      MemorySize: 512
+      MemorySize: 1024
       Environment:
         Variables:
           JAVA_TOOL_OPTIONS: -XX:+TieredCompilation -XX:TieredStopAtLevel=1
@@ -699,7 +699,7 @@ Resources:
       Runtime: java11
       Architectures:
         - x86_64
-      MemorySize: 512
+      MemorySize: 1024
       Environment:
         Variables:
           JAVA_TOOL_OPTIONS: -XX:+TieredCompilation -XX:TieredStopAtLevel=1
@@ -733,7 +733,7 @@ Resources:
       Runtime: java11
       Architectures:
         - x86_64
-      MemorySize: 512
+      MemorySize: 1024
       Environment:
         Variables:
           JAVA_TOOL_OPTIONS: -XX:+TieredCompilation -XX:TieredStopAtLevel=1
@@ -765,7 +765,7 @@ Resources:
       Runtime: java11
       Architectures:
         - x86_64
-      MemorySize: 512
+      MemorySize: 1024
       Environment:
         Variables:
           JAVA_TOOL_OPTIONS: -XX:+TieredCompilation -XX:TieredStopAtLevel=1
@@ -791,7 +791,7 @@ Resources:
       Runtime: java11
       Architectures:
         - x86_64
-      MemorySize: 512
+      MemorySize: 1024
       Environment:
         Variables:
           JAVA_TOOL_OPTIONS: -XX:+TieredCompilation -XX:TieredStopAtLevel=1
@@ -817,7 +817,7 @@ Resources:
       Runtime: java11
       Architectures:
         - x86_64
-      MemorySize: 512
+      MemorySize: 1024
       Environment:
         Variables:
           JAVA_TOOL_OPTIONS: -XX:+TieredCompilation -XX:TieredStopAtLevel=1
@@ -843,7 +843,7 @@ Resources:
       Runtime: java11
       Architectures:
         - x86_64
-      MemorySize: 512
+      MemorySize: 1024
       Environment:
         Variables:
           JAVA_TOOL_OPTIONS: -XX:+TieredCompilation -XX:TieredStopAtLevel=1
@@ -869,7 +869,7 @@ Resources:
       Runtime: java11
       Architectures:
         - x86_64
-      MemorySize: 512
+      MemorySize: 1024
       Environment:
         Variables:
           JAVA_TOOL_OPTIONS: -XX:+TieredCompilation -XX:TieredStopAtLevel=1
@@ -901,7 +901,7 @@ Resources:
       Runtime: java11
       Architectures:
         - x86_64
-      MemorySize: 512
+      MemorySize: 1024
       Environment:
         Variables:
           JAVA_TOOL_OPTIONS: -XX:+TieredCompilation -XX:TieredStopAtLevel=1
@@ -927,7 +927,7 @@ Resources:
       Runtime: java11
       Architectures:
         - x86_64
-      MemorySize: 512
+      MemorySize: 1024
       Environment:
         Variables:
           JAVA_TOOL_OPTIONS: -XX:+TieredCompilation -XX:TieredStopAtLevel=1
@@ -955,7 +955,7 @@ Resources:
       Runtime: java11
       Architectures:
         - x86_64
-      MemorySize: 512
+      MemorySize: 1024
       Environment:
         Variables:
           JAVA_TOOL_OPTIONS: -XX:+TieredCompilation -XX:TieredStopAtLevel=1
