@@ -47,6 +47,7 @@ public class TemplateCreatureDaoTest {
         doReturn("{\"name\": \"testName\"}").when(response).body();
         //WHEN
         TemplateCreature result = dao.getSingle("slug");
+        verify(open5EClient).call("https://api.open5e.com/v1/monsters/slug/");
 
         //THEN
         assertEquals("testName", result.getName(), "Expected dao to return single matching result");
@@ -90,7 +91,8 @@ public class TemplateCreatureDaoTest {
         doReturn(200).when(response).statusCode();
         doReturn("{\"results\": [{\"name\": \"testName\"}]}").when(response).body();
         //WHEN
-        List<TemplateCreature> result = dao.getMultiple("slug");
+        List<TemplateCreature> result = dao.getMultiple("search=wind dragon&limit=50");
+        verify(open5EClient).call("https://api.open5e.com/v1/monsters/?search=wind%20dragon&limit=50");
 
         //THEN
         assertEquals("testName", result.get(0).getName(), "Expected dao to return single matching result");
