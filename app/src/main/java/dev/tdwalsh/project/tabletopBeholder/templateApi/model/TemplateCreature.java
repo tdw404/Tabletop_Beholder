@@ -20,6 +20,7 @@ public class TemplateCreature {
     private String armor_desc;
     private int hit_points;
     private String hit_dice;
+    @JsonIgnoreProperties("hover")
     private Map<String, Integer> speed;
     private int strength;
     private int dexterity;
