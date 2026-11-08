@@ -8,6 +8,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.exc.MismatchedInputException;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.json.JSONException;
 
 import java.io.IOException;
 import java.net.http.HttpResponse;
@@ -99,8 +100,8 @@ public class TemplateCreatureDao {
                     throw new CurlException("Error making call to 5E API: " +
                             response.statusCode() + "  " + response.body());
             }
-        } catch (IOException e) {
-            throw new CurlException("Error making call to 5E API: ", e);
+        } catch (IOException | JSONException e) {
+            throw new CurlException("Unable to read Open5e creature search results.", e);
         }
     }
 }

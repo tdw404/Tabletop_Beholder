@@ -896,6 +896,14 @@ Resources:
               Action:
                 - dynamodb:Query
               Resource: !Sub '${CreatureTable.Arn}/index/CreaturesSortByNameIndex'
+            - Effect: Allow
+              Action:
+                - dynamodb:Query
+              Resource: !Sub '${SpellTable.Arn}/index/SpellsSortByNameIndex'
+            - Effect: Allow
+              Action:
+                - dynamodb:PutItem
+              Resource: !GetAtt SpellTable.Arn
       CodeUri: app
       Handler: dev.tdwalsh.project.tabletopBeholder.lambda.templateCreature.CreateTemplateCreatureLambda::handleRequest
       Runtime: java11

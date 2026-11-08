@@ -130,4 +130,13 @@ public class TemplateCreatureDaoTest {
     }
 
 
+
+    @Test
+    public void getMultiple_invalidJson_reportsUpstreamFailure() {
+        doReturn(response).when(open5EClient).call(anyString());
+        doReturn(200).when(response).statusCode();
+        doReturn("<html>Temporary error</html>").when(response).body();
+
+        assertThrows(CurlException.class, () -> dao.getMultiple("search=dragon&limit=50"));
+    }
 }
