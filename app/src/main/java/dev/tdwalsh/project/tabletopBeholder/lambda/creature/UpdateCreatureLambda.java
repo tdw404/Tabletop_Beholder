@@ -19,9 +19,9 @@ public class UpdateCreatureLambda
             () -> {
                 UpdateCreatureRequest stageRequest = input.fromBody(UpdateCreatureRequest.class);
 
-                return input.fromUserClaims(claims ->
+                return input.fromOwnerId(ownerId ->
                         UpdateCreatureRequest.builder()
-                                .withUserEmail(claims.get("email"))
+                                .withUserEmail(ownerId)
                                 .withCreature(stageRequest.getCreature())
                                 .build());
             },

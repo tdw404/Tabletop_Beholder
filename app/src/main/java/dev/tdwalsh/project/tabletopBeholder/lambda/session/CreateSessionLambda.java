@@ -19,9 +19,9 @@ public class CreateSessionLambda
             () -> {
                 CreateSessionRequest stageRequest = input.fromBody(CreateSessionRequest.class);
 
-                return input.fromUserClaims(claims ->
+                return input.fromOwnerId(ownerId ->
                         CreateSessionRequest.builder()
-                                .withUserEmail(claims.get("email"))
+                                .withUserEmail(ownerId)
                                 .withSession(stageRequest.getSession())
                                 .build());
             },

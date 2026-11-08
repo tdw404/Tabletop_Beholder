@@ -17,9 +17,9 @@ public class GetSessionLambda
     public LambdaResponse handleRequest(AuthenticatedLambdaRequest<GetSessionRequest> input, Context context) {
         return super.runActivity(
             () -> {
-                GetSessionRequest stageRequest = input.fromUserClaims(claims ->
+                GetSessionRequest stageRequest = input.fromOwnerId(ownerId ->
                         GetSessionRequest.builder()
-                                .withUserEmail(claims.get("email"))
+                                .withUserEmail(ownerId)
                                 .build());
 
                 return input.fromPath(path ->

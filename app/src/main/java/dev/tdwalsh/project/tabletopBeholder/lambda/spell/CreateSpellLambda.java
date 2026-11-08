@@ -19,9 +19,9 @@ public class CreateSpellLambda
             () -> {
                 CreateSpellRequest stageRequest = input.fromBody(CreateSpellRequest.class);
 
-                return input.fromUserClaims(claims ->
+                return input.fromOwnerId(ownerId ->
                         CreateSpellRequest.builder()
-                                .withUserEmail(claims.get("email"))
+                                .withUserEmail(ownerId)
                                 .withSpell(stageRequest.getSpell())
                                 .build());
             },

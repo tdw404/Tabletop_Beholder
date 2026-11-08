@@ -16,9 +16,9 @@ public class GetAllEncountersLambda
     @Override
     public LambdaResponse handleRequest(AuthenticatedLambdaRequest<GetAllEncountersRequest> input, Context context) {
         return super.runActivity(
-            () -> input.fromUserClaims(claims ->
+            () -> input.fromOwnerId(ownerId ->
                     GetAllEncountersRequest.builder()
-                            .withUserEmail(claims.get("email"))
+                            .withUserEmail(ownerId)
                             .build()),
             (request, serviceComponent) ->
                     serviceComponent.provideGetAllEncountersActivity().handleRequest(request)

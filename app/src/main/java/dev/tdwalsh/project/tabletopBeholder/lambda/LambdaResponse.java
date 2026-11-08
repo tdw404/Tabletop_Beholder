@@ -8,6 +8,7 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import dev.tdwalsh.project.tabletopBeholder.exceptions.CurlException;
 import dev.tdwalsh.project.tabletopBeholder.exceptions.MalformedInputException;
 import dev.tdwalsh.project.tabletopBeholder.exceptions.MissingResourceException;
+import dev.tdwalsh.project.tabletopBeholder.exceptions.UnauthenticatedException;
 import dev.tdwalsh.project.tabletopBeholder.exceptions.resourceNotFoundExceptions.DBResourceNotFoundException;
 
 import com.amazonaws.services.dynamodbv2.model.ConditionalCheckFailedException;
@@ -91,6 +92,9 @@ public class LambdaResponse extends APIGatewayProxyResponseEvent {
      * @return a JSON error response
      */
     public static LambdaResponse error(Exception exception) {
+        if (exception instanceof UnauthenticatedException) {
+            return error(401, "Sign in to continue.");
+        }
         if (exception instanceof MalformedInputException) {
             return error(400, exception.getMessage() == null ? "Invalid request." : exception.getMessage());
         }

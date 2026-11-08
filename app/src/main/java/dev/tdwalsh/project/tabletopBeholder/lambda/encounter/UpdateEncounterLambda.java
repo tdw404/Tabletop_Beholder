@@ -19,9 +19,9 @@ public class UpdateEncounterLambda
             () -> {
                 UpdateEncounterRequest stageRequest = input.fromBody(UpdateEncounterRequest.class);
 
-                return input.fromUserClaims(claims ->
+                return input.fromOwnerId(ownerId ->
                         UpdateEncounterRequest.builder()
-                                .withUserEmail(claims.get("email"))
+                                .withUserEmail(ownerId)
                                 .withEncounter(stageRequest.getEncounter())
                                 .build());
             },

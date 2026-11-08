@@ -17,9 +17,9 @@ public class DeleteSpellLambda
     public LambdaResponse handleRequest(AuthenticatedLambdaRequest<DeleteSpellRequest> input, Context context) {
         return super.runActivity(
             () -> {
-                DeleteSpellRequest stageRequest = input.fromUserClaims(claims ->
+                DeleteSpellRequest stageRequest = input.fromOwnerId(ownerId ->
                         DeleteSpellRequest.builder()
-                                .withUserEmail(claims.get("email"))
+                                .withUserEmail(ownerId)
                                 .build());
 
                 return input.fromPath(path ->

@@ -21,9 +21,9 @@ public class RunEncounterLambda
     public LambdaResponse handleRequest(AuthenticatedLambdaRequest<RunEncounterRequest> input, Context context) {
         return super.runActivity(
             () -> {
-                RunEncounterRequest claimsRequest = input.fromUserClaims(claims ->
+                RunEncounterRequest claimsRequest = input.fromOwnerId(ownerId ->
                         RunEncounterRequest.builder()
-                                .withUserEmail(claims.get("email"))
+                                .withUserEmail(ownerId)
                                 .build());
                 RunEncounterRequest queryRequest = input.fromQuery(query ->
                         RunEncounterRequest.builder()

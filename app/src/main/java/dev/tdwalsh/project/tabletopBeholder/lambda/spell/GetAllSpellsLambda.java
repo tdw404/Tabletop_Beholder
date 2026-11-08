@@ -16,9 +16,9 @@ public class GetAllSpellsLambda
     @Override
     public LambdaResponse handleRequest(AuthenticatedLambdaRequest<GetAllSpellsRequest> input, Context context) {
         return super.runActivity(
-            () -> input.fromUserClaims(claims ->
+            () -> input.fromOwnerId(ownerId ->
                     GetAllSpellsRequest.builder()
-                            .withUserEmail(claims.get("email"))
+                            .withUserEmail(ownerId)
                             .build()),
             (request, serviceComponent) ->
                     serviceComponent.provideGetAllSpellsActivity().handleRequest(request)

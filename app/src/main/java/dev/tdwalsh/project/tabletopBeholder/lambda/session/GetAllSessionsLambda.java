@@ -16,9 +16,9 @@ public class GetAllSessionsLambda
     @Override
     public LambdaResponse handleRequest(AuthenticatedLambdaRequest<GetAllSessionsRequest> input, Context context) {
         return super.runActivity(
-            () -> input.fromUserClaims(claims ->
+            () -> input.fromOwnerId(ownerId ->
                     GetAllSessionsRequest.builder()
-                            .withUserEmail(claims.get("email"))
+                            .withUserEmail(ownerId)
                             .build()),
             (request, serviceComponent) ->
                     serviceComponent.provideGetAllSessionsActivity().handleRequest(request)

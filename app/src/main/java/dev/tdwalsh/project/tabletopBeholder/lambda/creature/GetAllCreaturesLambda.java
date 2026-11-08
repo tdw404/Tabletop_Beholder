@@ -16,9 +16,9 @@ public class GetAllCreaturesLambda
     @Override
     public LambdaResponse handleRequest(AuthenticatedLambdaRequest<GetAllCreaturesRequest> input, Context context) {
         return super.runActivity(
-            () -> input.fromUserClaims(claims ->
+            () -> input.fromOwnerId(ownerId ->
                     GetAllCreaturesRequest.builder()
-                            .withUserEmail(claims.get("email"))
+                            .withUserEmail(ownerId)
                             .build()),
             (request, serviceComponent) ->
                     serviceComponent.provideGetAllCreaturesActivity().handleRequest(request)

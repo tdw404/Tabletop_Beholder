@@ -17,9 +17,9 @@ public class DeleteEncounterLambda
     public LambdaResponse handleRequest(AuthenticatedLambdaRequest<DeleteEncounterRequest> input, Context context) {
         return super.runActivity(
             () -> {
-                DeleteEncounterRequest stageRequest = input.fromUserClaims(claims ->
+                DeleteEncounterRequest stageRequest = input.fromOwnerId(ownerId ->
                         DeleteEncounterRequest.builder()
-                                .withUserEmail(claims.get("email"))
+                                .withUserEmail(ownerId)
                                 .build());
 
                 return input.fromPath(path ->

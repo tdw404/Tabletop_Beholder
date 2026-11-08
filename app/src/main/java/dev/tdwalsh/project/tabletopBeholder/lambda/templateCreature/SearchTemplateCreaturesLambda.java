@@ -17,9 +17,9 @@ public class SearchTemplateCreaturesLambda
     public LambdaResponse handleRequest(AuthenticatedLambdaRequest<SearchTemplateCreaturesRequest> input, Context context) {
         return super.runActivity(
             () -> {
-                SearchTemplateCreaturesRequest stageRequest = input.fromUserClaims(claims ->
+                SearchTemplateCreaturesRequest stageRequest = input.fromOwnerId(ownerId ->
                         SearchTemplateCreaturesRequest.builder()
-                                .withUserEmail(claims.get("email"))
+                                .withUserEmail(ownerId)
                                 .build());
 
                 return input.fromPath(path ->

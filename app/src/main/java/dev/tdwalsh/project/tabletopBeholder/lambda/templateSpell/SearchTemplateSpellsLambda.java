@@ -17,9 +17,9 @@ public class SearchTemplateSpellsLambda
     public LambdaResponse handleRequest(AuthenticatedLambdaRequest<SearchTemplateSpellsRequest> input, Context context) {
         return super.runActivity(
             () -> {
-                SearchTemplateSpellsRequest stageRequest = input.fromUserClaims(claims ->
+                SearchTemplateSpellsRequest stageRequest = input.fromOwnerId(ownerId ->
                         SearchTemplateSpellsRequest.builder()
-                                .withUserEmail(claims.get("email"))
+                                .withUserEmail(ownerId)
                                 .build());
 
                 return input.fromPath(path ->
