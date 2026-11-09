@@ -16,6 +16,7 @@ public class UpdateSessionLambda
     @Override
     public LambdaResponse handleRequest(AuthenticatedLambdaRequest<UpdateSessionRequest> input, Context context) {
         return super.runActivity(
+            input,
             () -> {
                 UpdateSessionRequest stageRequest = input.fromBody(UpdateSessionRequest.class);
 
@@ -25,8 +26,8 @@ public class UpdateSessionLambda
                                 .withSession(stageRequest.getSession())
                                 .build());
             },
-            (request, serviceComponent) ->
-                    serviceComponent.provideUpdateSessionActivity().handleRequest(request)
+            serviceComponent -> serviceComponent.provideUpdateSessionActivity(),
+            (activity, request) -> activity.handleRequest(request)
         );
     }
 }

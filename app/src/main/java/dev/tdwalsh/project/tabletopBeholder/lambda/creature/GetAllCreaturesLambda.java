@@ -20,11 +20,13 @@ public class GetAllCreaturesLambda
     @Override
     public LambdaResponse handleRequest(AuthenticatedLambdaRequest<GetAllCreaturesRequest> input, Context context) {
         return super.runActivity(
+            input,
             () -> input.fromOwnerId(ownerId ->
                     GetAllCreaturesRequest.builder()
                             .withUserEmail(ownerId)
                             .build()),
-            (request, serviceComponent) -> activity.handleRequest(request)
+            serviceComponent -> activity,
+            (creatureActivity, request) -> creatureActivity.handleRequest(request)
         );
     }
 }

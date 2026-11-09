@@ -16,6 +16,7 @@ public class UpdateEncounterLambda
     @Override
     public LambdaResponse handleRequest(AuthenticatedLambdaRequest<UpdateEncounterRequest> input, Context context) {
         return super.runActivity(
+            input,
             () -> {
                 UpdateEncounterRequest stageRequest = input.fromBody(UpdateEncounterRequest.class);
 
@@ -25,8 +26,8 @@ public class UpdateEncounterLambda
                                 .withEncounter(stageRequest.getEncounter())
                                 .build());
             },
-            (request, serviceComponent) ->
-                    serviceComponent.provideUpdateEncounterActivity().handleRequest(request)
+            serviceComponent -> serviceComponent.provideUpdateEncounterActivity(),
+            (activity, request) -> activity.handleRequest(request)
         );
     }
 }

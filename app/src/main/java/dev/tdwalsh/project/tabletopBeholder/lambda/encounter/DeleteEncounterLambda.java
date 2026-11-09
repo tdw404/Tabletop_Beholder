@@ -16,6 +16,7 @@ public class DeleteEncounterLambda
     @Override
     public LambdaResponse handleRequest(AuthenticatedLambdaRequest<DeleteEncounterRequest> input, Context context) {
         return super.runActivity(
+            input,
             () -> {
                 DeleteEncounterRequest stageRequest = input.fromOwnerId(ownerId ->
                         DeleteEncounterRequest.builder()
@@ -28,8 +29,8 @@ public class DeleteEncounterLambda
                                 .withObjectId(path.get("objectId"))
                                 .build());
             },
-            (request, serviceComponent) ->
-                    serviceComponent.provideDeleteEncounterActivity().handleRequest(request)
+            serviceComponent -> serviceComponent.provideDeleteEncounterActivity(),
+            (activity, request) -> activity.handleRequest(request)
         );
     }
 }

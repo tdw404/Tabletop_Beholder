@@ -16,12 +16,13 @@ public class GetAllEncountersLambda
     @Override
     public LambdaResponse handleRequest(AuthenticatedLambdaRequest<GetAllEncountersRequest> input, Context context) {
         return super.runActivity(
+            input,
             () -> input.fromOwnerId(ownerId ->
                     GetAllEncountersRequest.builder()
                             .withUserEmail(ownerId)
                             .build()),
-            (request, serviceComponent) ->
-                    serviceComponent.provideGetAllEncountersActivity().handleRequest(request)
+            serviceComponent -> serviceComponent.provideGetAllEncountersActivity(),
+            (activity, request) -> activity.handleRequest(request)
         );
     }
 }

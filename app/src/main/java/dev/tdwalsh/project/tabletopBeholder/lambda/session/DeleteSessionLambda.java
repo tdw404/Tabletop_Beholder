@@ -16,6 +16,7 @@ public class DeleteSessionLambda
     @Override
     public LambdaResponse handleRequest(AuthenticatedLambdaRequest<DeleteSessionRequest> input, Context context) {
         return super.runActivity(
+            input,
             () -> {
                 DeleteSessionRequest stageRequest = input.fromOwnerId(ownerId ->
                         DeleteSessionRequest.builder()
@@ -28,8 +29,8 @@ public class DeleteSessionLambda
                                 .withObjectId(path.get("objectId"))
                                 .build());
             },
-            (request, serviceComponent) ->
-                    serviceComponent.provideDeleteSessionActivity().handleRequest(request)
+            serviceComponent -> serviceComponent.provideDeleteSessionActivity(),
+            (activity, request) -> activity.handleRequest(request)
         );
     }
 }
