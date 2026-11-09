@@ -16,7 +16,6 @@ public class CreateTemplateSpellLambda
     @Override
     public LambdaResponse handleRequest(AuthenticatedLambdaRequest<CreateTemplateSpellRequest> input, Context context) {
         return super.runActivity(
-            input,
             () -> {
                 CreateTemplateSpellRequest stageRequest = input.fromPath(path ->
                         CreateTemplateSpellRequest.builder()
@@ -29,8 +28,8 @@ public class CreateTemplateSpellLambda
                                 .withSlug(stageRequest.getSlug())
                                 .build());
             },
-            serviceComponent -> serviceComponent.provideCreateTemplateSpellActivity(),
-            (activity, request) -> activity.handleRequest(request)
+            (request, serviceComponent) ->
+                    serviceComponent.provideCreateTemplateSpellActivity().handleRequest(request)
         );
     }
 }

@@ -16,7 +16,6 @@ public class SearchTemplateSpellsLambda
     @Override
     public LambdaResponse handleRequest(AuthenticatedLambdaRequest<SearchTemplateSpellsRequest> input, Context context) {
         return super.runActivity(
-            input,
             () -> {
                 SearchTemplateSpellsRequest stageRequest = input.fromOwnerId(ownerId ->
                         SearchTemplateSpellsRequest.builder()
@@ -29,8 +28,8 @@ public class SearchTemplateSpellsLambda
                             .withSearchTerms(path.get("searchTerms"))
                             .build());
             },
-            serviceComponent -> serviceComponent.provideSearchTemplateSpellsActivity(),
-            (activity, request) -> activity.handleRequest(request)
+            (request, serviceComponent) ->
+                    serviceComponent.provideSearchTemplateSpellsActivity().handleRequest(request)
         );
     }
 }

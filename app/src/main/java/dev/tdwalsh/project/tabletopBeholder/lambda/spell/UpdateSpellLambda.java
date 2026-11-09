@@ -16,7 +16,6 @@ public class UpdateSpellLambda
     @Override
     public LambdaResponse handleRequest(AuthenticatedLambdaRequest<UpdateSpellRequest> input, Context context) {
         return super.runActivity(
-            input,
             () -> {
                 UpdateSpellRequest stageRequest = input.fromBody(UpdateSpellRequest.class);
 
@@ -26,8 +25,8 @@ public class UpdateSpellLambda
                                 .withSpell(stageRequest.getSpell())
                                 .build());
             },
-            serviceComponent -> serviceComponent.provideUpdateSpellActivity(),
-            (activity, request) -> activity.handleRequest(request)
+            (request, serviceComponent) ->
+                    serviceComponent.provideUpdateSpellActivity().handleRequest(request)
         );
     }
 }

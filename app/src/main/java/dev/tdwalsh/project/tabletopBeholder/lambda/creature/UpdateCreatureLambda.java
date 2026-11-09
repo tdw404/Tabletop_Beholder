@@ -16,7 +16,6 @@ public class UpdateCreatureLambda
     @Override
     public LambdaResponse handleRequest(AuthenticatedLambdaRequest<UpdateCreatureRequest> input, Context context) {
         return super.runActivity(
-            input,
             () -> {
                 UpdateCreatureRequest stageRequest = input.fromBody(UpdateCreatureRequest.class);
 
@@ -26,8 +25,8 @@ public class UpdateCreatureLambda
                                 .withCreature(stageRequest.getCreature())
                                 .build());
             },
-            serviceComponent -> serviceComponent.provideUpdateCreatureActivity(),
-            (activity, request) -> activity.handleRequest(request)
+            (request, serviceComponent) ->
+                    serviceComponent.provideUpdateCreatureActivity().handleRequest(request)
         );
     }
 }

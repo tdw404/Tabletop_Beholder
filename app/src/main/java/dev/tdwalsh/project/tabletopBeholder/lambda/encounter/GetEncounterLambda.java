@@ -16,7 +16,6 @@ public class GetEncounterLambda
     @Override
     public LambdaResponse handleRequest(AuthenticatedLambdaRequest<GetEncounterRequest> input, Context context) {
         return super.runActivity(
-            input,
             () -> {
                 GetEncounterRequest stageRequest = input.fromOwnerId(ownerId ->
                         GetEncounterRequest.builder()
@@ -29,8 +28,8 @@ public class GetEncounterLambda
                             .withObjectId(path.get("objectId"))
                             .build());
             },
-            serviceComponent -> serviceComponent.provideGetEncounterActivity(),
-            (activity, request) -> activity.handleRequest(request)
+            (request, serviceComponent) ->
+                    serviceComponent.provideGetEncounterActivity().handleRequest(request)
         );
     }
 }

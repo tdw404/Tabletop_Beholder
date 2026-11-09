@@ -16,13 +16,12 @@ public class GetAllSessionsLambda
     @Override
     public LambdaResponse handleRequest(AuthenticatedLambdaRequest<GetAllSessionsRequest> input, Context context) {
         return super.runActivity(
-            input,
             () -> input.fromOwnerId(ownerId ->
                     GetAllSessionsRequest.builder()
                             .withUserEmail(ownerId)
                             .build()),
-            serviceComponent -> serviceComponent.provideGetAllSessionsActivity(),
-            (activity, request) -> activity.handleRequest(request)
+            (request, serviceComponent) ->
+                    serviceComponent.provideGetAllSessionsActivity().handleRequest(request)
         );
     }
 }
