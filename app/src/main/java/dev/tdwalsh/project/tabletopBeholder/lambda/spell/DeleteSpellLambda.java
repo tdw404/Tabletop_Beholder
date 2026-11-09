@@ -16,7 +16,6 @@ public class DeleteSpellLambda
     @Override
     public LambdaResponse handleRequest(AuthenticatedLambdaRequest<DeleteSpellRequest> input, Context context) {
         return super.runActivity(
-            input,
             () -> {
                 DeleteSpellRequest stageRequest = input.fromOwnerId(ownerId ->
                         DeleteSpellRequest.builder()
@@ -29,8 +28,8 @@ public class DeleteSpellLambda
                                 .withObjectId(path.get("objectId"))
                                 .build());
             },
-            serviceComponent -> serviceComponent.provideDeleteSpellActivity(),
-            (activity, request) -> activity.handleRequest(request)
+            (request, serviceComponent) ->
+                    serviceComponent.provideDeleteSpellActivity().handleRequest(request)
         );
     }
 }

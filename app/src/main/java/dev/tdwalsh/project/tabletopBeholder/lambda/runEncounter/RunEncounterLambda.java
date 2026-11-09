@@ -20,7 +20,6 @@ public class RunEncounterLambda
     @Override
     public LambdaResponse handleRequest(AuthenticatedLambdaRequest<RunEncounterRequest> input, Context context) {
         return super.runActivity(
-            input,
             () -> {
                 RunEncounterRequest claimsRequest = input.fromOwnerId(ownerId ->
                         RunEncounterRequest.builder()
@@ -38,8 +37,8 @@ public class RunEncounterLambda
                             .withBody(new JSONObject(input.readJsonBody(Map.class)))
                             .build());
             },
-            serviceComponent -> serviceComponent.provideRunEncounterActivity(),
-            (activity, request) -> activity.handleRequest(request)
+            (request, serviceComponent) ->
+                    serviceComponent.provideRunEncounterActivity().handleRequest(request)
         );
     }
 }

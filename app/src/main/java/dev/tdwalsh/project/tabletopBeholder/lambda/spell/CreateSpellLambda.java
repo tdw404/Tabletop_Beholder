@@ -16,7 +16,6 @@ public class CreateSpellLambda
     @Override
     public LambdaResponse handleRequest(AuthenticatedLambdaRequest<CreateSpellRequest> input, Context context) {
         return super.runActivity(
-            input,
             () -> {
                 CreateSpellRequest stageRequest = input.fromBody(CreateSpellRequest.class);
 
@@ -26,8 +25,8 @@ public class CreateSpellLambda
                                 .withSpell(stageRequest.getSpell())
                                 .build());
             },
-            serviceComponent -> serviceComponent.provideCreateSpellActivity(),
-            (activity, request) -> activity.handleRequest(request)
+            (request, serviceComponent) ->
+                    serviceComponent.provideCreateSpellActivity().handleRequest(request)
         );
     }
 }

@@ -47,11 +47,6 @@ dependencies {
         exclude group: 'software.amazon.awssdk', module: 'apache5-client'
         exclude group: 'software.amazon.awssdk', module: 'netty-nio-client'
     }
-    implementation('software.amazon.awssdk:lambda') {
-        exclude group: 'software.amazon.awssdk', module: 'apache-client'
-        exclude group: 'software.amazon.awssdk', module: 'apache5-client'
-        exclude group: 'software.amazon.awssdk', module: 'netty-nio-client'
-    }
     implementation 'software.amazon.awssdk:url-connection-client'
 
     implementation 'javax.measure:unit-api:2.1.3'

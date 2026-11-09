@@ -16,7 +16,6 @@ public class GetEncounterListLambda
     @Override
     public LambdaResponse handleRequest(AuthenticatedLambdaRequest<GetEncounterListRequest> input, Context context) {
         return super.runActivity(
-            input,
             () -> {
                 GetEncounterListRequest stageRequest = input.fromOwnerId(ownerId ->
                         GetEncounterListRequest.builder()
@@ -29,8 +28,8 @@ public class GetEncounterListLambda
                             .withSessionId(path.get("sessionId"))
                             .build());
             },
-            serviceComponent -> serviceComponent.provideGetEncounterListActivity(),
-            (activity, request) -> activity.handleRequest(request)
+            (request, serviceComponent) ->
+                    serviceComponent.provideGetEncounterListActivity().handleRequest(request)
         );
     }
 }

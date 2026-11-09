@@ -16,7 +16,6 @@ public class CreateTemplateCreatureLambda
     @Override
     public LambdaResponse handleRequest(AuthenticatedLambdaRequest<CreateTemplateCreatureRequest> input, Context context) {
         return super.runActivity(
-            input,
             () -> {
                 CreateTemplateCreatureRequest stageRequest = input.fromPath(path ->
                         CreateTemplateCreatureRequest.builder()
@@ -29,8 +28,8 @@ public class CreateTemplateCreatureLambda
                                 .withSlug(stageRequest.getSlug())
                                 .build());
             },
-            serviceComponent -> serviceComponent.provideCreateTemplateCreatureActivity(),
-            (activity, request) -> activity.handleRequest(request)
+            (request, serviceComponent) ->
+                    serviceComponent.provideCreateTemplateCreatureActivity().handleRequest(request)
         );
     }
 }

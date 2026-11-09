@@ -16,13 +16,12 @@ public class GetAllSpellsLambda
     @Override
     public LambdaResponse handleRequest(AuthenticatedLambdaRequest<GetAllSpellsRequest> input, Context context) {
         return super.runActivity(
-            input,
             () -> input.fromOwnerId(ownerId ->
                     GetAllSpellsRequest.builder()
                             .withUserEmail(ownerId)
                             .build()),
-            serviceComponent -> serviceComponent.provideGetAllSpellsActivity(),
-            (activity, request) -> activity.handleRequest(request)
+            (request, serviceComponent) ->
+                    serviceComponent.provideGetAllSpellsActivity().handleRequest(request)
         );
     }
 }

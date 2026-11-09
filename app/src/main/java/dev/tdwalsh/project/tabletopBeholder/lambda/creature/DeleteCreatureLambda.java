@@ -16,7 +16,6 @@ public class DeleteCreatureLambda
     @Override
     public LambdaResponse handleRequest(AuthenticatedLambdaRequest<DeleteCreatureRequest> input, Context context) {
         return super.runActivity(
-            input,
             () -> {
                 DeleteCreatureRequest stageRequest = input.fromOwnerId(ownerId ->
                         DeleteCreatureRequest.builder()
@@ -29,8 +28,8 @@ public class DeleteCreatureLambda
                                 .withObjectId(path.get("objectId"))
                                 .build());
             },
-            serviceComponent -> serviceComponent.provideDeleteCreatureActivity(),
-            (activity, request) -> activity.handleRequest(request)
+            (request, serviceComponent) ->
+                    serviceComponent.provideDeleteCreatureActivity().handleRequest(request)
         );
     }
 }
