@@ -21,7 +21,15 @@ Parameters:
       - remote
     ConstraintDescription: Must specify 'local' or 'remote' for FrontendDeployment.
 
+  WarmupMode:
+    Type: String
+    Default: all
+    AllowedValues: ['off', core, all]
+    Description: Which API Lambdas to warm during active sessions.
+
 Conditions:
+  WarmAllEndpoints: !Equals [!Ref WarmupMode, all]
+  WarmCoreEndpoints: !Equals [!Ref WarmupMode, core]
   DeployCloudFront: !Equals
     - !Ref FrontendDeployment
     - remote
@@ -973,6 +981,117 @@ Resources:
           Properties:
             Path: /runEncounter/{encounterId}
             Method: post
+  WarmupLambda:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: app
+      Handler: dev.tdwalsh.project.tabletopBeholder.lambda.WarmupLambda::handleRequest
+      Runtime: java11
+      MemorySize: 1024
+      Environment:
+        Variables:
+          WARMUP_TABLE: !Ref WarmupCooldownTable
+          WARMUP_TARGETS: !If
+            - WarmAllEndpoints
+            - !Join
+              - ','
+              -
+                - !Sub '${GetSpellLambda.Arn}:live'
+                - !Sub '${GetAllSpellsLambda.Arn}:live'
+                - !Sub '${CreateSpellLambda.Arn}:live'
+                - !Sub '${UpdateSpellLambda.Arn}:live'
+                - !Sub '${DeleteSpellLambda.Arn}:live'
+                - !Sub '${GetCreatureLambda.Arn}:live'
+                - !Sub '${GetAllCreaturesLambda.Arn}:live'
+                - !Sub '${CreateCreatureLambda.Arn}:live'
+                - !Sub '${UpdateCreatureLambda.Arn}:live'
+                - !Sub '${DeleteCreatureLambda.Arn}:live'
+                - !Sub '${GetEncounterLambda.Arn}:live'
+                - !Sub '${GetAllEncountersLambda.Arn}:live'
+                - !Sub '${CreateEncounterLambda.Arn}:live'
+                - !Sub '${UpdateEncounterLambda.Arn}:live'
+                - !Sub '${DeleteEncounterLambda.Arn}:live'
+                - !Sub '${GetSessionLambda.Arn}:live'
+                - !Sub '${GetAllSessionsLambda.Arn}:live'
+                - !Sub '${CreateSessionLambda.Arn}:live'
+                - !Sub '${UpdateSessionLambda.Arn}:live'
+                - !Sub '${DeleteSessionLambda.Arn}:live'
+                - !Sub '${CreateTemplateSpellLambda.Arn}:live'
+                - !Sub '${GetTemplateSpellLambda.Arn}:live'
+                - !Sub '${SearchTemplateSpellsLambda.Arn}:live'
+                - !Sub '${GetTemplateCreatureLambda.Arn}:live'
+                - !Sub '${SearchTemplateCreaturesLambda.Arn}:live'
+                - !Sub '${CreateTemplateCreatureLambda.Arn}:live'
+                - !Sub '${GetEncounterListLambda.Arn}:live'
+                - !Sub '${RunEncounterLambda.Arn}:live'
+            - !If
+              - WarmCoreEndpoints
+              - !Join
+                - ','
+                -
+                  - !Sub '${GetAllCreaturesLambda.Arn}:live'
+                  - !Sub '${GetAllSpellsLambda.Arn}:live'
+                  - !Sub '${GetAllSessionsLambda.Arn}:live'
+                  - !Sub '${GetAllEncountersLambda.Arn}:live'
+                  - !Sub '${GetEncounterLambda.Arn}:live'
+                  - !Sub '${GetEncounterListLambda.Arn}:live'
+                  - !Sub '${RunEncounterLambda.Arn}:live'
+              - ''
+      Policies:
+        - Version: '2012-10-17'
+          Statement:
+            - Effect: Allow
+              Action: dynamodb:UpdateItem
+              Resource: !GetAtt WarmupCooldownTable.Arn
+            - Effect: Allow
+              Action: lambda:InvokeFunction
+              Resource:
+                - !Sub '${GetSpellLambda.Arn}:live'
+                - !Sub '${GetAllSpellsLambda.Arn}:live'
+                - !Sub '${CreateSpellLambda.Arn}:live'
+                - !Sub '${UpdateSpellLambda.Arn}:live'
+                - !Sub '${DeleteSpellLambda.Arn}:live'
+                - !Sub '${GetCreatureLambda.Arn}:live'
+                - !Sub '${GetAllCreaturesLambda.Arn}:live'
+                - !Sub '${CreateCreatureLambda.Arn}:live'
+                - !Sub '${UpdateCreatureLambda.Arn}:live'
+                - !Sub '${DeleteCreatureLambda.Arn}:live'
+                - !Sub '${GetEncounterLambda.Arn}:live'
+                - !Sub '${GetAllEncountersLambda.Arn}:live'
+                - !Sub '${CreateEncounterLambda.Arn}:live'
+                - !Sub '${UpdateEncounterLambda.Arn}:live'
+                - !Sub '${DeleteEncounterLambda.Arn}:live'
+                - !Sub '${GetSessionLambda.Arn}:live'
+                - !Sub '${GetAllSessionsLambda.Arn}:live'
+                - !Sub '${CreateSessionLambda.Arn}:live'
+                - !Sub '${UpdateSessionLambda.Arn}:live'
+                - !Sub '${DeleteSessionLambda.Arn}:live'
+                - !Sub '${CreateTemplateSpellLambda.Arn}:live'
+                - !Sub '${GetTemplateSpellLambda.Arn}:live'
+                - !Sub '${SearchTemplateSpellsLambda.Arn}:live'
+                - !Sub '${GetTemplateCreatureLambda.Arn}:live'
+                - !Sub '${SearchTemplateCreaturesLambda.Arn}:live'
+                - !Sub '${CreateTemplateCreatureLambda.Arn}:live'
+                - !Sub '${GetEncounterListLambda.Arn}:live'
+                - !Sub '${RunEncounterLambda.Arn}:live'
+      Events:
+        TabletopBeholder:
+          Type: Api
+          Properties:
+            Path: /warmup
+            Method: post
+
+  WarmupCooldownTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      BillingMode: PAY_PER_REQUEST
+      AttributeDefinitions:
+        - AttributeName: id
+          AttributeType: S
+      KeySchema:
+        - AttributeName: id
+          KeyType: HASH
+
   #-----------------------------------------------------
   # DynamoDB Configuration
   #-----------------------------------------------------

@@ -16,6 +16,7 @@ public class CreateSessionLambda
     @Override
     public LambdaResponse handleRequest(AuthenticatedLambdaRequest<CreateSessionRequest> input, Context context) {
         return super.runActivity(
+            input,
             () -> {
                 CreateSessionRequest stageRequest = input.fromBody(CreateSessionRequest.class);
 
@@ -25,8 +26,8 @@ public class CreateSessionLambda
                                 .withSession(stageRequest.getSession())
                                 .build());
             },
-            (request, serviceComponent) ->
-                    serviceComponent.provideCreateSessionActivity().handleRequest(request)
+            serviceComponent -> serviceComponent.provideCreateSessionActivity(),
+            (activity, request) -> activity.handleRequest(request)
         );
     }
 }

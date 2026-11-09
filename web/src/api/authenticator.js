@@ -1,3 +1,4 @@
+import { startSessionWarmup, stopSessionWarmup } from "./sessionWarmup";
 import BindingClass from "../util/bindingClass";
 import { Auth } from 'aws-amplify';
 
@@ -14,6 +15,7 @@ export default class Authenticator extends BindingClass {
     async getCurrentUserInfo() {
         const congnitoUser = await Auth.currentAuthenticatedUser();
         const { email, name } = congnitoUser.signInUserSession.idToken.payload;
+        startSessionWarmup(() => this.getUserToken());
         return { email, name };
     }
 
@@ -36,6 +38,7 @@ export default class Authenticator extends BindingClass {
     }
 
     async logout() {
+        stopSessionWarmup();
         await Auth.signOut();
     }
 

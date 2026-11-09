@@ -16,6 +16,7 @@ public class CreateCreatureLambda
     @Override
     public LambdaResponse handleRequest(AuthenticatedLambdaRequest<CreateCreatureRequest> input, Context context) {
         return super.runActivity(
+            input,
             () -> {
                 CreateCreatureRequest stageRequest = input.fromBody(CreateCreatureRequest.class);
 
@@ -25,8 +26,8 @@ public class CreateCreatureLambda
                                 .withCreature(stageRequest.getCreature())
                                 .build());
             },
-            (request, serviceComponent) ->
-                    serviceComponent.provideCreateCreatureActivity().handleRequest(request)
+            serviceComponent -> serviceComponent.provideCreateCreatureActivity(),
+            (activity, request) -> activity.handleRequest(request)
         );
     }
 }

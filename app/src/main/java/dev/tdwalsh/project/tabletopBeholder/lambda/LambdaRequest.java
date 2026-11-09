@@ -21,6 +21,20 @@ import java.util.function.Function;
  */
 public class LambdaRequest<T> extends APIGatewayProxyRequestEvent {
 
+    private Long warmupUntil;
+
+    public Long getWarmupUntil() {
+        return warmupUntil;
+    }
+
+    public void setWarmupUntil(Long warmupUntil) {
+        this.warmupUntil = warmupUntil;
+    }
+
+    boolean isInternalWarmup() {
+        return warmupUntil != null && getHttpMethod() == null && getRequestContext() == null && getBody() == null;
+    }
+
     private static final int MAX_BODY_LENGTH = 2 * 1024 * 1024;
     protected static final ObjectMapper MAPPER = new ObjectMapper(JsonFactory.builder()
             .streamReadConstraints(StreamReadConstraints.builder()

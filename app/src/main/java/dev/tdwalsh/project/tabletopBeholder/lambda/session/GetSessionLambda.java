@@ -16,6 +16,7 @@ public class GetSessionLambda
     @Override
     public LambdaResponse handleRequest(AuthenticatedLambdaRequest<GetSessionRequest> input, Context context) {
         return super.runActivity(
+            input,
             () -> {
                 GetSessionRequest stageRequest = input.fromOwnerId(ownerId ->
                         GetSessionRequest.builder()
@@ -28,8 +29,8 @@ public class GetSessionLambda
                             .withObjectId(path.get("objectId"))
                             .build());
             },
-            (request, serviceComponent) ->
-                    serviceComponent.provideGetSessionActivity().handleRequest(request)
+            serviceComponent -> serviceComponent.provideGetSessionActivity(),
+            (activity, request) -> activity.handleRequest(request)
         );
     }
 }
