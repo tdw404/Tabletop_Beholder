@@ -137,7 +137,7 @@ export default class CreatureClient extends BindingClass {
                     {headers: {
                         Authorization: `Bearer ${token}`
                     }});
-                return response.data.creature;
+                return response.data;
             } catch (error) {
                 this.handleError(error, errorCallback)
             }

@@ -10,6 +10,8 @@ import dev.tdwalsh.project.tabletopBeholder.dynamodb.models.Creature;
 import dev.tdwalsh.project.tabletopBeholder.templateApi.TemplateCreatureDao;
 import dev.tdwalsh.project.tabletopBeholder.templateApi.model.TemplateCreature;
 
+import java.util.ArrayList;
+import java.util.List;
 import javax.inject.Inject;
 
 /**
@@ -43,18 +45,15 @@ public class CreateTemplateCreatureActivity {
      * @return CreateTemplateCreatureResult - Result continaing the translated beholder model.
      */
     public CreateTemplateCreatureResult handleRequest(CreateTemplateCreatureRequest createTemplateCreatureRequest) {
-        //First, retrieves template object from external API
-        //Then, converts template object to Beholder object
-        //Then, checks for name uniqueness and throws error if not unique
-        //Then, iterates over all spells - if spell does not exist, creates spell. Otherwise, adds a link to that spell.
-        // Finally, writes the new object to DynamoDB and returns the result
+        List<String> warnings = new ArrayList<>();
         Creature creature = templateCreatureTranslator.translate(templateCreatureDao.getSingle(createTemplateCreatureRequest.getSlug()),
-                createTemplateCreatureRequest.getUserEmail());
+                createTemplateCreatureRequest.getUserEmail(), warnings);
         creature.setUserEmail(createTemplateCreatureRequest.getUserEmail());
         NameHelper.objectNameUniqueness(creatureDao, creature);
 
         return CreateTemplateCreatureResult.builder()
                 .withCreature((Creature) CreateObjectHelper.createObject(creatureDao, creature))
+                .withWarnings(warnings)
                 .build();
     }
 

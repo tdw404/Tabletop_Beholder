@@ -2,15 +2,24 @@ package dev.tdwalsh.project.tabletopBeholder.activity.externalCreature.result;
 
 import dev.tdwalsh.project.tabletopBeholder.dynamodb.models.Creature;
 
+import java.util.List;
+
 public class CreateTemplateCreatureResult {
     private final Creature creature;
 
-    private CreateTemplateCreatureResult(Creature creature) {
+    private final List<String> warnings;
+
+    private CreateTemplateCreatureResult(Creature creature, List<String> warnings) {
         this.creature = creature;
+        this.warnings = List.copyOf(warnings);
     }
 
     public Creature getCreature() {
         return creature;
+    }
+
+    public List<String> getWarnings() {
+        return warnings;
     }
 
     /**
@@ -23,6 +32,12 @@ public class CreateTemplateCreatureResult {
 
     public static class Builder {
         private Creature creature;
+        private List<String> warnings = List.of();
+
+        public Builder withWarnings(List<String> warnings) {
+            this.warnings = warnings;
+            return this;
+        }
 
         /**
          * Builder setter.
@@ -39,7 +54,7 @@ public class CreateTemplateCreatureResult {
          * @return builder
          */
         public CreateTemplateCreatureResult build() {
-            return new CreateTemplateCreatureResult(creature);
+            return new CreateTemplateCreatureResult(creature, warnings);
         }
     }
 }

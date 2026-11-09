@@ -803,7 +803,7 @@ const EMPTY_DATASTORE_STATE = {
                 this.hideElements();
 
                 var warned = false;
-                var newCreature = await this.creatureClient.createTemplate(slug, (error) => {
+                var imported = await this.creatureClient.createTemplate(slug, (error) => {
                     document.getElementById('offcanvas-warn-body').innerText = error.message;
                     var myOffcanvas = document.getElementById('offcanvasWarn');
                     var bsOffcanvas = new bootstrap.Offcanvas(myOffcanvas);
@@ -812,14 +812,18 @@ const EMPTY_DATASTORE_STATE = {
                     warned = true;
                     document.getElementById('import-finish-btn').disabled = false;
                 });
-                if (!warned) {
+                if (!warned && imported?.creature) {
                     document.getElementById('close-import-btn').click();
                     this.dataStore.set([CREATURE_LIST_KEY], await this.creatureClient.getMultipleCreatures());
                     var creatureMap = new Map(this.dataStore.get([CREATURE_LIST_KEY]).map((obj) => [obj.objectId, obj]));
                     this.dataStore.set([CREATURE_MAP_KEY], creatureMap);
                     await this.populateTable();
                     this.showElements();
-                    this.creatureRowClick(newCreature.objectId);
+                    this.creatureRowClick(imported.creature.objectId);
+                    if (imported.warnings?.length) {
+                        document.getElementById('offcanvas-warn-body').textContent = imported.warnings.join(' ');
+                        bootstrap.Offcanvas.getOrCreateInstance(document.getElementById('offcanvasWarn')).show();
+                    }
                 };
         }
     }
