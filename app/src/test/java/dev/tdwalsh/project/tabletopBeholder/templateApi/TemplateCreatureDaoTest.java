@@ -85,17 +85,27 @@ public class TemplateCreatureDaoTest {
     }
 
     @Test
-    public void getMultiple_200_returnsCreature() {
+    public void getMultiple_200_searchesByPartialName() {
         //GIVEN
         doReturn(response).when(open5EClient).call(anyString());
         doReturn(200).when(response).statusCode();
-        doReturn("{\"results\": [{\"name\": \"testName\"}]}").when(response).body();
+        doReturn("{\"results\": [{\"name\": \"Ancient Wind Dragon\"}]}").when(response).body();
         //WHEN
-        List<TemplateCreature> result = dao.getMultiple("search=wind dragon&limit=50");
-        verify(open5EClient).call("https://api.open5e.com/v1/monsters/?search=wind%20dragon&limit=50");
+        List<TemplateCreature> result = dao.getMultiple("search=WiNd DrAgOn&limit=50");
+        verify(open5EClient).call("https://api.open5e.com/v1/monsters/?name__icontains=WiNd+DrAgOn&limit=50");
 
         //THEN
-        assertEquals("testName", result.get(0).getName(), "Expected dao to return single matching result");
+        assertEquals("Ancient Wind Dragon", result.get(0).getName(), "Expected dao to return single matching result");
+    }
+
+    @Test
+    public void getMultiple_treatsQueryCharactersAsPartOfTheName() {
+        doReturn(response).when(open5EClient).call(anyString());
+        doReturn(200).when(response).statusCode();
+        doReturn("{\"results\":[]}").when(response).body();
+
+        assertTrue(dao.getMultiple("search=Fire & Ice&limit=10").isEmpty());
+        verify(open5EClient).call("https://api.open5e.com/v1/monsters/?name__icontains=Fire+%26+Ice&limit=10");
     }
 
     @Test
@@ -105,7 +115,7 @@ public class TemplateCreatureDaoTest {
         doReturn(404).when(response).statusCode();
         //WHEN
         //THEN
-        assertThrows(MissingResourceException.class, () -> dao.getMultiple("slug"));
+        assertThrows(MissingResourceException.class, () -> dao.getMultiple("search=dragon"));
     }
 
     @Test
@@ -115,7 +125,7 @@ public class TemplateCreatureDaoTest {
         doReturn(500).when(response).statusCode();
         //WHEN
         //THEN
-        assertThrows(CurlException.class, () -> dao.getMultiple("slug"));
+        assertThrows(CurlException.class, () -> dao.getMultiple("search=dragon"));
     }
 
     @Test

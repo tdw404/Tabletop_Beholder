@@ -106,9 +106,8 @@ export default class CreatureClient extends BindingClass {
 
     async searchTemplate(searchTerms, limit, errorCallback) {
             try {
-                //const cleanedTerms = searchTerms.interpolate
                 const token = await this.getTokenOrThrow("Encountered token error trying to call Creature Template endpoint.");
-                const response = await this.axiosClient.get(`creatureTemplate/search/search=${searchTerms}&limit=${limit}`,
+                const response = await this.axiosClient.get(`creatureTemplate/search/search=${encodeURIComponent(searchTerms.trim())}&limit=${limit}`,
                     {headers: {
                         Authorization: `Bearer ${token}`
                     }});

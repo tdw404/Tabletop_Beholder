@@ -85,6 +85,47 @@ public class TemplateCreatureTranslatorTest {
     }
 
     @Test
+    public void translate_preservesFractionalAndZeroChallengeRatings() {
+        List<String> warnings = new ArrayList<>();
+        templateCreature.setChallenge_rating(" 1 / 8 ");
+        assertEquals(0.125, translator.translate(templateCreature, userEmail, warnings).getChallengeRating());
+        templateCreature.setChallenge_rating("0");
+        assertEquals(0.0, translator.translate(templateCreature, userEmail, warnings).getChallengeRating());
+        assertTrue(warnings.isEmpty());
+    }
+
+    @Test
+    public void translate_usesNumericFallbackForInvalidChallengeRating() {
+        templateCreature.setChallenge_rating("1/0");
+        templateCreature.setCr(0.125);
+        List<String> warnings = new ArrayList<>();
+
+        assertEquals(0.125, translator.translate(templateCreature, userEmail, warnings).getChallengeRating());
+        assertTrue(warnings.isEmpty());
+    }
+
+    @Test
+    public void translate_warnsWhenChallengeRatingIsUnavailable() {
+        templateCreature.setChallenge_rating(null);
+        templateCreature.setCr(null);
+        List<String> warnings = new ArrayList<>();
+
+        assertNull(translator.translate(templateCreature, userEmail, warnings).getChallengeRating());
+        assertTrue(warnings.stream().anyMatch(warning -> warning.contains("challenge rating")));
+    }
+
+    @Test
+    public void translate_keepsDamageAndConditionImmunitiesSeparate() {
+        templateCreature.setDamage_immunities("poison");
+        templateCreature.setCondition_immunities("charmed, exhaustion, poisoned");
+
+        Creature result = translator.translate(templateCreature, userEmail);
+
+        assertEquals("poison", result.getImmunities());
+        assertEquals("charmed, exhaustion, poisoned", result.getConditionImmunities());
+    }
+
+    @Test
     public void translate_containsInnateSpellcasting_translatesToSpells() {
         //GIVEN
         TemplateAction innateSpellcasting = TemplateActionHelper.provideTemplateAction(1);
