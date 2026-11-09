@@ -43,7 +43,7 @@ public class TemplateCreature {
     private String senses;
     private String languages;
     private String challenge_rating;
-    private int cr;
+    private Double cr;
     private List<TemplateAction> actions;
     private List<TemplateAction> bonus_actions;
 
@@ -333,11 +333,11 @@ public class TemplateCreature {
         this.challenge_rating = challenge_rating;
     }
 
-    public int getCr() {
+    public Double getCr() {
         return cr;
     }
 
-    public void setCr(int cr) {
+    public void setCr(Double cr) {
         this.cr = cr;
     }
 

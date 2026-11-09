@@ -89,18 +89,17 @@ public class TemplateCreatureTranslator {
         creature.setVulnerabilities(templateCreature.getDamage_vulnerabilities());
         creature.setResistances(templateCreature.getDamage_resistances());
         creature.setImmunities(templateCreature.getDamage_immunities());
+        creature.setConditionImmunities(templateCreature.getCondition_immunities());
         creature.setSenses(templateCreature.getSenses());
         creature.setLanguages(templateCreature.getLanguages());
-        if (templateCreature.getChallenge_rating().contains("1/4")) {
-            creature.setChallengeRating(0.25D);
-        } else if (templateCreature.getChallenge_rating().contains("1/2")) {
-            creature.setChallengeRating(0.5D);
+        Double challengeRating = parseChallengeRating(templateCreature.getChallenge_rating());
+        if (challengeRating == null) {
+            challengeRating = templateCreature.getCr();
+        }
+        if (isValidChallengeRating(challengeRating)) {
+            creature.setChallengeRating(challengeRating);
         } else {
-            try {
-                creature.setChallengeRating(new Double(templateCreature.getChallenge_rating()));
-            } catch (Exception e) {
-                creature.setChallengeRating(0D);
-            }
+            warnings.add("Creature imported. Review its missing or invalid challenge rating.");
         }
         creature.setLegendaryDesc(templateCreature.getLegendary_desc());
         creature.setCreateDateTime(ZonedDateTime.now());
@@ -133,6 +132,32 @@ public class TemplateCreatureTranslator {
 
         importSpellcasting(creature, actionMap, userEmail, warnings);
         return creature;
+    }
+
+    private static Double parseChallengeRating(String text) {
+        if (text == null || text.isBlank()) {
+            return null;
+        }
+        String[] parts = text.split("/", -1);
+        try {
+            double rating = Double.parseDouble(parts[0].strip());
+            if (parts.length == 2) {
+                double denominator = Double.parseDouble(parts[1].strip());
+                if (!Double.isFinite(denominator) || denominator <= 0) {
+                    return null;
+                }
+                rating /= denominator;
+            } else if (parts.length != 1) {
+                return null;
+            }
+            return isValidChallengeRating(rating) ? rating : null;
+        } catch (NumberFormatException exception) {
+            return null;
+        }
+    }
+
+    private static boolean isValidChallengeRating(Double rating) {
+        return rating != null && Double.isFinite(rating) && rating >= 0;
     }
 
     private void importSpellcasting(Creature creature, Map<String, Action> actions, String userEmail,

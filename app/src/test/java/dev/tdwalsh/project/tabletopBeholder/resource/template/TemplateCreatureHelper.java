@@ -50,7 +50,7 @@ public class TemplateCreatureHelper {
         templateCreature.setSenses("senses" + mod);
         templateCreature.setLanguages("languages" + mod);
         templateCreature.setChallenge_rating("challenge_rating" + mod);
-        templateCreature.setCr(mod);
+        templateCreature.setCr((double) mod);
         List<TemplateAction> actionList = new ArrayList<>();
         actionList.add(TemplateActionHelper.provideTemplateAction(1));
         actionList.add(TemplateActionHelper.provideTemplateAction(2));

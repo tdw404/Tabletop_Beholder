@@ -11,9 +11,13 @@ import org.json.JSONObject;
 import org.json.JSONException;
 
 import java.io.IOException;
+import java.net.URLEncoder;
 import java.net.http.HttpResponse;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
@@ -26,6 +30,7 @@ import javax.inject.Singleton;
 @Singleton
 public class TemplateCreatureDao {
     private static final String URI_PATH = "https://api.open5e.com/v1/monsters/";
+    private static final Pattern NAME_SEARCH = Pattern.compile("search=(.*?)(?:&limit=(\\d+))?");
     private final ObjectMapper objectMapper;
     private final Open5EClient open5EClient;
 
@@ -73,12 +78,18 @@ public class TemplateCreatureDao {
      * @return A list of {@link TemplateCreature} if found, or an empty list if none found
      */
     public List<TemplateCreature> getMultiple(String searchTerms) {
-        //First, uses the search term chain of the external object to build a uri
-        //Then, makes a GET call with that url
-        //Then, converts the result to a list of model objects and returns it
-        String cleanedTerms = searchTerms.replace(" ", "%20");
+        Matcher search = NAME_SEARCH.matcher(searchTerms == null ? "" : searchTerms);
+        if (!search.matches()) {
+            return List.of();
+        }
+
+        String name = URLEncoder.encode(search.group(1).strip(), StandardCharsets.UTF_8);
+        String query = "name__icontains=" + name;
+        if (search.group(2) != null) {
+            query += "&limit=" + search.group(2);
+        }
         try {
-            HttpResponse<String> response = open5EClient.call(URI_PATH + "?" + cleanedTerms);
+            HttpResponse<String> response = open5EClient.call(URI_PATH + "?" + query);
             switch (response.statusCode()) {
                 case 404:
                     throw new MissingResourceException("5E API could not return resource with parameters: " +

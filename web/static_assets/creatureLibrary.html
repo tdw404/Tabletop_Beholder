@@ -227,7 +227,7 @@
                         </div>
                         <div class="mb-3 col">
                             <label for="challengeRating" class="form-label">Challenge Rating</label>
-                            <input class="form-control" id="challengeRating" type="number" min="0" data-bind="value:replyNumber">
+                            <input class="form-control" id="challengeRating" type="number" min="0" step="any" data-bind="value:replyNumber">
                         </div>
                         <div class="mb-3 col">
                         </div>
@@ -896,7 +896,7 @@
         </div>
         <hr/>
         <div class="offcanvas-body" id="offcanvas-import-body">
-            <div>Search for templates by a word, part of a word, or the name of the creature you're seeking:</div>
+            <label for="templateSearch">Search by creature name</label>
             <input class="form-control" id="templateSearch">
             <label for="limit" class="form-label pad-up-mini">Results</label>
             <select class="form-select" id="limit">
