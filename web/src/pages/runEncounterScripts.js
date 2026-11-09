@@ -993,11 +993,14 @@ const EMPTY_DATASTORE_STATE = {
             document.getElementById('ss9').innerHTML = spellSlotMap.get(9) || '';;
         }
         document.getElementById('walkSpeed').innerHTML = creature.speedMap?.walk || '';
-        document.getElementById('flySpeed').innerHTML = creature.speedMap?.fly || '';
+        const flySpeed = creature.speedMap?.fly ?? '';
+        const hover = creature.hover ?? (creature.speedMap?.hover > 0);
+        document.getElementById('flySpeed').textContent = hover
+            ? (flySpeed === '' ? 'Hover' : flySpeed + ' (hover)')
+            : flySpeed;
         document.getElementById('swimSpeed').innerHTML = creature.speedMap?.swim || '';
         document.getElementById('burrowSpeed').innerHTML = creature.speedMap?.burrow || '';
         document.getElementById('climbSpeed').innerHTML = creature.speedMap?.climb || '';
-        document.getElementById('hoverSpeed').innerHTML = creature.speedMap?.hover || '';
         document.getElementById('strStat').innerHTML = this.modCalc(creature.statMap?.strength);
         document.getElementById('dexStat').innerHTML = this.modCalc(creature.statMap?.dexterity);
         document.getElementById('conStat').innerHTML = this.modCalc(creature.statMap?.constitution);

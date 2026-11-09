@@ -1,5 +1,7 @@
 package dev.tdwalsh.project.tabletopBeholder.dynamodb.models;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+
 import dev.tdwalsh.project.tabletopBeholder.converters.ActionConverter;
 import dev.tdwalsh.project.tabletopBeholder.converters.EffectConverter;
 import dev.tdwalsh.project.tabletopBeholder.converters.IntIntMapConverter;
@@ -50,6 +52,7 @@ public class Creature implements BeholderObject {
     private String hitDice;
     private Integer currentHitDice;
     private Map<String, Integer> speedMap;
+    private Boolean hover;
     private Map<String, Integer> statMap;
     private Map<String, Integer> saveMap;
     private Integer passivePerception;
@@ -70,6 +73,15 @@ public class Creature implements BeholderObject {
     private String spellAttackModifier;
     private ZonedDateTime createDateTime;
     private ZonedDateTime editDateTime;
+
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    public Boolean getHover() {
+        return hover;
+    }
+
+    public void setHover(Boolean hover) {
+        this.hover = hover;
+    }
 
     @Override
     @DynamoDbPartitionKey

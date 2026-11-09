@@ -1,6 +1,8 @@
 package dev.tdwalsh.project.tabletopBeholder.templateApi;
 
 import com.amazonaws.services.lambda.runtime.events.models.dynamodb.AttributeValue;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import dev.tdwalsh.project.tabletopBeholder.converters.templateTranslators.TemplateCreatureTranslator;
 import dev.tdwalsh.project.tabletopBeholder.dynamodb.dao.CreatureDao;
 import dev.tdwalsh.project.tabletopBeholder.dynamodb.models.Creature;
 import dev.tdwalsh.project.tabletopBeholder.exceptions.CurlException;
@@ -10,6 +12,7 @@ import dev.tdwalsh.project.tabletopBeholder.templateApi.Open5EClient;
 import dev.tdwalsh.project.tabletopBeholder.templateApi.TemplateCreatureDao;
 import dev.tdwalsh.project.tabletopBeholder.templateApi.model.TemplateCreature;
 import org.junit.jupiter.api.BeforeEach;
+import software.amazon.awssdk.enhanced.dynamodb.TableSchema;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
@@ -163,8 +166,44 @@ public class TemplateCreatureDaoTest {
 
         for (TemplateCreature creature : List.of(searchResult, detail)) {
             assertEquals(java.util.Map.of("fly", 80), creature.getSpeed());
+            assertEquals(Boolean.TRUE, creature.getHover());
+            assertEquals(6, creature.getActions().get(0).getDamage_bonus());
             assertEquals("Bite", creature.getActions().get(0).getName());
             assertEquals("2d10", creature.getActions().get(0).getDamage_dice());
         }
+    }
+    @Test
+    public void importedHoverAndAttackDetailsSurviveStorageRoundTrip() throws Exception {
+        var mapper = new ObjectMapper();
+        var template = mapper.readValue("{\"name\":\"Blink Dog\","
+                + "\"challenge_rating\":\"1/4\",\"speed\":{\"swim\":20,\"burrow\":10,\"hover\":true},"
+                + "\"actions\":[{\"name\":\"Bite\",\"desc\":\"Bite description\","
+                + "\"attack_bonus\":3,\"damage_dice\":\"1d6\",\"damage_bonus\":0},"
+                + "{\"name\":\"Teleport\",\"desc\":\"Teleport description\"}]}", TemplateCreature.class);
+        var translator = new TemplateCreatureTranslator(null, null);
+        Creature imported = translator.translate(template, "owner");
+        var schema = TableSchema.fromBean(Creature.class);
+        Creature saved = schema.mapToItem(schema.itemToMap(imported, true));
+
+        assertEquals(Boolean.TRUE, saved.getHover());
+        assertEquals(java.util.Map.of("swim", 20, "burrow", 10), saved.getSpeedMap());
+        var bite = saved.getActionMap().values().stream()
+                .filter(action -> action.getObjectName().equals("Bite")).findFirst().orElseThrow();
+        assertEquals(3, bite.getAttackBonus());
+        assertEquals("1d6", bite.getDamageDice());
+        assertEquals(0, bite.getDamageModifier());
+        assertEquals("Bite description", bite.getActionDescription());
+        var teleport = saved.getActionMap().values().stream()
+                .filter(action -> action.getObjectName().equals("Teleport")).findFirst().orElseThrow();
+        assertNull(teleport.getAttackBonus());
+        assertNull(teleport.getDamageDice());
+        assertNull(teleport.getDamageModifier());
+        assertEquals("Teleport description", teleport.getActionDescription());
+
+        Creature legacy = new Creature();
+        legacy.setSpeedMap(java.util.Map.of("fly", 40, "hover", 10));
+        Creature reloaded = schema.mapToItem(schema.itemToMap(legacy, true));
+        assertNull(reloaded.getHover());
+        assertEquals(10, reloaded.getSpeedMap().get("hover"));
     }
 }
