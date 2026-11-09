@@ -16,6 +16,8 @@ import org.mockito.Mock;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyList;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 import static org.mockito.MockitoAnnotations.openMocks;
 
@@ -55,7 +57,7 @@ public class CreateTemplateCreatureActivityTest {
     public void handleRequest_nameUnique_returnsResult() {
         //GIVEN
         doReturn(templateCreature).when(templateCreatureDao).getSingle(slug);
-        doReturn(creature).when(templateCreatureTranslator).translate(templateCreature, email);
+        doReturn(creature).when(templateCreatureTranslator).translate(eq(templateCreature), eq(email), anyList());
         doReturn(false).when(creatureDao).objectNameExists(email, templateCreature.getName());
 
         //WHEN
