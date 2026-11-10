@@ -1,0 +1,390 @@
+{
+  "type": "object",
+  "properties": {
+    "creature": {
+      "type": "object",
+      "properties": {
+        "objectName": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "size": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "type": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "subType": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "alignment": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "sourceBook": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "armorClass": {
+          "type": [
+            "integer",
+            "null"
+          ]
+        },
+        "armorType": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "hitPoints": {
+          "type": [
+            "integer",
+            "null"
+          ]
+        },
+        "hitDice": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "challengeRating": {
+          "type": [
+            "number",
+            "null"
+          ]
+        },
+        "hover": {
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
+        "passivePerception": {
+          "type": [
+            "integer",
+            "null"
+          ]
+        },
+        "senses": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "languages": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "vulnerabilities": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "resistances": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "immunities": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "conditionImmunities": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "legendaryDesc": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "spellcastingAbility": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "spellSaveDC": {
+          "type": [
+            "integer",
+            "null"
+          ]
+        },
+        "spellAttackModifier": {
+          "type": [
+            "integer",
+            "null"
+          ]
+        },
+        "speedMap": {
+          "type": "object",
+          "properties": {
+            "walk": {
+              "type": [
+                "integer",
+                "null"
+              ]
+            },
+            "fly": {
+              "type": [
+                "integer",
+                "null"
+              ]
+            },
+            "swim": {
+              "type": [
+                "integer",
+                "null"
+              ]
+            },
+            "burrow": {
+              "type": [
+                "integer",
+                "null"
+              ]
+            },
+            "climb": {
+              "type": [
+                "integer",
+                "null"
+              ]
+            }
+          },
+          "required": [
+            "walk",
+            "fly",
+            "swim",
+            "burrow",
+            "climb"
+          ],
+          "additionalProperties": false
+        },
+        "statMap": {
+          "type": "object",
+          "properties": {
+            "strength": {
+              "type": [
+                "integer",
+                "null"
+              ]
+            },
+            "dexterity": {
+              "type": [
+                "integer",
+                "null"
+              ]
+            },
+            "constitution": {
+              "type": [
+                "integer",
+                "null"
+              ]
+            },
+            "intelligence": {
+              "type": [
+                "integer",
+                "null"
+              ]
+            },
+            "wisdom": {
+              "type": [
+                "integer",
+                "null"
+              ]
+            },
+            "charisma": {
+              "type": [
+                "integer",
+                "null"
+              ]
+            }
+          },
+          "required": [
+            "strength",
+            "dexterity",
+            "constitution",
+            "intelligence",
+            "wisdom",
+            "charisma"
+          ],
+          "additionalProperties": false
+        },
+        "saveMap": {
+          "type": "object",
+          "properties": {
+            "strength_save": {
+              "type": [
+                "integer",
+                "null"
+              ]
+            },
+            "dexterity_save": {
+              "type": [
+                "integer",
+                "null"
+              ]
+            },
+            "constitution_save": {
+              "type": [
+                "integer",
+                "null"
+              ]
+            },
+            "intelligence_save": {
+              "type": [
+                "integer",
+                "null"
+              ]
+            },
+            "wisdom_save": {
+              "type": [
+                "integer",
+                "null"
+              ]
+            },
+            "charisma_save": {
+              "type": [
+                "integer",
+                "null"
+              ]
+            }
+          },
+          "required": [
+            "strength_save",
+            "dexterity_save",
+            "constitution_save",
+            "intelligence_save",
+            "wisdom_save",
+            "charisma_save"
+          ],
+          "additionalProperties": false
+        },
+        "actions": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "objectName": {
+                "type": "string"
+              },
+              "actionType": {
+                "type": "string",
+                "enum": [
+                  "special",
+                  "standard",
+                  "bonus",
+                  "reaction",
+                  "legendary"
+                ]
+              },
+              "actionDescription": {
+                "type": "string"
+              },
+              "attackBonus": {
+                "type": [
+                  "integer",
+                  "null"
+                ]
+              },
+              "damageDice": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "damageModifier": {
+                "type": [
+                  "integer",
+                  "null"
+                ]
+              },
+              "rechargeOn": {
+                "type": [
+                  "integer",
+                  "null"
+                ]
+              }
+            },
+            "required": [
+              "objectName",
+              "actionType",
+              "actionDescription",
+              "attackBonus",
+              "damageDice",
+              "damageModifier",
+              "rechargeOn"
+            ],
+            "additionalProperties": false
+          }
+        }
+      },
+      "required": [
+        "objectName",
+        "size",
+        "type",
+        "subType",
+        "alignment",
+        "sourceBook",
+        "armorClass",
+        "armorType",
+        "hitPoints",
+        "hitDice",
+        "challengeRating",
+        "hover",
+        "passivePerception",
+        "senses",
+        "languages",
+        "vulnerabilities",
+        "resistances",
+        "immunities",
+        "conditionImmunities",
+        "legendaryDesc",
+        "spellcastingAbility",
+        "spellSaveDC",
+        "spellAttackModifier",
+        "speedMap",
+        "statMap",
+        "saveMap",
+        "actions"
+      ],
+      "additionalProperties": false
+    },
+    "warnings": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    }
+  },
+  "required": [
+    "creature",
+    "warnings"
+  ],
+  "additionalProperties": false
+}

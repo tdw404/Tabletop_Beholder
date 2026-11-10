@@ -1,0 +1,118 @@
+{
+  "creature": {
+    "objectName": "Draugr",
+    "size": "Medium",
+    "type": "undead",
+    "subType": null,
+    "alignment": "any evil alignment",
+    "sourceBook": "The Impermissicon",
+    "armorClass": 13,
+    "armorType": "armor scraps, shield",
+    "hitPoints": 52,
+    "hitDice": "7d8 + 21",
+    "challengeRating": 2,
+    "hover": null,
+    "passivePerception": 9,
+    "senses": "darkvision 60 ft.",
+    "languages": "the languages it knew in life",
+    "vulnerabilities": null,
+    "resistances": "cold, necrotic",
+    "immunities": "poison",
+    "conditionImmunities": "exhaustion, frightened, paralyzed, poisoned",
+    "legendaryDesc": null,
+    "spellcastingAbility": null,
+    "spellSaveDC": null,
+    "spellAttackModifier": null,
+    "speedMap": {
+      "walk": 25,
+      "fly": null,
+      "swim": null,
+      "burrow": null,
+      "climb": null
+    },
+    "statMap": {
+      "strength": 17,
+      "dexterity": 11,
+      "constitution": 16,
+      "intelligence": 7,
+      "wisdom": 8,
+      "charisma": 13
+    },
+    "saveMap": {
+      "strength_save": null,
+      "dexterity_save": null,
+      "constitution_save": null,
+      "intelligence_save": null,
+      "wisdom_save": 1,
+      "charisma_save": null
+    },
+    "actions": [
+      {
+        "objectName": "Dark Rejuvenation",
+        "actionType": "special",
+        "actionDescription": "Revives in 3d6 days unless its remains are beheaded, burned, and cast into the sea.",
+        "attackBonus": null,
+        "damageDice": null,
+        "damageModifier": null,
+        "rechargeOn": null
+      },
+      {
+        "objectName": "Undead Fortitude",
+        "actionType": "special",
+        "actionDescription": "At 0 HP, make a Constitution save (DC 5 + damage taken), except for fire, radiant, or a critical hit. On success, drop to 1 HP.",
+        "attackBonus": null,
+        "damageDice": null,
+        "damageModifier": null,
+        "rechargeOn": null
+      },
+      {
+        "objectName": "Multiattack",
+        "actionType": "standard",
+        "actionDescription": "Makes two weapon attacks.",
+        "attackBonus": null,
+        "damageDice": null,
+        "damageModifier": null,
+        "rechargeOn": null
+      },
+      {
+        "objectName": "Claw",
+        "actionType": "standard",
+        "actionDescription": "+5 to hit, reach 5 ft. Hit: 6 (1d6 + 3) slashing damage.",
+        "attackBonus": 5,
+        "damageDice": "1d6",
+        "damageModifier": 3,
+        "rechargeOn": null
+      },
+      {
+        "objectName": "Battleaxe",
+        "actionType": "standard",
+        "actionDescription": "+5 to hit, reach 5 ft. Hit: 7 (1d8 + 3) slashing damage, or 8 (1d10 + 3) if used with two hands.",
+        "attackBonus": 5,
+        "damageDice": "1d8",
+        "damageModifier": 3,
+        "rechargeOn": null
+      },
+      {
+        "objectName": "Javelin",
+        "actionType": "standard",
+        "actionDescription": "+5 to hit, reach 5 ft. or range 30/120 ft. Hit: 6 (1d6 + 3) piercing damage.",
+        "attackBonus": 5,
+        "damageDice": "1d6",
+        "damageModifier": 3,
+        "rechargeOn": null
+      },
+      {
+        "objectName": "Hateful Glare",
+        "actionType": "standard",
+        "actionDescription": "Target makes a DC 13 Wisdom save or is frightened for 1 minute, cannot move, and must Dodge. It repeats the save at the end of each turn.",
+        "attackBonus": null,
+        "damageDice": null,
+        "damageModifier": null,
+        "rechargeOn": 6
+      }
+    ]
+  },
+  "warnings": [
+    "Battleaxe has two damage formulas. Review the primary formula."
+  ]
+}
