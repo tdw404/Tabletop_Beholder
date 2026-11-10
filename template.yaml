@@ -87,11 +87,19 @@ Resources:
             - DeployCloudFront
             - !Sub "https://${CloudFrontDistribution.DomainName}"
             - !Ref "AWS::NoValue"
+        - !If
+            - DeployCloudFront
+            - "https://tdwalsh.dev/beholder/"
+            - !Ref "AWS::NoValue"
       LogoutURLs:
         - http://localhost:8000
         - !If
             - DeployCloudFront
             - !Sub "https://${CloudFrontDistribution.DomainName}"
+            - !Ref "AWS::NoValue"
+        - !If
+            - DeployCloudFront
+            - "https://tdwalsh.dev/beholder/"
             - !Ref "AWS::NoValue"
       AllowedOAuthFlows:
         - code
@@ -1110,9 +1118,9 @@ Outputs:
 
   CognitoRedirectSignin:
     Description: "The URL of the deployed front-end application (COGNITO_REDIRECT_SIGNIN)."
-    Value: !Sub "https://${CloudFrontDistribution.DomainName}"
+    Value: "https://tdwalsh.dev/beholder/"
     Condition: DeployCloudFront
   CognitoRedirectSignout:
     Description: "The URL of the deployed front-end application (COGNITO_REDIRECT_SIGNOUT)."
-    Value: !Sub "https://${CloudFrontDistribution.DomainName}"
+    Value: "https://tdwalsh.dev/beholder/"
     Condition: DeployCloudFront
