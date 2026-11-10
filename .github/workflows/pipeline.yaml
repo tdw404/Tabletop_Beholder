@@ -44,7 +44,6 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-python@v2
-      - uses: actions/setup-node@v3
       - uses: aws-actions/setup-sam@v1
 
       - name: Build SAM resources
@@ -71,35 +70,6 @@ jobs:
           name: packaged-prod.yaml
           path: packaged-prod.yaml
 
-      - name: Install NPM dependencies
-        working-directory: web
-        run: npm install
-
-      - name: Create .env file for npm build
-        working-directory: web
-        run: |
-          outputs=$(aws cloudformation describe-stacks --stack-name "$STACK_NAME" --region "$REGION" --query 'Stacks[0].Outputs' --output json)
-          jq -er '
-            map({key: .OutputKey, value: .OutputValue}) | from_entries |
-            "API_BASE_URL=\(.ApiBaseUrl | strings)",
-            "COGNITO_DOMAIN=\(.CognitoDomain | strings)",
-            "COGNITO_USER_POOL_ID=\(.CognitoUserPoolId | strings)",
-            "COGNITO_USER_POOL_CLIENT_ID=\(.CognitoUserPoolClientId | strings)",
-            "COGNITO_REDIRECT_SIGNIN=\(.CognitoRedirectSignin | strings)",
-            "COGNITO_REDIRECT_SIGNOUT=\(.CognitoRedirectSignout | strings)"
-          ' <<< "$outputs" > .env
-          test "$(wc -l < .env)" -eq 6
-
-      - name: Build NPM static resources
-        working-directory: web
-        run: npm run build
-
-      - name: Upload NPM static build output
-        uses: actions/upload-artifact@v4
-        with:
-          name: static-build
-          path: web/build
-
   deploy-to-aws:
     if: github.ref == 'refs/heads/main'
     permissions:
@@ -110,6 +80,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-python@v2
+      - uses: actions/setup-node@v3
       - uses: actions/setup-node@v3
       - uses: aws-actions/setup-sam@v1
       - uses: actions/download-artifact@v4
@@ -135,15 +106,32 @@ jobs:
             --parameter-overrides "S3Bucket=${WEBSITE_BUCKET} CognitoDomain=${COGNITO_DOMAIN}" \
             --role-arn ${CLOUDFORMATION_EXECUTION_ROLE}
 
-      - name: Download NPM static resources
-        uses: actions/download-artifact@v4
-        with:
-          name: static-build
-          path: build/static
+      - name: Install NPM dependencies
+        working-directory: web
+        run: npm install
+
+      - name: Create .env file for npm build
+        working-directory: web
+        run: |
+          outputs=$(aws cloudformation describe-stacks --stack-name "$STACK_NAME" --region "$REGION" --query 'Stacks[0].Outputs' --output json)
+          jq -er '
+            map({key: .OutputKey, value: .OutputValue}) | from_entries |
+            "API_BASE_URL=\(.ApiBaseUrl | strings)",
+            "COGNITO_DOMAIN=\(.CognitoDomain | strings)",
+            "COGNITO_USER_POOL_ID=\(.CognitoUserPoolId | strings)",
+            "COGNITO_USER_POOL_CLIENT_ID=\(.CognitoUserPoolClientId | strings)",
+            "COGNITO_REDIRECT_SIGNIN=\(.CognitoRedirectSignin | strings)",
+            "COGNITO_REDIRECT_SIGNOUT=\(.CognitoRedirectSignout | strings)"
+          ' <<< "$outputs" > .env
+          test "$(wc -l < .env)" -eq 6
+
+      - name: Build NPM static resources
+        working-directory: web
+        run: npm run build
 
       - name: Deploy NPM static resources
         run: |
           aws s3 cp \
-            build/static \
+            web/build \
             s3://${WEBSITE_BUCKET}/static/ \
             --recursive
