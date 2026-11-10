@@ -256,8 +256,8 @@
                             <input class="form-control" id="climbSpeed" type="number" min="0" data-bind="value:replyNumber">
                         </div>
                         <div class="mb-3 col">
-                            <label for="hoverSpeed" class="form-label">Hover</label>
-                            <input class="form-control" id="hoverSpeed" type="number" min="0" data-bind="value:replyNumber">
+                            <input class="form-check-input" id="hoverSpeed" type="checkbox">
+                            <label for="hoverSpeed" class="form-check-label">Can hover</label>
                         </div>
                     </div>
                     <hr>
@@ -729,6 +729,12 @@
             <div class="mb-3">
                 <label for="descriptionActionEdit" class="form-label">Name</label>
                 <textarea class="form-control" id="descriptionActionEdit" rows="3"></textarea>
+                <label for="attackBonusEdit" class="form-label">Attack bonus</label>
+                <input class="form-control" id="attackBonusEdit" type="number" step="1">
+                <label for="damageDiceEdit" class="form-label">Damage dice</label>
+                <input class="form-control" id="damageDiceEdit">
+                <label for="damageModifierEdit" class="form-label">Damage modifier</label>
+                <input class="form-control" id="damageModifierEdit" type="number" step="1">
             </div>
             <div class="mb-3">
                 <label for="typeEditAction" class="form-label">Type</label>

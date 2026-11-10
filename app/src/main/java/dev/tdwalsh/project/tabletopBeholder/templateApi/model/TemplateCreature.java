@@ -2,6 +2,7 @@ package dev.tdwalsh.project.tabletopBeholder.templateApi.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -20,8 +21,8 @@ public class TemplateCreature {
     private String armor_desc;
     private int hit_points;
     private String hit_dice;
-    @JsonIgnoreProperties("hover")
     private Map<String, Integer> speed;
+    private Boolean hover;
     private int strength;
     private int dexterity;
     private int constitution;
@@ -161,8 +162,29 @@ public class TemplateCreature {
         return speed;
     }
 
-    public void setSpeed(Map<String, Integer> speed) {
-        this.speed = speed;
+    public void setSpeed(Map<String, ?> speeds) {
+        hover = null;
+        if (speeds == null) {
+            speed = null;
+            return;
+        }
+
+        speed = new LinkedHashMap<>();
+        speeds.forEach((movement, value) -> {
+            if ("hover".equals(movement)) {
+                if (value instanceof Boolean) {
+                    hover = (Boolean) value;
+                } else if (value instanceof Number) {
+                    hover = ((Number) value).intValue() > 0;
+                }
+            } else if (value instanceof Number) {
+                speed.put(movement, ((Number) value).intValue());
+            }
+        });
+    }
+
+    public Boolean getHover() {
+        return hover;
     }
 
     public int getStrength() {

@@ -68,6 +68,7 @@ public class TemplateCreatureTranslator {
         creature.setCurrentHitPoints(templateCreature.getHit_points());
         creature.setHitDice(templateCreature.getHit_dice());
         creature.setSpeedMap(templateCreature.getSpeed());
+        creature.setHover(templateCreature.getHover());
         Map<String, Integer> statMap = new HashMap<>();
         statMap.put("strength", templateCreature.getStrength());
         statMap.put("dexterity", templateCreature.getDexterity());

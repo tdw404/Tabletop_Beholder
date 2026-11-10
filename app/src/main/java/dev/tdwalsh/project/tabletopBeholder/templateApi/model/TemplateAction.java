@@ -8,7 +8,8 @@ import java.util.Objects;
 public class TemplateAction {
     private String name;
     private String desc;
-    private int attack_bonus;
+    private Integer attack_bonus;
+    private Integer damage_bonus;
     private String damage_dice;
 
     public String getName() {
@@ -27,12 +28,20 @@ public class TemplateAction {
         this.desc = desc;
     }
 
-    public int getAttack_bonus() {
+    public Integer getAttack_bonus() {
         return attack_bonus;
     }
 
-    public void setAttack_bonus(int attack_bonus) {
+    public void setAttack_bonus(Integer attack_bonus) {
         this.attack_bonus = attack_bonus;
+    }
+
+    public Integer getDamage_bonus() {
+        return damage_bonus;
+    }
+
+    public void setDamage_bonus(Integer damage_bonus) {
+        this.damage_bonus = damage_bonus;
     }
 
     public String getDamage_dice() {

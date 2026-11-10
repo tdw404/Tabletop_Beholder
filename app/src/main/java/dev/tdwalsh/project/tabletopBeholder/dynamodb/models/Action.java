@@ -1,5 +1,7 @@
 package dev.tdwalsh.project.tabletopBeholder.dynamodb.models;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+
 import org.apache.commons.text.WordUtils;
 
 import java.time.ZonedDateTime;
@@ -12,11 +14,41 @@ public class Action implements BeholderObject {
     private String objectName;
     private String actionType;
     private String actionDescription;
+    private Integer attackBonus;
+    private String damageDice;
+    private Integer damageModifier;
     private Integer uses;
     private Integer rechargeOn;
     private Map<String, Effect> appliesEffects;
     private ZonedDateTime createDateTime;
     private ZonedDateTime editDateTime;
+
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    public Integer getAttackBonus() {
+        return attackBonus;
+    }
+
+    public void setAttackBonus(Integer attackBonus) {
+        this.attackBonus = attackBonus;
+    }
+
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    public String getDamageDice() {
+        return damageDice;
+    }
+
+    public void setDamageDice(String damageDice) {
+        this.damageDice = damageDice;
+    }
+
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    public Integer getDamageModifier() {
+        return damageModifier;
+    }
+
+    public void setDamageModifier(Integer damageModifier) {
+        this.damageModifier = damageModifier;
+    }
 
     @Override
     public String getUserEmail() {

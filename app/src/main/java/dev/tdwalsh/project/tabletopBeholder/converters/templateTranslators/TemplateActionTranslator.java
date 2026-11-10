@@ -19,6 +19,9 @@ public class TemplateActionTranslator {
         action.setObjectName(templateAction.getName());
         action.setActionType(actionType);
         action.setActionDescription(templateAction.getDesc());
+        action.setAttackBonus(templateAction.getAttack_bonus());
+        action.setDamageDice(templateAction.getDamage_dice());
+        action.setDamageModifier(templateAction.getDamage_bonus());
         return action;
     }
 }

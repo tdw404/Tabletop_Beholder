@@ -262,7 +262,7 @@ const EMPTY_DATASTORE_STATE = {
         document.getElementById('swimSpeed').value = creature.speedMap?.swim;
         document.getElementById('burrowSpeed').value = creature.speedMap?.burrow;
         document.getElementById('climbSpeed').value = creature.speedMap?.climb;
-        document.getElementById('hoverSpeed').value = creature.speedMap?.hover;
+        document.getElementById('hoverSpeed').checked = creature.hover ?? (creature.speedMap?.hover > 0);
         document.getElementById('strStat').value = creature.statMap?.strength;
         document.getElementById('dexStat').value = creature.statMap?.dexterity;
         document.getElementById('conStat').value = creature.statMap?.constitution;
@@ -437,6 +437,9 @@ const EMPTY_DATASTORE_STATE = {
 
             document.getElementById('nameActionEdit').value = action.objectName;
             document.getElementById('descriptionActionEdit').value = action.actionDescription;
+            document.getElementById('attackBonusEdit').value = action.attackBonus ?? '';
+            document.getElementById('damageDiceEdit').value = action.damageDice ?? '';
+            document.getElementById('damageModifierEdit').value = action.damageModifier ?? '';
             document.getElementById('typeEditAction').value = action.actionType;
             document.getElementById('usesEditAction').value = action.uses;
             document.getElementById('rechargeEditAction').value = action.rechargeOn;
@@ -503,6 +506,11 @@ const EMPTY_DATASTORE_STATE = {
         var action = this.dataStore.get(SELECTED_ACTION_KEY);
         action.objectName = document.getElementById('nameActionEdit').value;
         action.actionDescription = document.getElementById('descriptionActionEdit').value;
+        const attackBonus = document.getElementById('attackBonusEdit').valueAsNumber;
+        const damageModifier = document.getElementById('damageModifierEdit').valueAsNumber;
+        action.attackBonus = Number.isInteger(attackBonus) ? attackBonus : null;
+        action.damageDice = document.getElementById('damageDiceEdit').value.trim() || null;
+        action.damageModifier = Number.isInteger(damageModifier) ? damageModifier : null;
         action.actionType = document.getElementById('typeEditAction').value;
         action.uses = document.getElementById('usesEditAction').value;
         action.rechargeOn = document.getElementById('rechargeEditAction').value;
@@ -643,10 +651,10 @@ const EMPTY_DATASTORE_STATE = {
             var speedMap = new Map;
             speedMap.set('walk', document.getElementById('walkSpeed').value);
             speedMap.set('fly', document.getElementById('flySpeed').value);
-            speedMap.set('swim', document.getElementById('burrowSpeed').value);
-            speedMap.set('burrow', document.getElementById('walkSpeed').value);
+            speedMap.set('swim', document.getElementById('swimSpeed').value);
+            speedMap.set('burrow', document.getElementById('burrowSpeed').value);
             speedMap.set('climb', document.getElementById('climbSpeed').value);
-            speedMap.set('hover', document.getElementById('hoverSpeed').value);
+            creature.hover = document.getElementById('hoverSpeed').checked;
             creature.speedMap = this.mapToObj(speedMap);
             var statMap = new Map;
             statMap.set('strength', document.getElementById('strStat').value);
